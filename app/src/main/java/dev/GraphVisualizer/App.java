@@ -1,4 +1,4 @@
-package org.example;
+package dev.GraphVisualizer;
 
 import javafx.application.Application;
 import javafx.scene.Scene;

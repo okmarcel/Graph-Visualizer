@@ -40,7 +40,7 @@ javafx {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "dev.GraphVisualizer.App"
 }
 
 tasks.named<Test>("test") {
