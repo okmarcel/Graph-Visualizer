@@ -1,6 +1,6 @@
 # Graph Visualizer
 
-# Building
+## Building
 Use gradle to build and run the project automatically with:
 ```
 ./gradlew run
