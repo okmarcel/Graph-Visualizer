@@ -13,20 +13,26 @@ public class Edge {
 
     private final Node source;
     private final Node target;
-    private final double weight;
+    private double weight;
+
+    public Edge(Node source, Node target, double weight) {
+        this.source = source;
+        this.target = target;
+        this.weight = weight;
+    }
 
     /**
      * Public method which returns the weight of the Edge
      * @return weight
      */
-    public double getWeight(){
+    public double getWeight() {
         return weight;
     }
     /**
      * Changes private field weight of the Edge
      * @param newWeight
      */
-    public void setWeight(double newWeight){
+    public void setWeight(double newWeight) {
         weight = newWeight;
     }
     /**
