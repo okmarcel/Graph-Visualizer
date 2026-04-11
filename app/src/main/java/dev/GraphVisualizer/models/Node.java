@@ -9,34 +9,50 @@ import java.util.List;
  */
 public class Node {
 	//TODO use this variable to generate Id
-	private static int numberOfNodes = 0;
+	protected static int numberOfNodes = 0;
 	
 	/**
 	 * Member id - String holding an id of Node
 	 */
-	private String id;
+	protected String id;
 
 	// TODO - add a parametrized version of node to hold different type of variables
 
 	/**
 	 * Memver value - int value stored by Node
 	 */
-	private int value;
+	protected int value;
 
 	/**
 	 * Member x - position on canvas - x axis
 	 */
-	private double x;
+	protected double x;
 
 	/**
 	 * Member y - position on canvas - y axis
 	 */
-	private double y;
+	protected double y;
 	
 	/**
 	 * Member adjacentEdges - list of Edge variables connected to the Node
 	 */
-	private List<Edge> adjacentEdges;
+	protected List<Edge> adjacentEdges;
+
+	/**
+	 * Node constructor taking four arguments:
+	 * @param id of a Node
+	 * @param value stored by Node
+	 * @param x position on canvas x axis
+	 * @param y position on canvas y axis
+	 */
+	public Node(String id, int value, double x, double y) {
+		this.id = id;
+		this.value = value;
+		this.x = x;
+		this.y = y;
+		this.adjacentEdges = new ArrayList<Edge>();
+		numberOfNodes++;
+	}
 
 	/**
 	 * Node constructor taking three arguments:
@@ -80,11 +96,11 @@ public class Node {
 	/**
 	 * Id setter
 	 */
-	private String setId() {
+	public String setId() {
 		return "test_id";
 	}
 
-	private void setCustomId(String id) {
+	public void setCustomId(String id) {
 		this.id = id;
 	}
 
@@ -153,4 +169,12 @@ public class Node {
 			+ ", x= " + x + ", y= " + y + "}";
 	}
 
+	@Override
+	public boolean equals(Object node) {
+		if (this == node)
+			return true;
+		if (node instanceof Node n && n.id == getId())
+			return true;
+		return false;
+	}
 }

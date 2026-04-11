@@ -127,7 +127,7 @@ public class Graph{
      * Returns a number of Node variables in graph
      * @return int
      */
-    public int getNumberOfNodes(){
+    public int getNumberOfNodes() {
         return nodes.size();
     }
 
@@ -135,7 +135,40 @@ public class Graph{
      * Returns a number of Edge variables in graph
      * @return int
      */
-    public int getNumberOfEdges(){
+    public int getNumberOfEdges() {
         return edges.size();
     }
+
+    /**
+     * nodes getter
+     * @return
+     */
+    public List<Node> getAllNodes() {
+        return nodes;
+    }
+
+    /**
+     * nodes setter
+     * @param nodes
+     */
+    public void setAllNodes(List<Node> nodes) {
+        this.nodes = nodes;
+    }
+
+    /**
+     * edges getter
+     * @return
+     */
+    public List<Edge> getAllEdges() {
+        return edges;
+    }
+
+    /**
+     * edges setter
+     * @param edges
+     */
+    public void setAllEdges(List<Edge> edges) {
+        this.edges = edges;
+    }
+
 }
