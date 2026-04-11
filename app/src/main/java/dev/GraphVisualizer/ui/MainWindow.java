@@ -1,6 +1,8 @@
 package dev.GraphVisualizer.ui;
 
 import dev.GraphVisualizer.ui.canvas.GraphCanvas;
+import dev.GraphVisualizer.ui.toolbar.GraphToolBar;
+
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
@@ -41,6 +43,7 @@ public class MainWindow {
         BorderPane root = new BorderPane();
         root.setPadding(new Insets(8));
         root.setCenter(graphCanvas);
+        root.setTop(new GraphToolBar());
         root.setRight(rightPane);
 
         Scene scene = new Scene(root, sceneWidth, sceneHeight);
