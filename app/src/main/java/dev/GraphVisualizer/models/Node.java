@@ -1,6 +1,7 @@
 package dev.GraphVisualizer.models;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
  
 /**
@@ -9,6 +10,7 @@ import java.util.List;
  * @author Marcel Gładysz
  * @version 0.1
  */
+
 public class Node {
 	private String id;
 	private int value;		// value stored by node
@@ -16,6 +18,7 @@ public class Node {
 	private double y;		// y - position on canvas
 	
 	private List<Edge> neighbours;
+	private List<Node> adjacentNodes;
 
 	/**
 	 * Node constructor
@@ -29,6 +32,7 @@ public class Node {
 		this.x = x;
 		this.y = y;
 		this.neighbours = new ArrayList<Edge>();
+		this.adjacentNodes = new ArrayList<Node>();
 	}
 
 	/**
@@ -43,19 +47,25 @@ public class Node {
 	 * Id getter
 	 * @return id of node
 	 */
-	public String getId() { return id; }
+	public String getId() {
+		return id;
+	}
 
 	/**
 	 * Value getter
 	 * @return value stored by node
 	 */
-	public int getValue() { return value; }
+	public int getValue() {
+		return value;
+	}
 
 	/**
 	 * Value setter
 	 * @param value new value to store by node
 	 */
-	public void setValue(int value) { this.value = value; }
+	public void setValue(int value){
+		this.value = value;
+	}
 
 	/**
 	 * Assigns id to new node
@@ -70,7 +80,15 @@ public class Node {
 			+ ", x= " + x + ", y= " + y + "}";
 	}
 
-	public List<Node> getNeighbours(){
-		return neighbours;
+	public void setNeighbours() {
+		this.adjacentNodes = getNeighbours();
+	}
+
+	public List<Node> getNeighbours() {
+		List<Node> adjacent = new ArrayList<Node>();
+		for(Edge i : neighbours) {
+			adjacent.add(i.getTarget());
+		}
+		return adjacent;
 	}
 }
