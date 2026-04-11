@@ -1,17 +1,59 @@
 package dev.GraphVisualizer.ui.canvas;
 
+import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.beans.binding.Bindings;
 
 public class GraphCanvas extends Pane {
+    private final Group graphGroup = new Group();
+    private double dragStartX;
+    private double dragStartY;
+    private double translateX;
+    private double translateY;
+    
 
     public GraphCanvas() {
-        setStyle("-fx-border-color: red; -fx-border-width: 2;");
-        drawSampleGraph();
+        clipProperty().bind(Bindings.createObjectBinding(() -> {
+            Rectangle clip = new Rectangle(getWidth(), getHeight());
+            clip.setArcWidth(14);
+            clip.setArcHeight(14);
+            return clip;
+        }, widthProperty(), heightProperty()));
+        
+        // Create a border as a Rectangle instance
+        Rectangle border = new Rectangle();
+        border.setFill(Color.TRANSPARENT);   // make transparent inside border
+        border.setStroke(Color.GRAY);       // border color
+        border.setStrokeWidth(2);           // border width
+        border.setArcWidth(14);             // rounded corners
+        border.setArcHeight(14);            // rounded corners
+        border.widthProperty().bind(widthProperty());
+        border.heightProperty().bind(heightProperty());
+
+        getChildren().add(graphGroup);
+        getChildren().add(border);
+        drawSampleGraph(); // hardcoded graph shape
+        addPanHandlers();
+    }
+
+    private void addPanHandlers() {
+        setOnMousePressed(e -> {
+            dragStartX = e.getX() - translateX;
+            dragStartY = e.getY() - translateY;
+        });
+
+        setOnMouseDragged(e -> {
+            translateX = e.getX() - dragStartX;
+            translateY = e.getY() - dragStartY;
+            graphGroup.setTranslateX(translateX);
+            graphGroup.setTranslateY(translateY);
+        });
     }
 
     private void drawSampleGraph() {
@@ -28,7 +70,7 @@ public class GraphCanvas extends Pane {
             Line line = new Line(x[edge[0]], y[edge[0]], x[edge[1]], y[edge[1]]);
             line.setStroke(Color.GRAY);
             line.setStrokeWidth(2);
-            getChildren().add(line);
+            graphGroup.getChildren().add(line);
         }
 
         // Draw nodes
@@ -41,7 +83,7 @@ public class GraphCanvas extends Pane {
             label.setFill(Color.WHITE);
             label.setFont(new Font(14));
 
-            getChildren().addAll(circle, label);
+            graphGroup.getChildren().addAll(circle, label);
         }
     }
 }
