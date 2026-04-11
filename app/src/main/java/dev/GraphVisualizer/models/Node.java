@@ -1,7 +1,8 @@
 package dev.GraphVisualizer.models;
 
-import java.util.Vector;
-
+import java.util.ArrayList;
+import java.util.List;
+ 
 /**
  * Class Node
  * 
@@ -14,7 +15,7 @@ public class Node {
 	private double x;		// x - position on canvas
 	private double y;		// y - position on canvas
 	
-	private Vector<Edge> neighbours;
+	private List<Edge> neighbours;
 
 	/**
 	 * Node constructor
@@ -27,7 +28,7 @@ public class Node {
 		this.value = value;
 		this.x = x;
 		this.y = y;
-		this.neighbours = new Vector<Edge>();
+		this.neighbours = new ArrayList<Edge>();
 	}
 
 	/**
@@ -67,5 +68,9 @@ public class Node {
 	public String toString() {
 		return "Node{id= " + id + ", value= " + value 
 			+ ", x= " + x + ", y= " + y + "}";
+	}
+
+	public List<Node> getNeighbours(){
+		return neighbours;
 	}
 }
