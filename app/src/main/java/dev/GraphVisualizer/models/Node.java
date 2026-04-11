@@ -1,153 +1,95 @@
 package dev.GraphVisualizer.models;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
- 
+import java.util.UUID;
+import java.util.Objects;
+
 /**
- * class Node
+ * Represents a node in a graph with a label and optional position.
  */
 public class Node {
-	//TODO use this variable to generate Id
-	protected static int numberOfNodes = 0;
-	
-	/**
-	 * Member id - String holding an id of Node
-	 */
-	protected String id;
+	/** Unique identifier, assigned once at construction and never changed */
+	private final String id;
 
-	// TODO - add a parametrized version of node to hold different type of variables
+	/** Node label */
+	private String label;
 
-	/**
-	 * Memver value - int value stored by Node
-	 */
-	protected int value;
+	/** Node x-axis position on canvas */
+	private double x;
+
+	/** Node y-axis position on canvas */
+	private double y;
 
 	/**
-	 * Member x - position on canvas - x axis
+	 * Constructs Node object from label string and x, y position arguments.
+	 * 
+	 * @param label node label string
+	 * @param x x-axis position on canvas
+	 * @param y y-axis position on canvas
+	 * @throws NullPointerException if label string is null
 	 */
-	protected double x;
-
-	/**
-	 * Member y - position on canvas - y axis
-	 */
-	protected double y;
-	
-	/**
-	 * Member adjacentEdges - list of Edge variables connected to the Node
-	 */
-	protected List<Edge> adjacentEdges;
-
-	/**
-	 * Node constructor taking four arguments:
-	 * @param id of a Node
-	 * @param value stored by Node
-	 * @param x position on canvas x axis
-	 * @param y position on canvas y axis
-	 */
-	public Node(String id, int value, double x, double y) {
-		this.id = id;
-		this.value = value;
+	public Node(String label, double x, double y) {
+		Objects.requireNonNull(label, "Node label cannot be null.");
+		this.id = UUID.randomUUID().toString();
+		this.label = label;
 		this.x = x;
 		this.y = y;
-		this.adjacentEdges = new ArrayList<Edge>();
-		numberOfNodes++;
 	}
 
 	/**
-	 * Node constructor taking three arguments:
-	 * @param value stored by Node
-	 * @param x position on canvas x axis
-	 * @param y position on canvas y axis
+	 * Constructs Node object from label string.
+	 * Position parameters (x, y) default to 0.0 and can later be set
+	 * via {@link #setPositionX(double)} and {@link #setPositionY(double)}
+	 * 
+	 * @param label node label string
+	 * @throws NullPointerException if label string is null
 	 */
-	public Node(int value, double x, double y) {
-		this.id = setId();
-		this.value = value;
-		this.x = x;
-		this.y = y;
-		this.adjacentEdges = new ArrayList<Edge>();
-		numberOfNodes++;
+	public Node(String label) {
+		// Note: arguments x, y are assigned 0.0 but they
+		// are likely redundant if this constructor was called.
+		this(label, 0.0, 0.0);
 	}
 
 	/**
-	 * Node constructor taking five arguments:
-	 * @param id of Node
-	 * @param value stored by Node
-	 * @param x position on canvas x axis
-	 * @param y position on canvas y axis
-	 * @param adjacentEdges copies the list - necessary for BFS
-	 */
-	public Node(String id, int value, double x, double y, List<Edge> edges) {
-		this.id = id;
-		this.value = value;
-		this.x = x;
-		this.y = y;
-		this.adjacentEdges = edges;;
-		numberOfNodes++;
-	}
-
-
-	/**
-	 * Node constructor taking two arguments:
-	 * @param value value stored by Node
-	 */
-	public Node(int value, double x) {
-		this(value, x, 0.0);
-	}
-	
-	public Node(int value) {
-		this(value, 0.0, 0.0);
-	}
-	
-	public Node() {
-		this(0);
-	}
-	
-	/**
-	 * Id getter
-	 * @return id of node
+	 * Returns node id string
+	 * 
+	 * @return Node id string
 	 */
 	public String getId() {
 		return id;
 	}
 
 	/**
-	 * Id setter
+	 * Returns node label string
+	 * 
+	 * @return Node label string
 	 */
-	public String setId() {
-		return "test_id";
-	}
-
-	public void setCustomId(String id) {
-		this.id = id;
+	public String getLabel() {
+		return label;
 	}
 
 	/**
-	 * Value getter
-	 * @return value stored by node
+	 * Sets node label string
+	 * 
+	 * @param label new node label string
+	 * @throws NullPointerException if label string is null
 	 */
-	public int getValue() {
-		return value;
+	public void setLabel(String label) {
+		Objects.requireNonNull(label, "Node label cannot be null.");
+		this.label = label;
 	}
 
 	/**
-	 * Value setter
-	 * @param value new value to store by node
-	 */
-	public void setValue(int value){
-		this.value = value;
-	}
-
-	/**
-	 * Getter for x-axis position on canvas
-	 * @return x-axis position on canvas
+	 * Returns node x-axis position on canvas
+	 * 
+	 * @return Node x-axis position on canvas
 	 */
 	public double getPositionX() {
 		return x;
 	}
 
 	/**
-	 * Setter for x-axis position on canvas
+	 * Sets node x-axis position on canvas
+	 * 
 	 * @param x x-axis position on canvas
 	 */
 	public void setPositionX(double x) {
@@ -155,15 +97,17 @@ public class Node {
 	}
 
 	/**
-	 * Getter for y-axis position on canvas
-	 * @return y-axis position on canvas
+	 * Returns node y-axis position on canvas
+	 * 
+	 * @return Node y-axis position on canvas
 	 */
 	public double getPositionY() {
 		return y;
 	}
 
 	/**
-	 * Setter for y-axis position on canvas
+	 * Sets node y-axis position on canvas
+	 * 
 	 * @param y y-axis position on canvas
 	 */
 	public void setPositionY(double y) {
@@ -171,47 +115,38 @@ public class Node {
 	}
 
 	/**
-	 * Returns a list of Node variables that a Node has a Edge with
+	 * Returns node parameters as String
+	 * 
+	 * @return Node parameters in format Node{id=id, label=label, x=x, y=y}
 	 */
-	public List<Node> getNeighbours() {
-		List<Node> adjacent = new ArrayList<Node>();
-		for(Edge i : adjacentEdges) {
-			adjacent.add(i.getTarget());
-		}
-		return adjacent;
-	}
-
-	/**
-	 * adjacentEdges getter
-	 * @return
-	 */
-	public List<Edge> getAdjacentEdges() {
-		return adjacentEdges;
-	}
-
-	/**
-	 * Node setter
-	 */
-	public void setNode(Node node) {
-		this.id = node.getId();
-		this.value = node.getValue();
-		this.x = node.getPositionX();
-		this.y = node.getPositionY();
-		this.adjacentEdges = node.getAdjacentEdges();
-	}
-
 	@Override
 	public String toString() {
-		return "Node{id= " + id + ", value= " + value 
+		return "Node{id= " + id + ", label= " + label 
 			+ ", x= " + x + ", y= " + y + "}";
 	}
 
+	/**
+	 * Checks if objects are equal
+	 * 
+	 * @param ob object to compare against
+	 * @return true if ob is same or id strings are the same, otherwise false
+	 */
 	@Override
-	public boolean equals(Object node) {
-		if (this == node)
+	public boolean equals(Object ob) {
+		if (this == ob)
 			return true;
-		if (node instanceof Node n && n.id.equals(getId())) 
+		if (ob instanceof Node n && n.id.equals(id))
 			return true;
 		return false;
+	}
+
+	/**
+	 * Returns hash code of node object
+	 * 
+	 * @return Hash code of node object
+	 */
+	@Override
+	public int hashCode() {
+		return id.hashCode();
 	}
 }
