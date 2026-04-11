@@ -202,7 +202,7 @@ class BFSNode extends Node {
      * @param pi parent
      */
     public BFSNode(Node node, Color color, int d, BFSNode pi) {
-        super(node.getId(), node.getValue(), node.getPositionX(), node.getPositionY());
+        super(node.getId(), node.getValue(), node.getPositionX(), node.getPositionY(), node.getAdjacentEdges());
         this.color = color;
         this.d = d; 
         this.pi = pi;
@@ -288,15 +288,6 @@ class BFSNode extends Node {
     public BFSNode getPi() {
         return pi;
     }
-
-    // @Override
-    // public List<BFSNode> getNeighbours() {
-	// 	List<BFSNode> adjacent = new ArrayList<BFSNode>();
-	// 	for(Edge i : adjacentEdges) {
-	// 		adjacent.add(i.getTarget());
-	// 	}
-	// 	return adjacent;
-	// }
 
 	@Override
 	public String toString() {

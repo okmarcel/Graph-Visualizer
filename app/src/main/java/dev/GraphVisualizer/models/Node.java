@@ -70,6 +70,24 @@ public class Node {
 	}
 
 	/**
+	 * Node constructor taking five arguments:
+	 * @param id of Node
+	 * @param value stored by Node
+	 * @param x position on canvas x axis
+	 * @param y position on canvas y axis
+	 * @param adjacentEdges copies the list - necessary for BFS
+	 */
+	public Node(String id, int value, double x, double y, List<Edge> edges) {
+		this.id = id;
+		this.value = value;
+		this.x = x;
+		this.y = y;
+		this.adjacentEdges = edges;;
+		numberOfNodes++;
+	}
+
+
+	/**
 	 * Node constructor taking two arguments:
 	 * @param value value stored by Node
 	 */
