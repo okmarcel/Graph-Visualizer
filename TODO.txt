@@ -1,0 +1,29 @@
+List should be completed top to bottom prioritizing tasks (In Progress) before (Missing Features)
+
+TODO for MVP:
+
+(Missing Features)
+  - UI Layer
+  - DFS implementation
+  - Dijkstra implementation
+  - AlgorithmService
+  - Saving and loading graph structure from files (GraphRepository implementation)
+
+(In Progress)
+  Graph class
+    - fix Node API calls after major Node class rewrite
+    - write tests
+
+  Edge class
+    - fix Node API calls after major Node class rewrite
+    - write tests
+
+  GraphService
+    - business logic for Graph class
+
+  BFS implementation + tests
+    - fix Node API calls after major Node class rewrite
+	- consult on graph copy approach
+
+(Done)
+  Node model class + tests
