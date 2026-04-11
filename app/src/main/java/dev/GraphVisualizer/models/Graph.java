@@ -83,4 +83,20 @@ public class Graph{
     public void setDirected(boolean directed) {
         this.directed = directed;
     }
+
+    /**
+     * Returns boolean flag which indicates whether the graph is weighted or not
+     * @return weighted
+     */
+    public boolean getWeighted() {
+        return weighted;
+    }
+
+    /**
+     * Sets boolean flag which indicates whether the graph is weighted or not
+     * @param weighted
+     */
+    public void setWeighted(boolean weighted) {
+        this.weighted = weighted;
+    }
 }
