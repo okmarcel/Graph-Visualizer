@@ -1,7 +1,11 @@
 package dev.GraphVisualizer.ui.canvas;
 
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -16,43 +20,94 @@ public class GraphCanvas extends Pane {
     private double dragStartY;
     private double translateX;
     private double translateY;
-    
+    private boolean isPanning = false;
 
-    public GraphCanvas() {
+    private final VBox zoomControls = new VBox(4);
+    private double scale = 1.0;
+    private static final double SCALE_STEP = 0.2;
+    private static final double SCALE_MIN  = 0.2;
+    private static final double SCALE_MAX  = 3.0;
+
+    public GraphCanvas() {    
         clipProperty().bind(Bindings.createObjectBinding(() -> {
             Rectangle clip = new Rectangle(getWidth(), getHeight());
             clip.setArcWidth(14);
             clip.setArcHeight(14);
             return clip;
         }, widthProperty(), heightProperty()));
-        
-        // Create a border as a Rectangle instance
-        Rectangle border = new Rectangle();
-        border.setFill(Color.TRANSPARENT);   // make transparent inside border
-        border.setStroke(Color.GRAY);       // border color
-        border.setStrokeWidth(2);           // border width
-        border.setArcWidth(14);             // rounded corners
-        border.setArcHeight(14);            // rounded corners
-        border.widthProperty().bind(widthProperty());
-        border.heightProperty().bind(heightProperty());
 
-        getChildren().add(graphGroup);
-        getChildren().add(border);
+        // // Create a border as a Rectangle instance
+        // Rectangle border = new Rectangle();
+        // border.setFill(Color.TRANSPARENT);   // make transparent inside border
+        // border.setStroke(Color.GRAY);       // border color
+        // border.setStrokeWidth(2);           // border width
+        // border.setArcWidth(14);             // rounded corners
+        // border.setArcHeight(14);            // rounded corners
+        // border.widthProperty().bind(widthProperty());
+        // border.heightProperty().bind(heightProperty());
+
+        zoomControls.setAlignment(Pos.CENTER);
+        zoomControls.setPadding(new Insets(4));
+
+        Button zoomIn = new Button("+");
+        Button zoomOut = new Button("-");
+
+        zoomIn.setMinSize(28, 28);
+        zoomOut.setMinSize(28, 28);
+        
+        zoomIn.setOnAction(e -> applyZoom(SCALE_STEP));
+        zoomOut.setOnAction(e -> applyZoom(-SCALE_STEP));
+
+        zoomControls.getChildren().addAll(zoomIn, zoomOut);
+
+        zoomControls.layoutXProperty().bind(widthProperty().subtract(zoomControls.widthProperty()).subtract(8));
+        zoomControls.setLayoutY(8);
+
+        // Add elements from bottom to top layer
+        getChildren().addAll(
+            graphGroup,
+            zoomControls
+            // adding border breaks zoomControls
+        );
         drawSampleGraph(); // hardcoded graph shape
         addPanHandlers();
     }
 
+    private void applyZoom(double delta) {
+        scale += delta;
+        if (scale < SCALE_MIN)
+            scale = SCALE_MIN;
+        else if (scale > SCALE_MAX)
+            scale = SCALE_MAX;
+
+        graphGroup.setScaleX(scale);
+        graphGroup.setScaleY(scale);
+    }
+
     private void addPanHandlers() {
-        setOnMousePressed(e -> {
+        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, e -> {
+            if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) {
+                isPanning = false;
+                return; // let the event reach the buttons
+            }
+            isPanning = true;
             dragStartX = e.getX() - translateX;
             dragStartY = e.getY() - translateY;
+            e.consume();
         });
 
-        setOnMouseDragged(e -> {
-            translateX = e.getX() - dragStartX;
-            translateY = e.getY() - dragStartY;
-            graphGroup.setTranslateX(translateX);
-            graphGroup.setTranslateY(translateY);
+        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, e -> {
+            if (isPanning) {
+                translateX = e.getX() - dragStartX;
+                translateY = e.getY() - dragStartY;
+                graphGroup.setTranslateX(translateX);
+                graphGroup.setTranslateY(translateY);
+                e.consume();
+            }
+        });
+
+        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, e -> {
+            isPanning = false;
         });
     }
 

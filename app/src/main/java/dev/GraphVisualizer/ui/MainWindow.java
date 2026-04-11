@@ -19,7 +19,7 @@ public class MainWindow {
 
     public void show() {
         GraphCanvas graphCanvas = new GraphCanvas();
-        graphCanvas.setStyle("-fx-border-color: gray; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
+        // graphCanvas.setStyle("-fx-border-color: gray; -fx-border-width: 2; -fx-border-radius: 8; -fx-background-radius: 8;");
 
         // Control pane
         BorderPane rightPane = new BorderPane();
