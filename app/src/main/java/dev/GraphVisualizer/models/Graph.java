@@ -3,13 +3,6 @@ package dev.GraphVisualizer.models;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class Edge
- * 
- * @author Jakub Piela
- * @version 0.1
- */
-
 public class Graph{
     /**
      * List of all nodes in the graph
@@ -69,7 +62,7 @@ public class Graph{
     /**
      * Returns list of nodes adjacent to the given Node
      * @param givenNode
-     * @return List<Node>
+     * @return List of Nodes
      */
     public List<Node> getNeighbours(Node givenNode) {
         return givenNode.getNeighbours();
@@ -82,7 +75,7 @@ public class Graph{
     public boolean getDirected() {
         return directed;
     }
-    
+
     /**
      * Sets boolean flag which indicates whether the graph is directed or not
      * @param directed

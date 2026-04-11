@@ -1,14 +1,5 @@
 package dev.GraphVisualizer.models;
 
-// import org.w3c.dom.Node;
-
-/**
- * Class Edge
- * 
- * @author Jakub Piela
- * @version 0.1
- */
-
 public class Edge {
     /**
      * Source Node of the Edge

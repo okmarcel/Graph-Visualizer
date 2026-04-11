@@ -4,13 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
  
-/**
- * Class Node
- * 
- * @author Marcel Gładysz
- * @version 0.1
- */
-
 public class Node {
 	private String id;
 	private int value;		// value stored by node
