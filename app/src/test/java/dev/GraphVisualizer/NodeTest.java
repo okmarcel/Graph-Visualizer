@@ -6,69 +6,93 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class NodeTest {
-    private Node nodeA;
-    private final int valueA = 2;
-    private Node nodeB;
-    private final int valueB = 5;
-
-    @BeforeEach
-    void setUp() {
-        nodeA = new Node(valueA);
-        nodeB = new Node(valueA);
+    @Test
+    void fullConstructorStoresLabel() {
+        Node node = new Node("Test Node", 1.2, 3.4);
+        assertEquals("Test Node", node.getLabel());
     }
 
     @Test
-    void fullConstructorStoresValues() {
-        Node node = new Node(42, 1.5, 3.7);
-        assertEquals(42, node.getValue());
+    void fullConstructorStoresPosition() {
+        Node node = new Node("Test Node", 1.2, 3.4);
+        assertEquals(1.2, node.getPositionX());
+        assertEquals(3.4, node.getPositionY());
+    }
+
+    @Test
+    void shortConstructorStoresLabel() {
+        Node node = new Node("Test Node");
+        assertEquals("Test Node", node.getLabel());
     }
 
     @Test
     void shortConstructorDefaultsPositionToZero() {
-        Node node = new Node(10);
-        assertEquals("Node{id= test_id, value= 10, x= 0.0, y= 0.0}", node.toString());
+        Node node = new Node("TestNode");
+        assertEquals(0.0, node.getPositionX());
+        assertEquals(0.0, node.getPositionY());
     }
 
     @Test
-    void shortConstructorDelegatesToFullConstructor() {
-        Node a = new Node(5);
-        Node b = new Node(5, 0.0, 0.0);
-        assertEquals(a.getValue(), b.getValue());
+    void constructorThrowsOnNullLabel() {
+        assertThrows(NullPointerException.class, () -> new Node(null));
+        assertThrows(NullPointerException.class, () -> new Node(null, 1.2, 3.4));
     }
 
     @Test
     void testIdNotNull() {
-        assertNotNull(nodeA.getId());
+        Node node = new Node("TestNode");
+        assertNotNull(node.getId());
     }
 
     @Test
     void testIdNotBlank() {
-        assertFalse(nodeA.getId().isBlank());
+        Node node = new Node("TestNode");
+        assertFalse(node.getId().isBlank());
     }
 
     @Test
-    void testGetValue() {
-        assertEquals(nodeA.getValue(), valueA);
+    void testGetLabel() {
+        Node node = new Node("TestNode");
+        assertEquals("TestNode", node.getLabel());
     }
 
     @Test
-    void setValueUpdatesValue() {
-        Node node = new Node(1);
-        node.setValue(42);
-        assertEquals(42, node.getValue());
+    void setLabelUpdatesLabel() {
+        Node node = new Node("TestNode");
+        node.setLabel("New Label");
+        assertEquals("New Label", node.getLabel());
     }
 
     @Test
-    void setValueAllowsNegative() {
-        Node node = new Node(1);
-        node.setValue(-10);
-        assertEquals(-10, node.getValue());
+    void setLabelThrowsOnNullLabel() {
+        Node node = new Node("TestNode");
+        assertThrows(NullPointerException.class, () -> node.setLabel(null));
     }
 
     @Test
     void testToString() {
-        String expected = "Node{id= " + nodeA.getId() + ", value= " + nodeA.getValue() 
-			    + ", x= " + nodeA.getPositionX() + ", y= " + nodeA.getPositionY() + "}";
-        assertEquals(expected, nodeA.toString());
+        Node node = new Node("TestNode", 1.2, 3.4);
+        String expected = "Node{id= " + node.getId() + ", label= " + node.getLabel() 
+			    + ", x= " + node.getPositionX() + ", y= " + node.getPositionY() + "}";
+        assertEquals(expected, node.toString());
+    }
+
+    @Test
+    void sameNodeIsEqual() {
+        Node node = new Node("TestNode");
+        assertEquals(node, node);
+    }
+
+    @Test
+    void nodesWithSameLabelAreNotEqual() {
+        Node a = new Node("TestNode");
+        Node b = new Node("TestNode");
+        assertNotEquals(a, b);
+    }
+
+    @Test
+    void hashCodeIsConsistent() {
+        Node node = new Node("TestNode");
+        assertEquals(node.hashCode(), node.hashCode());
     }
 }
