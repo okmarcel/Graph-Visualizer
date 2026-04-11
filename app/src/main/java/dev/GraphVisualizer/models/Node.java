@@ -4,36 +4,65 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
  
+/**
+ * class Node
+ */
 public class Node {
+	/**
+	 * Member id - String holding an id of Node
+	 */
 	private String id;
-	private int value;		// value stored by node
-	private double x;		// x - position on canvas
-	private double y;		// y - position on canvas
-	
-	private List<Edge> neighbours;
-	private List<Node> adjacentNodes;
+
+	// TODO - add a parametrized version of node to hold different type of variables
 
 	/**
-	 * Node constructor
-	 * @param value value stored by Node
-	 * @param x x - position on canvas
-	 * @param y y - position on canvas
+	 * Memver value - int value stored by Node
+	 */
+	private int value;
+
+	/**
+	 * Member x - position on canvas - x axis
+	 */
+	private double x;
+
+	/**
+	 * Member y - position on canvas - y axis
+	 */
+	private double y;
+	
+	/**
+	 * Member adjacentEdges - list of Edge variables connected to the Node
+	 */
+	private List<Edge> adjacentEdges;
+
+	/**
+	 * Node constructor taking three arguments:
+	 * @param value stored by Node
+	 * @param x position on canvas x axis
+	 * @param y position on canvas y axis
 	 */
 	public Node(int value, double x, double y) {
 		this.id = assignId();
 		this.value = value;
 		this.x = x;
 		this.y = y;
-		this.neighbours = new ArrayList<Edge>();
-		this.adjacentNodes = new ArrayList<Node>();
+		this.adjacentEdges = new ArrayList<Edge>();
 	}
 
 	/**
-	 * Node constructor
+	 * Node constructor taking two arguments:
 	 * @param value value stored by Node
 	 */
+	public Node(int value, double x) {
+		this(value, x, 0.0);
+	}
+	
 	public Node(int value) {
 		this(value, 0.0, 0.0);
+	}
+	
+	public Node() {
+		this(0);
 	}
 	
 	/**
@@ -103,7 +132,7 @@ public class Node {
 
 	public List<Node> getNeighbours() {
 		List<Node> adjacent = new ArrayList<Node>();
-		for(Edge i : neighbours) {
+		for(Edge i : adjacentEdges) {
 			adjacent.add(i.getTarget());
 		}
 		return adjacent;

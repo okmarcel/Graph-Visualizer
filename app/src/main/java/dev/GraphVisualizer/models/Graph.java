@@ -3,40 +3,63 @@ package dev.GraphVisualizer.models;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * class Graph
+ */
 public class Graph{
     /**
-     * List of all nodes in the graph
+     * Member nodes - list of all nodes in the graph
      */
     private List<Node> nodes;
 
     /**
-     * List of all edges in the graph
+     * Member edges - list of all edges in the graph
      */
     private List<Edge> edges;
 
     /**
-     * Boolean flag to hold information whether the graph is directed or not
+     * Member directed - boolean flag to hold information whether the graph is directed or not
      */
     private boolean directed;
 
     /**
-     * Boolean flag to hold information whether the graph is weighted or not
+     * Member weighted - boolean flag to hold information whether the graph is weighted or not
      */
     private boolean weighted;
 
     /**
      * Contructor which initializes list of nodes and edges.
-     * By default we consider graph not to be directed and not weighted.
+     * @param directed indicated whether graph is directed or not
+     * @param weighted indicates whether graph is weighted or not  
      */
-    public Graph() {
+    public Graph(boolean directed, boolean weighted) {
         nodes = new ArrayList<Node>();
         edges = new ArrayList<Edge>();
-        directed = false;
-        weighted = false;
+        this.directed = directed;
+        this.weighted = weighted;
     }
 
     /**
-     * Adds a new node to the list of nodes aka nodes
+     * Contructor taking one argument:
+     * directed = provided argument;
+     * weighted = false;
+     * @param directed indicated whether graph is directed or not
+     */
+    public Graph(boolean directed) {
+        this(directed, false);
+    }
+
+    /**
+     * Conctruct taking no arguemnts:
+     * directed = false;
+     * weighted = false
+     */
+    public Graph() {
+        this(false);
+    }
+
+    /**
+     * Adds a new Node to the list of nodes - nodes
      * @param newNode
      */
     public void addNode(Node newNode) {
@@ -44,7 +67,7 @@ public class Graph{
     }
 
     /**
-     * Adds a new edge to the list of edges aka edges
+     * Adds a new Edge to the list of edges - edges
      * @param newEdge
      */
     public void addEdge(Edge newEdge) {
@@ -52,7 +75,7 @@ public class Graph{
     }
 
     /**
-     * Removes a node from the list of nodes aka nodes
+     * Removes a node from the list of nodes - nodes
      * @param toBeRemovedNode
      */
     public void removeNode(Node toBeRemovedNode) {
@@ -61,16 +84,16 @@ public class Graph{
 
     /**
      * Returns list of nodes adjacent to the given Node
-     * @param givenNode
-     * @return List of Nodes
+     * @param mainNode
+     * @return neighbours of the mainNode
      */
-    public List<Node> getNeighbours(Node givenNode) {
-        return givenNode.getNeighbours();
+    public List<Node> getNeighbours(Node mainNode) {
+        return mainNode.getNeighbours();
     }
 
     /**
      * Returns boolean flag which indicates whether the graph is directed or not
-     * @return
+     * @return directed
      */
     public boolean getDirected() {
         return directed;
@@ -86,7 +109,7 @@ public class Graph{
 
     /**
      * Returns boolean flag which indicates whether the graph is weighted or not
-     * @return weighted
+     * @return boolean
      */
     public boolean getWeighted() {
         return weighted;
@@ -98,5 +121,21 @@ public class Graph{
      */
     public void setWeighted(boolean weighted) {
         this.weighted = weighted;
+    }
+
+    /**
+     * Returns a number of Node variables in graph
+     * @return int
+     */
+    public int getNumberOfNodes(){
+        return nodes.size();
+    }
+
+    /**
+     * Returns a number of Edge variables in graph
+     * @return int
+     */
+    public int getNumberOfEdges(){
+        return edges.size();
     }
 }
