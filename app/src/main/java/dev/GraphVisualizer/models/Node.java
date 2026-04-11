@@ -8,6 +8,9 @@ import java.util.List;
  * class Node
  */
 public class Node {
+	//TODO use this variable to generate Id
+	private static int numberOfNodes = 0;
+	
 	/**
 	 * Member id - String holding an id of Node
 	 */
@@ -42,11 +45,12 @@ public class Node {
 	 * @param y position on canvas y axis
 	 */
 	public Node(int value, double x, double y) {
-		this.id = assignId();
+		this.id = setId();
 		this.value = value;
 		this.x = x;
 		this.y = y;
 		this.adjacentEdges = new ArrayList<Edge>();
+		numberOfNodes++;
 	}
 
 	/**
@@ -74,6 +78,17 @@ public class Node {
 	}
 
 	/**
+	 * Id setter
+	 */
+	private String setId() {
+		return "test_id";
+	}
+
+	private void setCustomId(String id) {
+		this.id = id;
+	}
+
+	/**
 	 * Value getter
 	 * @return value stored by node
 	 */
@@ -93,31 +108,43 @@ public class Node {
 	 * Getter for x-axis position on canvas
 	 * @return x-axis position on canvas
 	 */
-	public double getPositionX() { return x; }
+	public double getPositionX() {
+		return x;
+	}
 
 	/**
 	 * Setter for x-axis position on canvas
 	 * @param x x-axis position on canvas
 	 */
-	public void setPositionX(double x) { this.x = x; }
+	public void setPositionX(double x) {
+		this.x = x;
+	}
 
 	/**
 	 * Getter for y-axis position on canvas
 	 * @return y-axis position on canvas
 	 */
-	public double getPositionY() { return y; }
+	public double getPositionY() {
+		return y;
+	}
 
 	/**
 	 * Setter for y-axis position on canvas
 	 * @param y y-axis position on canvas
 	 */
-	public void setPositionY(double y) { this.y = y; }
+	public void setPositionY(double y) {
+		this.y = y;
+	}
 
 	/**
-	 * Assigns id to new node
+	 * Returns a list of Node variables that a Node has a Edge with
 	 */
-	private String assignId() {
-		return "test_id";
+	public List<Node> getNeighbours() {
+		List<Node> adjacent = new ArrayList<Node>();
+		for(Edge i : adjacentEdges) {
+			adjacent.add(i.getTarget());
+		}
+		return adjacent;
 	}
 
 	@Override
@@ -126,15 +153,4 @@ public class Node {
 			+ ", x= " + x + ", y= " + y + "}";
 	}
 
-	public void setNeighbours() {
-		this.adjacentNodes = getNeighbours();
-	}
-
-	public List<Node> getNeighbours() {
-		List<Node> adjacent = new ArrayList<Node>();
-		for(Edge i : adjacentEdges) {
-			adjacent.add(i.getTarget());
-		}
-		return adjacent;
-	}
 }

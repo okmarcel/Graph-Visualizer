@@ -1,5 +1,8 @@
 package dev.GraphVisualizer.models;
 
+/**
+ * class Edge
+ */
 public class Edge {
     /**
      * Source Node of the Edge
