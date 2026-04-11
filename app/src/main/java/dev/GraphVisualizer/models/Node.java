@@ -58,6 +58,30 @@ public class Node {
 	public void setValue(int value) { this.value = value; }
 
 	/**
+	 * Getter for x-axis position on canvas
+	 * @return x-axis position on canvas
+	 */
+	public double getPositionX() { return x; }
+
+	/**
+	 * Setter for x-axis position on canvas
+	 * @param x x-axis position on canvas
+	 */
+	public void setPositionX(double x) { this.x = x; }
+
+	/**
+	 * Getter for y-axis position on canvas
+	 * @return y-axis position on canvas
+	 */
+	public double getPositionY() { return y; }
+
+	/**
+	 * Setter for y-axis position on canvas
+	 * @param y y-axis position on canvas
+	 */
+	public void setPositionY(double y) { this.y = y; }
+
+	/**
 	 * Assigns id to new node
 	 */
 	private String assignId() {
