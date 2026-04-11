@@ -163,6 +163,25 @@ public class Node {
 		return adjacent;
 	}
 
+	/**
+	 * adjacentEdges getter
+	 * @return
+	 */
+	public List<Edge> getAdjacentEdges() {
+		return adjacentEdges;
+	}
+
+	/**
+	 * Node setter
+	 */
+	public void setNode(Node node) {
+		this.id = node.getId();
+		this.value = node.getValue();
+		this.x = node.getPositionX();
+		this.y = node.getPositionY();
+		this.adjacentEdges = node.getAdjacentEdges();
+	}
+
 	@Override
 	public String toString() {
 		return "Node{id= " + id + ", value= " + value 
@@ -173,7 +192,7 @@ public class Node {
 	public boolean equals(Object node) {
 		if (this == node)
 			return true;
-		if (node instanceof Node n && n.id == getId())
+		if (node instanceof Node n && n.id.equals(getId())) 
 			return true;
 		return false;
 	}

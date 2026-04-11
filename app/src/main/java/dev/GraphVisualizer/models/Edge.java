@@ -41,6 +41,14 @@ public class Edge {
     }
 
     /**
+     * Contructor taking weight sets source and target to null
+     * @param weight
+     */
+    public Edge(double weight) {
+        this(null, null, weight);
+    }
+
+    /**
      * Public method which returns the weight of the Edge
      * @return weight
      */
@@ -63,13 +71,19 @@ public class Edge {
     //     return Graph.getDirected();
     // }
 
-    // public void setSource(){
-    //     source.setNode();
-    // }
+    /**
+     * source setter
+     */
+    public void setSource(Node source){
+        this.source = source;
+    }
 
-    // public void setTarget(){
-    //     target.setNode();
-    // }
+    /**
+     * target setter
+     */
+    public void setTarget(Node target){
+        this.target = target;
+    }
 
     /**
      * Returns source Node
@@ -86,4 +100,13 @@ public class Edge {
     public Node getTarget(){
         return target;
     }
+
+    @Override
+	public boolean equals(Object edge) {
+		if (this == edge)
+			return true;
+		if (edge instanceof Edge e && e.getSource() == source && e.getTarget() == target)
+			return true;
+		return false;
+	}
 }

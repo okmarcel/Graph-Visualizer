@@ -1,7 +1,9 @@
 package dev.GraphVisualizer.algorithms;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import javax.xml.transform.Source;
 
@@ -40,10 +42,11 @@ public class BFS {
         this.graph = initializeGraph(graph);
         initializeAllBFSNodes(graph, sourceNode);
         this.sourceNode = initializeSourceNode(graph, sourceNode, Color.GREY, 0, null);
+        initializeAllNodesEdges();
         initializeAllBFSEdges(graph);
     }
 
-    //TODO add another contructor with some default Node to be taken only graph provided
+    //TODO add another contructor with some default Node to be taken when only graph provided
 
     /**
      * Initializes the graph on which the algorith executes
@@ -60,7 +63,7 @@ public class BFS {
      * @param graph
      * @param sourcNode
      */
-    public void initializeAllBFSNodes(Graph graph, Node sourcNode) {
+    public void initializeAllBFSNodes(Graph graph, Node sourceNode) {
         for(Node i : graph.getAllNodes()){
             if(!i.equals(sourceNode))
                 this.graph.getAllNodes().add(new BFSNode(i));
@@ -77,13 +80,45 @@ public class BFS {
      */
     public BFSNode initializeSourceNode(Graph graph, Node sourceNode, Color color, int d, BFSNode pi) {
         BFSNode start = new BFSNode(sourceNode, color, d, pi);
-        graph.getAllNodes().add(start);
+        this.graph.getAllNodes().add(start);
         return start;
     }
 
+    /**
+     * Initializes Edges in all Nodes
+     * @param graph
+     */
+    public void initializeAllNodesEdges() {
+        for(Node i : this.graph.getAllNodes()) {
+            for(Edge j : i.getAdjacentEdges()) {
+                for(Node k : this.graph.getAllNodes()) {
+                    if(j.getSource().equals(k)) {
+                        j.setSource(k);
+                    }
+                    if(j.getTarget().equals(k)) {
+                        j.setTarget(k);
+                    }
+                }
+           }
+        }
+    }
+
+    /**
+     * Initializes Edges in the graph
+     * @param graph
+     */
     public void initializeAllBFSEdges(Graph graph) {
-        for(Edge i : graph.getAllEdges()){
-            this.graph.getAllNodes().add(new BFSNode(i));
+        for(Edge i : graph.getAllEdges()) {
+            Edge e = new Edge(i.getWeight());
+            for(Node j : graph.getAllNodes()) {
+                if(i.getSource().equals(j)) {
+                    e.setSource(j);
+                }
+                if(i.getTarget().equals(j)) {
+                    e.setTarget(j);
+                }
+            }
+            this.graph.getAllEdges().add(e);
         }
     }
 
@@ -123,10 +158,22 @@ public class BFS {
      * Main logic of the algorithm
      */
     public void runBFS() {
-
+        Queue<BFSNode> q = new LinkedList<BFSNode>();
+        q.add(sourceNode);
+        while(!q.isEmpty()) { 
+            BFSNode u = q.remove();
+            for(Node i : u.getNeighbours()) {
+                if(((BFSNode) i).getColor() == Color.WHITE) {
+                    ((BFSNode) i).setColor(Color.GREY); 
+                    ((BFSNode) i).setD(u.getD() + 1);
+                    ((BFSNode) i).setPi(u); 
+                    q.add((BFSNode) i);
+                }
+            }
+            u.setColor(Color.BLACK);
+        }
     }
 }
-
 /**
  * class BFSNode inherits after Node
  * has some additional fields required for the BFS algorithm
@@ -260,7 +307,7 @@ class BFSNode extends Node {
 	public boolean equals(Object node) {
 		if (this == node)
 			return true;
-		if (node instanceof Node n && super.id == n.getId())
+		if (node instanceof Node n && super.id.equals(n.getId()))
 			return true;
 		return false;
 	}
