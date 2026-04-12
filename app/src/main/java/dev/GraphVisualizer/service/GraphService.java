@@ -1,6 +1,10 @@
 package dev.GraphVisualizer.service;
 
 import dev.GraphVisualizer.models.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map; 
 
 /**
  * class GraphService
@@ -10,6 +14,30 @@ public class GraphService {
      * Member graph - instance of class Graph
      */
     private Graph graph;
+
+    /**
+     * List of Adjacent Nodes for every Node in graph
+     */
+    private Map<Node, List<Node>> Adjacent;
+
+    /**
+     * Constructor which crates list of Adjacent Nodes for every Node in the graph
+     * @param graph
+     */
+    public GraphService(Graph graph) {
+        this.graph = graph;
+        this.Adjacent = new HashMap<>();
+        List<Node> tmp = null;
+        for(Node i : this.graph.getAllNodes()) {
+            tmp = new ArrayList<>();
+            Adjacent.put(i, tmp);
+            for(Edge j : this.graph.getAllEdges()) {
+                if(j.getSource().equals(i)) {
+                    Adjacent.get(i).add(j.getTarget());
+                }
+            }
+        }
+    }
 
     /**
      * Sets private member directed in graph
@@ -45,6 +73,14 @@ public class GraphService {
      */
     public Graph getGraph() {
         return graph;
+    }
+
+    /**
+     * Graph setter
+     * @param graph
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
 
 }
