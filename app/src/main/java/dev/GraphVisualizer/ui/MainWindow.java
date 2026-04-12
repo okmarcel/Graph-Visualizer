@@ -12,9 +12,9 @@ import javafx.geometry.Insets;
  * Main window of the App, holding all GUI elements
  */
 public class MainWindow {
-    private final int sceneWidth = 640;
+    private final int sceneWidth = 1280;
 
-    private final int sceneHeight = 480;
+    private final int sceneHeight = 720;
 
     private final String WINDOW_TITLE = "Graph Visualizer";
 
