@@ -23,22 +23,40 @@ public class ExtraInfo {
     private Node pi;
 
     /**
+     * Time of proceed time used by DFS specifically
+     */
+    private int f;
+    
+    /**
+     * Constructor taking four paramethers:
+     * @param algorithmcolor algorithmcolor
+     * @param d distance
+     * @param pi parent
+     * @param f proceed time
+     */
+    public ExtraInfo(AlgorithmColor algorithmcolor, int d, Node pi, int f) {
+        this.algorithmcolor = algorithmcolor;
+        this.d = d; 
+        this.pi = pi;
+        this.f = f;
+    }
+    /**
      * Constructor taking three paramethers:
      * @param algorithmcolor algorithmcolor
      * @param d distance
      * @param pi parent
+     * f = 0 by default;
      */
     public ExtraInfo(AlgorithmColor algorithmcolor, int d, Node pi) {
-        this.algorithmcolor = algorithmcolor;
-        this.d = d; 
-        this.pi = pi;
+        this(algorithmcolor, d, pi, 0);
     }
     
     /**
-     * Constructor taking twoe paramethers:
+     * Constructor taking two paramethers:
      * @param algorithmcolor algorithmcolor
      * @param d distance
      * pi = null by default;
+     * f = 0 by default;
      */
     public ExtraInfo(AlgorithmColor algorithmcolor, int d) {
         this(algorithmcolor, d, null);
@@ -49,9 +67,10 @@ public class ExtraInfo {
      * @param algorithmcolor algorithmcolor
      * d = 2147483647 by default;
      * pi = null by default;
+     * f = 0 by default;
      */
     public ExtraInfo(AlgorithmColor algorithmcolor) {
-        this(algorithmcolor, Integer.MAX_VALUE, null);
+        this(algorithmcolor, Integer.MAX_VALUE);
     }
 
     /**
@@ -59,9 +78,10 @@ public class ExtraInfo {
      * algorithmcolor = WHITE  by default;
      * d = 2147483647 by default;
      * pi = null by default;
+     * f = 0 by default;
      */
     public ExtraInfo(){
-        this(AlgorithmColor.WHITE, Integer.MAX_VALUE, null);
+        this(AlgorithmColor.WHITE);
     }
 
     /**
@@ -113,15 +133,38 @@ public class ExtraInfo {
     }
 
     /**
+     * f setter
+     * @param f
+     */
+    public void setF(int f) {
+        this.f = f;
+    }
+
+    /**
+     * f getter
+     */
+    public int getF() {
+        return f;
+    }
+
+    /**
      * One big setter to set the state of ExtraInfo
      * @param algorithmcolor
      * @param d
      * @param pi
      */
-    public void setAll(AlgorithmColor algorithmcolor, int d, Node pi) {
+    public void setAllBFS(AlgorithmColor algorithmcolor, int d, Node pi) {
         this.algorithmcolor = algorithmcolor;
         this.d = d;
         this.pi = pi;
+        this.f = 0;
+    }
+
+    public void setAllDFS(AlgorithmColor algorithmcolor, int d, Node pi, int f) {
+        this.algorithmcolor = algorithmcolor;
+        this.d = d;
+        this.pi = pi;
+        this.f = f;
     }
 
 	@Override

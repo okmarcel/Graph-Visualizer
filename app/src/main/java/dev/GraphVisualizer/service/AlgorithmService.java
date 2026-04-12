@@ -12,6 +12,8 @@ public class AlgorithmService {
 
     private Map<Node, ExtraInfo> state;
 
+    private int time = 0;
+
     public AlgorithmService(GraphService service) {
         this.service = service;
         this.state = new HashMap<>();
@@ -45,9 +47,22 @@ public class AlgorithmService {
 
     private void resetState() {
         state.clear();
+        resetTime();
         for(Node i : service.getGraph().getAllNodes()) {
             state.put(i, new ExtraInfo());
         }
+    }
+
+    public int getTime() {
+        return time;
+    }
+    
+    public void incrementTime(){
+        time++;
+    }
+    
+    public void resetTime() {
+        time = 0;
     }
 }
 

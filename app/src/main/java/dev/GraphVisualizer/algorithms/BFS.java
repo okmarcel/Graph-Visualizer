@@ -33,14 +33,14 @@ public class BFS {
     // private BFSNode sourceNode;
 
 public static void runBFS(AlgorithmService service, Node sourceNode) {
-    service.getState().get(sourceNode).setAll(AlgorithmColor.GREY, 0, null);
+    service.getState().get(sourceNode).setAllBFS(AlgorithmColor.GREY, 0, null);
     Queue<Node> q = new LinkedList<>();
     q.add(sourceNode);
     while(!q.isEmpty()) { 
         Node u = q.remove();
         for(Node v : service.getService().getAdjacent().get(u)) {
             if(service.getState().get(v).getAlgorithmColor() == AlgorithmColor.WHITE) {
-                service.getState().get(v).setAll(AlgorithmColor.GREY, service.getState().get(u).getD() + 1, u);
+                service.getState().get(v).setAllBFS(AlgorithmColor.GREY, service.getState().get(u).getD() + 1, u);
                 q.add(v);
             }
         }
