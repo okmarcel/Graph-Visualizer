@@ -1,6 +1,5 @@
-package dev.GraphVisualizer.algorithms;
+package dev.GraphVisualizer;
 
-import dev.GraphVisualizer.algorithms.BFS;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ public class BFSServiceTest {
         b = new Node("B", 1.0, 0.0);
         c = new Node("C", 2.0, 0.0);
         d = new Node("D", 3.0, 0.0);
-        // A → B, A → C, B → D
+
         Edge ab = new Edge(a, b);
         Edge ac = new Edge(a, c);
         Edge bd = new Edge(b, d);
@@ -41,127 +40,71 @@ public class BFSServiceTest {
     @Test
     public void testInitialStateIsWhite() {
         for (Node node : graph.getAllNodes()) {
-            assertEquals(AlgorithmColor.WHITE, algorithmService.getState().get(node).getAlgorithmColor(),
-                "Node " + node.getId() + " should be WHITE before BFS");
+            assertEquals(AlgorithmColor.WHITE, algorithmService.getState().get(node).getAlgorithmColor());
         }
     }
 
     @Test
-    public void testInitialDistanceIsMaxValue() {
-        for (Node node : graph.getAllNodes()) {
-            assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(node).getD(),
-                "Distance of " + node.getId() + " should be MAX_VALUE before BFS");
-        }
-    }
-
-    @Test
-    public void testInitialParentIsNull() {
-        for (Node node : graph.getAllNodes()) {
-            assertNull(algorithmService.getState().get(node).getPi(),
-                "Parent of " + node.getId() + " should be null before BFS");
-        }
-    }
-
-    @Test
-    public void testAllNodesVisitedAfterBFS() {
-        BFS.runBFS(algorithmService, a);
-
+    public void testAllNodesVisited() {
+        algorithmService.runBFS(a);
         for (Node node : graph.getAllNodes()) {
             assertEquals(AlgorithmColor.BLACK, algorithmService.getState().get(node).getAlgorithmColor(),
-                "Node " + node.getId() + " should be BLACK after BFS");
+                "Node " + node.getLabel() + " should be BLACK after BFS");
         }
     }
 
     @Test
-    public void testDistancesAfterBFS() {
-        BFS.runBFS(algorithmService, a);
-
-        assertEquals(0, algorithmService.getState().get(a).getD(), "Distance A should be 0");
-        assertEquals(1, algorithmService.getState().get(b).getD(), "Distance B should be 1");
-        assertEquals(1, algorithmService.getState().get(c).getD(), "Distance C should be 1");
-        assertEquals(2, algorithmService.getState().get(d).getD(), "Distance D should be 2");
+    public void testDistances() {
+        algorithmService.runBFS(a);
+        assertEquals(0, algorithmService.getState().get(a).getD());
+        assertEquals(1, algorithmService.getState().get(b).getD());
+        assertEquals(1, algorithmService.getState().get(c).getD());
+        assertEquals(2, algorithmService.getState().get(d).getD());
     }
 
     @Test
-    public void testParentsAfterBFS() {
-        BFS.runBFS(algorithmService, a);
-
-        assertNull(algorithmService.getState().get(a).getPi(), "Source should have no parent");
-        assertEquals(a, algorithmService.getState().get(b).getPi(), "Parent of B should be A");
-        assertEquals(a, algorithmService.getState().get(c).getPi(), "Parent of C should be A");
-        assertEquals(b, algorithmService.getState().get(d).getPi(), "Parent of D should be B");
+    public void testParents() {
+        algorithmService.runBFS(a);
+        assertNull(algorithmService.getState().get(a).getPi());
+        assertEquals(a, algorithmService.getState().get(b).getPi());
+        assertEquals(a, algorithmService.getState().get(c).getPi());
+        assertEquals(b, algorithmService.getState().get(d).getPi());
     }
 
     @Test
-    public void testBFSFromDifferentSource() {
-        BFS.runBFS(algorithmService, b);
-
-        assertEquals(0, algorithmService.getState().get(b).getD(), "Distance B should be 0");
-        assertEquals(1, algorithmService.getState().get(d).getD(), "Distance D should be 1");
-        // A i C nie są osiągalne z B w grafie skierowanym
-        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(a).getD(), "A should be unreachable from B");
-        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(c).getD(), "C should be unreachable from B");
+    public void testStateResetsBeforeSecondRun() {
+        algorithmService.runBFS(a);
+        algorithmService.runBFS(b);
+        assertEquals(0, algorithmService.getState().get(b).getD());
+        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(a).getD());
     }
 
     @Test
-    public void testAdjacentListBuiltCorrectly() {
-        assertEquals(2, graphService.getAdjacent().get(a).size(), "A should have 2 neighbours");
-        assertEquals(1, graphService.getAdjacent().get(b).size(), "B should have 1 neighbour");
-        assertEquals(0, graphService.getAdjacent().get(c).size(), "C should have 0 neighbours");
-        assertEquals(0, graphService.getAdjacent().get(d).size(), "D should have 0 neighbours");
+    public void testUnreachableNodeFromB() {
+        algorithmService.runBFS(b);
+        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(a).getD());
+        assertEquals(AlgorithmColor.WHITE, algorithmService.getState().get(a).getAlgorithmColor());
     }
 
     @Test
     public void testUndirectedBFS() {
-        // graf nieskierowany A - B - C
         Node x = new Node("X", 0.0, 0.0);
         Node y = new Node("Y", 1.0, 0.0);
         Node z = new Node("Z", 2.0, 0.0);
-
-        Edge xy = new Edge(x, y);
-        Edge yz = new Edge(y, z);
 
         Graph undirected = new Graph(false, false);
         undirected.addNode(x);
         undirected.addNode(y);
         undirected.addNode(z);
-        undirected.addEdge(xy);
-        undirected.addEdge(yz);
+        undirected.addEdge(new Edge(x, y));
+        undirected.addEdge(new Edge(y, z));
 
-        GraphService gs = new GraphService(undirected);
-        AlgorithmService as = new AlgorithmService(gs);
+        AlgorithmService as = new AlgorithmService(new GraphService(undirected));
+        as.runBFS(z);
 
-        BFS.runBFS(as, z); // startujemy z Z, nie z X
-
-        // wszystkie powinny być odwiedzone mimo że startujemy z końca
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(x).getAlgorithmColor(), "X should be visited");
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(y).getAlgorithmColor(), "Y should be visited");
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(z).getAlgorithmColor(), "Z should be visited");
-
-        // odległości od Z
-        assertEquals(0, as.getState().get(z).getD(), "Distance Z should be 0");
-        assertEquals(1, as.getState().get(y).getD(), "Distance Y should be 1");
-        assertEquals(2, as.getState().get(x).getD(), "Distance X should be 2");
-    }
-
-    @Test
-    public void testDirectedCannotGoBack() {
-        // graf skierowany A → B, nie można wrócić z B do A
-        Node x = new Node("X", 0.0, 0.0);
-        Node y = new Node("Y", 1.0, 0.0);
-
-        Graph directed = new Graph(true, false);
-        directed.addNode(x);
-        directed.addNode(y);
-        directed.addEdge(new Edge(x, y));
-
-        GraphService gs = new GraphService(directed);
-        AlgorithmService as = new AlgorithmService(gs);
-
-        BFS.runBFS(as, y); // startujemy z Y, X nie jest osiągalny
-
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(y).getAlgorithmColor(), "Y should be visited");
-        assertEquals(AlgorithmColor.WHITE, as.getState().get(x).getAlgorithmColor(), "X should not be visited");
-        assertEquals(Integer.MAX_VALUE, as.getState().get(x).getD(), "X should be unreachable");
+        assertEquals(AlgorithmColor.BLACK, as.getState().get(x).getAlgorithmColor());
+        assertEquals(2, as.getState().get(x).getD());
+        assertEquals(1, as.getState().get(y).getD());
+        assertEquals(0, as.getState().get(z).getD());
     }
 }

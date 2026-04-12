@@ -19,11 +19,6 @@ public class AlgorithmService {
     private Map<Node, ExtraInfo> state;
 
     /**
-     * time variable needed for the DFS algorithm - represents proceed time of algorithm on a node
-     */
-    private int time = 0;
-
-    /**
      * Constructor - sets the initial state of nodes neeeded for BFS and DFS algorithms
      * @param service
      */
@@ -40,9 +35,9 @@ public class AlgorithmService {
      * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
-    public void runBFS(AlgorithmService service, Node sourceNode) {
+    public void runBFS(Node sourceNode) {
         resetState();
-        BFS.runBFS(service, sourceNode);
+        BFS.runBFS(service.getAdjacent(), state, sourceNode);
     }
 
     /**
@@ -50,9 +45,10 @@ public class AlgorithmService {
      * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
-    public void runDFS(AlgorithmService service, Node sourceNode) {
+    public void runDFS(Node sourceNode) {
         resetState();
-        DFS.runDFS(service, sourceNode);
+        int[] time = {0};
+        DFS.runDFS(service.getAdjacent(), state, time, sourceNode);
     }
 
     /**
@@ -60,9 +56,9 @@ public class AlgorithmService {
      * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
-    public void runDijkstra(AlgorithmService service, Node sourceNode) {
+    public void runDijkstra(Node sourceNode) {
         resetState();
-        Dijkstra.runDijkstra(service, sourceNode);
+        Dijkstra.runDijkstra(service.getAdjacent(), state, sourceNode);
     }
 
     /**
@@ -86,32 +82,9 @@ public class AlgorithmService {
      */
     private void resetState() {
         state.clear();
-        resetTime();
         for(Node i : service.getGraph().getAllNodes()) {
             state.put(i, new ExtraInfo());
         }
-    }
-
-    /**
-     * time getter
-     * @return time
-     */
-    public int getTime() {
-        return time;
-    }
-    
-    /**
-     * time incrementer
-     */
-    public void incrementTime(){
-        time++;
-    }
-    
-    /**
-     * time reseter
-     */
-    public void resetTime() {
-        time = 0;
     }
 }
 

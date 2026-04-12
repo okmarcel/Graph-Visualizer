@@ -4,6 +4,8 @@ import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 import javax.xml.transform.Source;
@@ -18,19 +20,19 @@ public class BFS {
      * @param service API with representation of graph and Adjacency List for all nodes
      * @param sourceNode Node from which the algorithm runs
      */
-    public static void runBFS(AlgorithmService service, Node sourceNode) {
-        service.getState().get(sourceNode).setAllBFS(AlgorithmColor.GREY, 0, null);
+    public static void runBFS(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, Node sourceNode) {
+        state.get(sourceNode).setAllBFS(AlgorithmColor.GREY, 0, null);
         Queue<Node> q = new LinkedList<>();
         q.add(sourceNode);
         while(!q.isEmpty()) { 
             Node u = q.remove();
-            for(Node v : service.getService().getAdjacent().get(u)) {
-                if(service.getState().get(v).getAlgorithmColor() == AlgorithmColor.WHITE) {
-                    service.getState().get(v).setAllBFS(AlgorithmColor.GREY, service.getState().get(u).getD() + 1, u);
+            for(Node v : adjacent.get(u)) {
+                if(state.get(v).getAlgorithmColor() == AlgorithmColor.WHITE) {
+                    state.get(v).setAllBFS(AlgorithmColor.GREY, state.get(u).getD() + 1, u);
                     q.add(v);
                 }
             }
-            service.getState().get(u).setAlgorithmColor(AlgorithmColor.BLACK);
+            state.get(u).setAlgorithmColor(AlgorithmColor.BLACK);
         }
     }
 }

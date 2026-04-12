@@ -1,4 +1,4 @@
-package dev.GraphVisualizer.algorithms;
+package dev.GraphVisualizer;
 
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
@@ -20,7 +20,6 @@ public class DFSServiceTest {
         c = new Node("C", 2.0, 0.0);
         d = new Node("D", 3.0, 0.0);
 
-        // A → B → D, A → C
         Edge ab = new Edge(a, b);
         Edge ac = new Edge(a, c);
         Edge bd = new Edge(b, d);
@@ -40,8 +39,7 @@ public class DFSServiceTest {
 
     @Test
     public void testAllNodesVisited() {
-        DFS.runDFS(algorithmService, a);
-
+        algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
             assertEquals(AlgorithmColor.BLACK, algorithmService.getState().get(node).getAlgorithmColor(),
                 "Node " + node.getLabel() + " should be BLACK after DFS");
@@ -49,29 +47,8 @@ public class DFSServiceTest {
     }
 
     @Test
-    public void testDiscoveryTimesArePositive() {
-        DFS.runDFS(algorithmService, a);
-
-        for (Node node : graph.getAllNodes()) {
-            assertTrue(algorithmService.getState().get(node).getD() > 0,
-                "Discovery time of " + node.getLabel() + " should be positive");
-        }
-    }
-
-    @Test
-    public void testFinishTimesArePositive() {
-        DFS.runDFS(algorithmService, a);
-
-        for (Node node : graph.getAllNodes()) {
-            assertTrue(algorithmService.getState().get(node).getF() > 0,
-                "Finish time of " + node.getLabel() + " should be positive");
-        }
-    }
-
-    @Test
     public void testDiscoveryBeforeFinish() {
-        DFS.runDFS(algorithmService, a);
-
+        algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
             assertTrue(algorithmService.getState().get(node).getD() < algorithmService.getState().get(node).getF(),
                 "Discovery time should be less than finish time for " + node.getLabel());
@@ -79,23 +56,29 @@ public class DFSServiceTest {
     }
 
     @Test
-    public void testParents() {
-        DFS.runDFS(algorithmService, a);
+    public void testTimesArePositive() {
+        algorithmService.runDFS(a);
+        for (Node node : graph.getAllNodes()) {
+            assertTrue(algorithmService.getState().get(node).getD() > 0);
+            assertTrue(algorithmService.getState().get(node).getF() > 0);
+        }
+    }
 
-        assertNull(algorithmService.getState().get(a).getPi(), "Source should have no parent");
-        assertEquals(a, algorithmService.getState().get(b).getPi(), "Parent of B should be A");
-        assertEquals(b, algorithmService.getState().get(d).getPi(), "Parent of D should be B");
+    @Test
+    public void testParents() {
+        algorithmService.runDFS(a);
+        assertNull(algorithmService.getState().get(a).getPi());
+        assertEquals(a, algorithmService.getState().get(b).getPi());
+        assertEquals(b, algorithmService.getState().get(d).getPi());
     }
 
     @Test
     public void testTimesResetBetweenRuns() {
-        DFS.runDFS(algorithmService, a);
-        int firstRunTime = algorithmService.getState().get(a).getD();
-
-        DFS.runDFS(algorithmService, a);
-        int secondRunTime = algorithmService.getState().get(a).getD();
-
-        assertEquals(firstRunTime, secondRunTime, "Times should be the same after reset");
+        algorithmService.runDFS(a);
+        int firstD = algorithmService.getState().get(a).getD();
+        algorithmService.runDFS(a);
+        int secondD = algorithmService.getState().get(a).getD();
+        assertEquals(firstD, secondD);
     }
 
     @Test
@@ -111,13 +94,11 @@ public class DFSServiceTest {
         undirected.addEdge(new Edge(x, y));
         undirected.addEdge(new Edge(y, z));
 
-        GraphService gs = new GraphService(undirected);
-        AlgorithmService as = new AlgorithmService(gs);
+        AlgorithmService as = new AlgorithmService(new GraphService(undirected));
+        as.runDFS(z);
 
-        DFS.runDFS(as, z);
-
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(x).getAlgorithmColor(), "X should be visited");
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(y).getAlgorithmColor(), "Y should be visited");
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(z).getAlgorithmColor(), "Z should be visited");
+        assertEquals(AlgorithmColor.BLACK, as.getState().get(x).getAlgorithmColor());
+        assertEquals(AlgorithmColor.BLACK, as.getState().get(y).getAlgorithmColor());
+        assertEquals(AlgorithmColor.BLACK, as.getState().get(z).getAlgorithmColor());
     }
 }
