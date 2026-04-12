@@ -18,7 +18,7 @@ public class GraphService {
     /**
      * List of Adjacent Nodes for every Node in graph
      */
-    private Map<Node, List<Node>> Adjacent;
+    private Map<Node, List<Node>> adjacent;
 
     /**
      * Constructor which crates list of Adjacent Nodes for every Node in the graph
@@ -26,14 +26,12 @@ public class GraphService {
      */
     public GraphService(Graph graph) {
         this.graph = graph;
-        this.Adjacent = new HashMap<>();
-        List<Node> tmp = null;
+        this.adjacent = new HashMap<>();
         for(Node i : this.graph.getAllNodes()) {
-            tmp = new ArrayList<>();
-            Adjacent.put(i, tmp);
+            adjacent.put(i, new ArrayList<>());
             for(Edge j : this.graph.getAllEdges()) {
                 if(j.getSource().equals(i)) {
-                    Adjacent.get(i).add(j.getTarget());
+                    adjacent.get(i).add(j.getTarget());
                 }
             }
         }
