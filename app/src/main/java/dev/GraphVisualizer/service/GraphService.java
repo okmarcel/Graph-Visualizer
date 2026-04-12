@@ -29,12 +29,11 @@ public class GraphService {
         this.adjacent = new HashMap<>();
         for(Node i : this.graph.getAllNodes()) {
             adjacent.put(i, new ArrayList<>());
-            for(Edge j : this.graph.getAllEdges()) {
-                if(j.getSource().equals(i)) {
-                    adjacent.get(i).add(j.getTarget());
-                }
-            }
         }
+        for(Edge j : this.graph.getAllEdges()) {
+            adjacent.get(j.getSource()).add(j.getTarget());
+        }
+        
     }
 
     /**
