@@ -14,7 +14,7 @@ public class ExtraInfo {
     /**
      * Member d - distance from the source Node - the one from which the algorithm started 
      */
-    private int d;
+    private double d;
 
     /**
      * Member pi - parent of the Node - the one that was previously visited by the algorithm
@@ -24,7 +24,7 @@ public class ExtraInfo {
     /**
      * Time of proceed time used by DFS specifically
      */
-    private int f;
+    private double f;
     
     /**
      * Constructor taking four paramethers:
@@ -33,7 +33,7 @@ public class ExtraInfo {
      * @param pi parent
      * @param f proceed time
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, int d, Node pi, int f) {
+    public ExtraInfo(AlgorithmColor algorithmcolor, double d, Node pi, double f) {
         this.algorithmcolor = algorithmcolor;
         this.d = d; 
         this.pi = pi;
@@ -47,8 +47,8 @@ public class ExtraInfo {
      * @param pi parent
      * f = 0 by default;
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, int d, Node pi) {
-        this(algorithmcolor, d, pi, 0);
+    public ExtraInfo(AlgorithmColor algorithmcolor, double d, Node pi) {
+        this(algorithmcolor, d, pi, 0.0);
     }
     
     /**
@@ -56,9 +56,9 @@ public class ExtraInfo {
      * @param algorithmcolor algorithmcolor
      * @param d distance
      * pi = null by default;
-     * f = 0 by default;
+     * f = 0.0 by default;
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, int d) {
+    public ExtraInfo(AlgorithmColor algorithmcolor, double d) {
         this(algorithmcolor, d, null);
     }
     
@@ -67,10 +67,10 @@ public class ExtraInfo {
      * @param algorithmcolor algorithmcolor
      * d = 2147483647 by default;
      * pi = null by default;
-     * f = 0 by default;
+     * f = 0.0 by default;
      */
     public ExtraInfo(AlgorithmColor algorithmcolor) {
-        this(algorithmcolor, Integer.MAX_VALUE);
+        this(algorithmcolor, Double.POSITIVE_INFINITY);
     }
 
     /**
@@ -78,7 +78,7 @@ public class ExtraInfo {
      * algorithmcolor = WHITE  by default;
      * d = 2147483647 by default;
      * pi = null by default;
-     * f = 0 by default;
+     * f = 0.0 by default;
      */
     public ExtraInfo(){
         this(AlgorithmColor.WHITE);
@@ -104,7 +104,7 @@ public class ExtraInfo {
      * d setter
      * @param d
      */
-    public void setD(int d) {
+    public void setD(double d) {
         this.d = d;
     }
 
@@ -112,7 +112,7 @@ public class ExtraInfo {
      * d getter
      * @return
      */
-    public int getD() {
+    public double getD() {
         return d;
     }
 
@@ -136,14 +136,14 @@ public class ExtraInfo {
      * f setter
      * @param f
      */
-    public void setF(int f) {
+    public void setF(double f) {
         this.f = f;
     }
 
     /**
      * f getter
      */
-    public int getF() {
+    public double getF() {
         return f;
     }
 
@@ -153,11 +153,11 @@ public class ExtraInfo {
      * @param d
      * @param pi
      */
-    public void setAllBFS(AlgorithmColor algorithmcolor, int d, Node pi) {
+    public void setAllBFS(AlgorithmColor algorithmcolor, double d, Node pi) {
         this.algorithmcolor = algorithmcolor;
         this.d = d;
         this.pi = pi;
-        this.f = 0;
+        this.f = 0.0;
     }
 
     /**
@@ -167,7 +167,7 @@ public class ExtraInfo {
      * @param pi
      * @param f
      */
-    public void setAllDFS(AlgorithmColor algorithmcolor, int d, Node pi, int f) {
+    public void setAllDFS(AlgorithmColor algorithmcolor, double d, Node pi, double f) {
         this.algorithmcolor = algorithmcolor;
         this.d = d;
         this.pi = pi;

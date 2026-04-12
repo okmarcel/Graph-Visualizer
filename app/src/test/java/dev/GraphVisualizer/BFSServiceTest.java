@@ -75,14 +75,14 @@ public class BFSServiceTest {
     public void testStateResetsBeforeSecondRun() {
         algorithmService.runBFS(a);
         algorithmService.runBFS(b);
-        assertEquals(0, algorithmService.getState().get(b).getD());
-        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(a).getD());
+        assertEquals(0.0, algorithmService.getState().get(b).getD());
+        assertEquals(Double.POSITIVE_INFINITY, algorithmService.getState().get(a).getD());
     }
 
     @Test
     public void testUnreachableNodeFromB() {
         algorithmService.runBFS(b);
-        assertEquals(Integer.MAX_VALUE, algorithmService.getState().get(a).getD());
+        assertEquals(Double.POSITIVE_INFINITY, algorithmService.getState().get(a).getD());
         assertEquals(AlgorithmColor.WHITE, algorithmService.getState().get(a).getAlgorithmColor());
     }
 
