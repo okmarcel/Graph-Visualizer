@@ -4,33 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * class Graph
+ * Representats a graph data structure
  */
-public class Graph{
-    /**
-     * Member nodes - list of all nodes in the graph
-     */
+public class Graph {
+    /** List of all nodes in the graph */
     private List<Node> nodes;
 
-    /**
-     * Member edges - list of all edges in the graph
-     */
+    /** List of all edges in the graph */
     private List<Edge> edges;
 
-    /**
-     * Member directed - boolean flag to hold information whether the graph is directed or not
-     */
+    /** Member directed - boolean flag to hold information whether the graph is directed or not */
     private boolean directed;
 
-    /**
-     * Member weighted - boolean flag to hold information whether the graph is weighted or not
-     */
+    /** Member weighted - boolean flag to hold information whether the graph is weighted or not */
     private boolean weighted;
 
     /**
-     * Contructor which initializes list of nodes and edges.
-     * @param directed indicated whether graph is directed or not
-     * @param weighted indicates whether graph is weighted or not  
+     * Constructs Graph object based on argument values
+     * 
+     * @param directed indicating whether graph is directed or not
+     * @param weighted indicating whether graph is weighted or not  
      */
     public Graph(boolean directed, boolean weighted) {
         nodes = new ArrayList<Node>();
@@ -40,92 +33,99 @@ public class Graph{
     }
 
     /**
-     * Contructor taking one argument:
-     * directed = provided argument;
-     * weighted = false;
-     * @param directed indicated whether graph is directed or not
+     * Constructs Graph object based on 'directed' value, defaults weighted to false
+     * 
+     * @param directed indicating whether graph is directed or not
      */
     public Graph(boolean directed) {
         this(directed, false);
     }
 
     /**
-     * Conctruct taking no arguemnts:
-     * directed = false;
-     * weighted = false
+     * Constructs a non-directed, non-weighted graph
      */
     public Graph() {
-        this(false);
+        this(false, false);
     }
 
     /**
-     * Adds a new Node to the list of nodes - nodes
-     * @param newNode
+     * Adds a node to the graph
+     * 
+     * @param node node to add to graph
      */
-    public void addNode(Node newNode) {
-        nodes.add(newNode);
+    public void addNode(Node node) {
+        nodes.add(node);
     }
 
     /**
-     * Adds a new Edge to the list of edges - edges
-     * @param newEdge
+     * Adds an edge to the graph
+     * 
+     * @param edge edge to add to graph
      */
-    public void addEdge(Edge newEdge) {
-        edges.add(newEdge);
+    public void addEdge(Edge edge) {
+        edges.add(edge);
     }
 
     /**
-     * Removes a node from the list of nodes - nodes
-     * @param toBeRemovedNode
+     * Removes a node from the graph
+     * 
+     * @param node node to be removed from graph
      */
-    public void removeNode(Node toBeRemovedNode) {
-        nodes.remove(toBeRemovedNode);
+    public void removeNode(Node node) {
+        if (!nodes.remove(node))
+            System.out.println("Tried to remove a node that is not part of the graph.");
     }
 
     /**
-     * Returns list of nodes adjacent to the given Node
-     * @param mainNode
-     * @return neighbours of the mainNode
+     * Removes an edge from the graph
+     * 
+     * @param edge edge to be removed from graph
      */
-    public List<Node> getNeighbours(Node mainNode) {
-        return mainNode.getNeighbours();
+    public void removeEdge(Edge edge) {
+        if (!edges.remove(edge))
+            System.out.println("Tried to remove an edge that is not part of the graph.");
     }
 
     /**
-     * Returns boolean flag which indicates whether the graph is directed or not
-     * @return directed
+     * Returns whether the graph is directed or not
+     * 
+     * @return true if graph is directed, otherwise false
      */
     public boolean getDirected() {
         return directed;
     }
 
     /**
-     * Sets boolean flag which indicates whether the graph is directed or not
-     * @param directed
+     * Sets graph as directed or non-directed
+     * 
+     * @param directed indicating whether graph is directed or not
      */
     public void setDirected(boolean directed) {
         this.directed = directed;
     }
 
     /**
-     * Returns boolean flag which indicates whether the graph is weighted or not
-     * @return boolean
+     * Returns whether the graph is weighted or not
+     * 
+     * @return true if graph is weighted, otherwise false
      */
     public boolean getWeighted() {
         return weighted;
     }
 
     /**
-     * Sets boolean flag which indicates whether the graph is weighted or not
-     * @param weighted
+     * Sets graph as wighted or non-weighted
+     * 
+     * @param weighted indicating whether graph is weighted or not
      */
     public void setWeighted(boolean weighted) {
         this.weighted = weighted;
     }
 
     /**
-     * Returns a number of Node variables in graph
-     * @return int
+     * Returns a number of nodes in the graph
+     * 
+     * @return Number of nodes
      */
     public int getNumberOfNodes() {
         return nodes.size();
@@ -133,42 +133,46 @@ public class Graph{
 
     /**
      * Returns a number of Edge variables in graph
-     * @return int
+     * 
+     * @return Number of edges
      */
     public int getNumberOfEdges() {
         return edges.size();
     }
 
     /**
-     * nodes getter
-     * @return
+     * Returns a list of all nodes in the graph
+     * 
+     * @return List of nodes
      */
     public List<Node> getAllNodes() {
         return nodes;
     }
 
     /**
-     * nodes setter
-     * @param nodes
+     * Sets all nodes in the graph from a list
+     * 
+     * @param nodes list of nodes
      */
     public void setAllNodes(List<Node> nodes) {
         this.nodes = nodes;
     }
 
     /**
-     * edges getter
-     * @return
+     * Returns a list of all edges in the graph
+     * 
+     * @return List of edges
      */
     public List<Edge> getAllEdges() {
         return edges;
     }
 
     /**
-     * edges setter
-     * @param edges
+     * Sets all edges in the graph from a list
+     * 
+     * @param edges list of edges
      */
     public void setAllEdges(List<Edge> edges) {
         this.edges = edges;
     }
-
 }
