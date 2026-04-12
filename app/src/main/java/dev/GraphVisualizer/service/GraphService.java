@@ -73,12 +73,33 @@ public class GraphService {
     }
 
     /**
-     * Graph setter
+     * Graph setter rebuilds the adjacent list for a new graph
      * @param graph
      */
     public void setGraph(Graph graph) {
         this.graph = graph;
+        rebuildAdjacent();
     }
 
+    /**
+     * Private method to rebuild the adjacent list after graph change
+     */
+    private void rebuildAdjacent() {
+        this.adjacent = new HashMap<>();
+        for(Node i : this.graph.getAllNodes()) {
+            adjacent.put(i, new ArrayList<>());
+        }
+        for(Edge j : this.graph.getAllEdges()) {
+            adjacent.get(j.getSource()).add(j.getTarget());
+        }
+    }
+
+    /**
+     * Return map od adjacent list of nodes for every node
+     * @return
+     */
+    public Map<Node, List<Node>> getAdjacent() {
+        return adjacent;
+    }
 }
 

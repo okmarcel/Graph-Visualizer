@@ -1,4 +1,6 @@
 package dev.GraphVisualizer.algorithms;
+import dev.GraphVisualizer.models.*;
+import dev.GraphVisualizer.service.*;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -6,8 +8,6 @@ import java.util.List;
 import java.util.Queue;
 
 import javax.xml.transform.Source;
-
-import dev.GraphVisualizer.models.*;
 
 /**
  * enum Color holding three possible stated of BFSNode's color: WHITE, GREY, BLACK
