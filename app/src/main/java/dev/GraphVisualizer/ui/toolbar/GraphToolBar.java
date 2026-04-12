@@ -1,5 +1,7 @@
 package dev.GraphVisualizer.ui.toolbar;
 
+import dev.GraphVisualizer.service.GraphService;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.HBox;
@@ -12,7 +14,10 @@ public class GraphToolBar extends ToolBar {
     private final Button removeEdgeBtn = new Button("Remove Edge");
     private final Button clearBtn = new Button("Clear Canvas");
 
-    public GraphToolBar() {
+    private final GraphService graphService;
+    public GraphToolBar(GraphService graphService) {
+        this.graphService = graphService;
+        
         getItems().addAll(
             addNodeBtn, removeNodeBtn,
             addEdgeBtn, removeEdgeBtn,

@@ -1,5 +1,9 @@
 package dev.GraphVisualizer.ui.canvas;
 
+import dev.GraphVisualizer.service.GraphService;
+import dev.GraphVisualizer.models.Node;
+import dev.GraphVisualizer.models.Edge;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -15,7 +19,7 @@ import javafx.scene.text.Text;
 import javafx.beans.binding.Bindings;
 
 /**
- * 
+ * Canvas where graph is drawn
  */
 public class GraphCanvas extends Pane {
     private final Group graphGroup = new Group();
@@ -31,7 +35,11 @@ public class GraphCanvas extends Pane {
     private static final double SCALE_MIN  = 0.2;
     private static final double SCALE_MAX  = 3.0;
 
-    public GraphCanvas() {    
+    private final GraphService graphService;
+
+    public GraphCanvas(GraphService graphService) { 
+        this.graphService = graphService;
+
         clipProperty().bind(Bindings.createObjectBinding(() -> {
             Rectangle clip = new Rectangle(getWidth(), getHeight());
             return clip;
@@ -61,6 +69,44 @@ public class GraphCanvas extends Pane {
         );
         // drawSampleGraph(); // hardcoded graph shape
         addPanHandlers();
+        refresh();
+    }
+
+    private void refresh() {
+        graphGroup.getChildren().clear();
+        drawEdges();
+        drawNodes();
+    }
+
+    private void drawNodes() {
+        for (Node node : graphService.getGraph().getAllNodes()) {
+            Circle circle = new Circle(node.getPositionX(), node.getPositionY(), 20, Color.BLUE);
+            circle.setStroke(Color.DARKBLUE);
+            circle.setStrokeWidth(2);
+
+            Text label = new Text(node.getPositionX(), node.getPositionY(), node.getLabel());
+            label.setFill(Color.WHITE);
+            label.setFont(new Font(14));
+
+            graphGroup.getChildren().addAll(circle, label);
+        }
+    }
+
+    private void drawEdges() {
+        for (Edge edge : graphService.getGraph().getAllEdges()) {
+            Node source = edge.getSource();
+            Node target = edge.getTarget();
+            if (source == null || target == null) continue;
+
+            Line line = new Line(
+                source.getPositionX(), source.getPositionY(),
+                target.getPositionX(), target.getPositionY()
+            );
+            line.setStroke(Color.GRAY);
+            line.setStrokeWidth(2);
+
+            graphGroup.getChildren().add(line);
+        }
     }
 
     private void applyZoom(double delta) {
