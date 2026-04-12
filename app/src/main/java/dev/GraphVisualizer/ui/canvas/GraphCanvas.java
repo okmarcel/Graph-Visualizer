@@ -34,8 +34,8 @@ public class GraphCanvas extends Pane {
     public GraphCanvas() {    
         clipProperty().bind(Bindings.createObjectBinding(() -> {
             Rectangle clip = new Rectangle(getWidth(), getHeight());
-            clip.setArcWidth(14);
-            clip.setArcHeight(14);
+            // clip.setArcWidth(14);
+            // clip.setArcHeight(14);
             return clip;
         }, widthProperty(), heightProperty()));
 
