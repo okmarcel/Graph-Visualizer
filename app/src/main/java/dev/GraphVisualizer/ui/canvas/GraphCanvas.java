@@ -14,6 +14,9 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.beans.binding.Bindings;
 
+/**
+ * 
+ */
 public class GraphCanvas extends Pane {
     private final Group graphGroup = new Group();
     private double dragStartX;
