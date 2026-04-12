@@ -21,7 +21,7 @@ public class BFS {
      * @param sourceNode Node from which the algorithm runs
      */
     public static void runBFS(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, Node sourceNode) {
-        state.get(sourceNode).setAllBFS(AlgorithmColor.GREY, 0, null);
+        state.get(sourceNode).setAllBFS(AlgorithmColor.GREY, 0.0, null);
         Queue<Node> q = new LinkedList<>();
         q.add(sourceNode);
         while(!q.isEmpty()) { 

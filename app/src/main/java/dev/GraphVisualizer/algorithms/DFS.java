@@ -20,7 +20,7 @@ public class DFS {
      * @param time array of size 1 used as mutable integer counter
      * @param sourceNode Node from which the algorithm runs
      */
-    public static void runDFS(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, int[] time, Node sourceNode) {
+    public static void runDFS(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, double[] time, Node sourceNode) {
         for(Node u : adjacent.keySet()) {
             if(state.get(u).getAlgorithmColor() == AlgorithmColor.WHITE) {
                 DFSVisit(adjacent, state, time, u);
@@ -35,7 +35,7 @@ public class DFS {
      * @param time array of size 1 used as mutable integer counter
      * @param u Node on which the function was invoked
      */
-    public static void DFSVisit(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, int[] time, Node u) {
+    public static void DFSVisit(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, double[] time, Node u) {
         state.get(u).setD(++time[0]);
         state.get(u).setAlgorithmColor(AlgorithmColor.GREY);
         for(Node v : adjacent.get(u)) {

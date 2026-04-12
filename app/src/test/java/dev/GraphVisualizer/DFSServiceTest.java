@@ -67,9 +67,9 @@ public class DFSServiceTest {
     @Test
     public void testTimesResetBetweenRuns() {
         algorithmService.runDFS(a);
-        int firstD = algorithmService.getState().get(a).getD();
+        double firstD = algorithmService.getState().get(a).getD();
         algorithmService.runDFS(a);
-        int secondD = algorithmService.getState().get(a).getD();
+        double secondD = algorithmService.getState().get(a).getD();
         assertEquals(firstD, secondD);
     }
 

@@ -47,7 +47,7 @@ public class AlgorithmService {
      */
     public void runDFS(Node sourceNode) {
         resetState();
-        int[] time = {0};
+        double[] time = {0.0};
         DFS.runDFS(service.getAdjacent(), state, time, sourceNode);
     }
 
@@ -58,7 +58,7 @@ public class AlgorithmService {
      */
     public void runDijkstra(Node sourceNode) {
         resetState();
-        Dijkstra.runDijkstra(service.getAdjacent(), state, sourceNode);
+        Dijkstra.runDijkstra(service.getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode);
     }
 
     /**
