@@ -65,13 +65,6 @@ public class Edge {
     }
 
     /**
-     * @return directed: calls getDirected method from class Graph
-     */
-    // public boolean isDirected(){
-    //     return Graph.getDirected();
-    // }
-
-    /**
      * source setter
      */
     public void setSource(Node source){
@@ -101,11 +94,16 @@ public class Edge {
         return target;
     }
 
+	/**
+	 * Checks if objects are equal
+	 * @param ob object to compare against
+	 * @return true if ob is same or if source Node and target Node are the same otherwise false
+	 */
     @Override
-	public boolean equals(Object edge) {
-		if (this == edge)
+	public boolean equals(Object ob) {
+		if (this == ob)
 			return true;
-		if (edge instanceof Edge e && e.getSource().equals(source) && e.getTarget().equals(target))
+		if (ob instanceof Edge e && e.getSource().equals(source) && e.getTarget().equals(target))
 			return true;
 		return false;
 	}

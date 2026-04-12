@@ -1,7 +1,12 @@
 package dev.GraphVisualizer.service;
 
 /**
- * enum AlgorithmColor holding three possible stated of Node's algorithmcolor: WHITE, GREY, BLACK
+ * enum AlgorithmColor
+ * holds three possible states of Node's algorithmcolor field:
+ * -WHITE
+ * -GREY
+ * -BLACK
+ * used by BFS and DFS algorithms
  */
 public enum AlgorithmColor {
     WHITE, GREY, BLACK;

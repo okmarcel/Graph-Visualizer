@@ -7,16 +7,24 @@ import java.util.List;
  * Representats a graph data structure
  */
 public class Graph {
-    /** List of all nodes in the graph */
+    /** 
+     * List of all nodes in the graph
+     */
     private List<Node> nodes;
 
-    /** List of all edges in the graph */
+    /**
+     * List of all edges in the graph
+     */
     private List<Edge> edges;
 
-    /** Member directed - boolean flag to hold information whether the graph is directed or not */
+    /**
+     * Member directed - boolean flag to hold information whether the graph is directed or not
+     */
     private boolean directed;
 
-    /** Member weighted - boolean flag to hold information whether the graph is weighted or not */
+    /**
+     * Member weighted - boolean flag to hold information whether the graph is weighted or not
+     */
     private boolean weighted;
 
     /**
@@ -34,7 +42,6 @@ public class Graph {
 
     /**
      * Constructs Graph object based on 'directed' value, defaults weighted to false
-     * 
      * @param directed indicating whether graph is directed or not
      */
     public Graph(boolean directed) {
@@ -50,7 +57,6 @@ public class Graph {
 
     /**
      * Adds a node to the graph
-     * 
      * @param node node to add to graph
      */
     public void addNode(Node node) {
@@ -59,7 +65,6 @@ public class Graph {
 
     /**
      * Adds an edge to the graph
-     * 
      * @param edge edge to add to graph
      */
     public void addEdge(Edge edge) {
@@ -67,8 +72,7 @@ public class Graph {
     }
 
     /**
-     * Removes a node from the graph
-     * 
+     * Removes a node from the graph 
      * @param node node to be removed from graph
      */
     public void removeNode(Node node) {
@@ -78,7 +82,6 @@ public class Graph {
 
     /**
      * Removes an edge from the graph
-     * 
      * @param edge edge to be removed from graph
      */
     public void removeEdge(Edge edge) {
@@ -88,7 +91,6 @@ public class Graph {
 
     /**
      * Returns whether the graph is directed or not
-     * 
      * @return true if graph is directed, otherwise false
      */
     public boolean isDirected() {
@@ -97,7 +99,6 @@ public class Graph {
 
     /**
      * Sets graph as directed or non-directed
-     * 
      * @param directed indicating whether graph is directed or not
      */
     public void setDirected(boolean directed) {
@@ -106,7 +107,6 @@ public class Graph {
 
     /**
      * Returns whether the graph is weighted or not
-     * 
      * @return true if graph is weighted, otherwise false
      */
     public boolean isWeighted() {
@@ -115,7 +115,6 @@ public class Graph {
 
     /**
      * Sets graph as wighted or non-weighted
-     * 
      * @param weighted indicating whether graph is weighted or not
      */
     public void setWeighted(boolean weighted) {
@@ -124,7 +123,6 @@ public class Graph {
 
     /**
      * Returns a number of nodes in the graph
-     * 
      * @return Number of nodes
      */
     public int getNumberOfNodes() {
@@ -133,7 +131,6 @@ public class Graph {
 
     /**
      * Returns a number of Edge variables in graph
-     * 
      * @return Number of edges
      */
     public int getNumberOfEdges() {
@@ -142,7 +139,6 @@ public class Graph {
 
     /**
      * Returns a list of all nodes in the graph
-     * 
      * @return List of nodes
      */
     public List<Node> getAllNodes() {
@@ -151,7 +147,6 @@ public class Graph {
 
     /**
      * Sets all nodes in the graph from a list
-     * 
      * @param nodes list of nodes
      */
     public void setAllNodes(List<Node> nodes) {
@@ -160,7 +155,6 @@ public class Graph {
 
     /**
      * Returns a list of all edges in the graph
-     * 
      * @return List of edges
      */
     public List<Edge> getAllEdges() {
@@ -169,7 +163,6 @@ public class Graph {
 
     /**
      * Sets all edges in the graph from a list
-     * 
      * @param edges list of edges
      */
     public void setAllEdges(List<Edge> edges) {

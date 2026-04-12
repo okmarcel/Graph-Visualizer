@@ -1,7 +1,5 @@
 package dev.GraphVisualizer.algorithms;
 
-import dev.GraphVisualizer.models.*;
-
 /**
  * Custom Exception thrown when graph provided to BFS algorithm is null
  */

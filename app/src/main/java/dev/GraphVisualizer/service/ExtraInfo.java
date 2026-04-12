@@ -2,7 +2,6 @@ package dev.GraphVisualizer.service;
 
 import dev.GraphVisualizer.models.*;
 
-
 /**
  * class ExtraInfo provides some additional fields required for the algorithms
  */
@@ -40,6 +39,7 @@ public class ExtraInfo {
         this.pi = pi;
         this.f = f;
     }
+
     /**
      * Constructor taking three paramethers:
      * @param algorithmcolor algorithmcolor
@@ -148,7 +148,7 @@ public class ExtraInfo {
     }
 
     /**
-     * One big setter to set the state of ExtraInfo
+     * One big setter to set the state of ExtraInfo used in context of BFS algorithm
      * @param algorithmcolor
      * @param d
      * @param pi
@@ -160,6 +160,13 @@ public class ExtraInfo {
         this.f = 0;
     }
 
+    /**
+     * One big setter to set the state of ExtraInfo used in context of DFS algorithm
+     * @param algorithmcolor
+     * @param d
+     * @param pi
+     * @param f
+     */
     public void setAllDFS(AlgorithmColor algorithmcolor, int d, Node pi, int f) {
         this.algorithmcolor = algorithmcolor;
         this.d = d;
@@ -167,18 +174,13 @@ public class ExtraInfo {
         this.f = f;
     }
 
+    /**
+     * Overrided method toString to pretty-print debug info
+     */
 	@Override
 	public String toString() {
 		return "ExtraInfo{algorithmcolor = " + algorithmcolor + "d=" + d + "pi=" + pi + "}";
 	}
 
-    // @Override
-	// public boolean equals(Object node) {
-	// 	if (this == node)
-	// 		return true;
-	// 	if (node instanceof Node n && super.id.equals(n.getId()))
-	// 		return true;
-	// 	return false;
-	// }
 }
 

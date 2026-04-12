@@ -22,6 +22,7 @@ public class GraphService {
 
     /**
      * Constructor which crates list of Adjacent Nodes for every Node in the graph
+     * works well not only for not directed but also for directed graphs
      * @param graph
      */
     public GraphService(Graph graph) {

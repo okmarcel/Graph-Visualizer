@@ -7,21 +7,28 @@ import java.util.Objects;
  * Represents a node in a graph with a label and optional position.
  */
 public class Node {
-	/** Unique identifier, assigned once at construction and never changed */
+	/**
+	 * Unique identifier, assigned once at construction and never changed
+	 */
 	private final String id;
 
-	/** Node label */
+	/**
+	 * Node label
+	 */
 	private String label;
 
-	/** Node x-axis position on canvas */
+	/**
+	 * Node x-axis position on canvas
+	 */
 	private double x;
 
-	/** Node y-axis position on canvas */
+	/**
+	 * Node y-axis position on canvas
+	 */
 	private double y;
 
 	/**
 	 * Constructs Node object from label string and x, y position arguments.
-	 * 
 	 * @param label node label string
 	 * @param x x-axis position on canvas
 	 * @param y y-axis position on canvas
@@ -39,7 +46,6 @@ public class Node {
 	 * Constructs Node object from label string.
 	 * Position parameters (x, y) default to 0.0 and can later be set
 	 * via {@link #setPositionX(double)} and {@link #setPositionY(double)}
-	 * 
 	 * @param label node label string
 	 * @throws NullPointerException if label string is null
 	 */
@@ -51,7 +57,6 @@ public class Node {
 
 	/**
 	 * Returns node id string
-	 * 
 	 * @return Node id string
 	 */
 	public String getId() {
@@ -60,7 +65,6 @@ public class Node {
 
 	/**
 	 * Returns node label string
-	 * 
 	 * @return Node label string
 	 */
 	public String getLabel() {
@@ -69,7 +73,6 @@ public class Node {
 
 	/**
 	 * Sets node label string
-	 * 
 	 * @param label new node label string
 	 * @throws NullPointerException if label string is null
 	 */
@@ -80,7 +83,6 @@ public class Node {
 
 	/**
 	 * Returns node x-axis position on canvas
-	 * 
 	 * @return Node x-axis position on canvas
 	 */
 	public double getPositionX() {
@@ -89,7 +91,6 @@ public class Node {
 
 	/**
 	 * Sets node x-axis position on canvas
-	 * 
 	 * @param x x-axis position on canvas
 	 */
 	public void setPositionX(double x) {
@@ -98,7 +99,6 @@ public class Node {
 
 	/**
 	 * Returns node y-axis position on canvas
-	 * 
 	 * @return Node y-axis position on canvas
 	 */
 	public double getPositionY() {
@@ -107,7 +107,6 @@ public class Node {
 
 	/**
 	 * Sets node y-axis position on canvas
-	 * 
 	 * @param y y-axis position on canvas
 	 */
 	public void setPositionY(double y) {
@@ -116,7 +115,6 @@ public class Node {
 
 	/**
 	 * Returns node parameters as String
-	 * 
 	 * @return Node parameters in format Node{id=id, label=label, x=x, y=y}
 	 */
 	@Override
@@ -127,7 +125,6 @@ public class Node {
 
 	/**
 	 * Checks if objects are equal
-	 * 
 	 * @param ob object to compare against
 	 * @return true if ob is same or id strings are the same, otherwise false
 	 */
@@ -142,7 +139,6 @@ public class Node {
 
 	/**
 	 * Returns hash code of node object
-	 * 
 	 * @return Hash code of node object
 	 */
 	@Override
