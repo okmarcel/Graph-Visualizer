@@ -4,4 +4,4 @@ Co zrobić:
 Pytania:
 - czy to dziedziczenie grafów zrobic
 - jakie podejscie do tej kopii grafu do algorytmu czy zrobic hashmape do trzymania stanu
-- 
+- usunac adjacent Edges z nodow i trzymac tylko jeden stan w grafie 
