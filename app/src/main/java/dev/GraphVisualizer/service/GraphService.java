@@ -73,12 +73,11 @@ public class GraphService {
     }
 
     /**
-     * Graph setter rebuilds the adjacent list for a new graph
+     * Graph setter
      * @param graph
      */
     public void setGraph(Graph graph) {
         this.graph = graph;
-        rebuildAdjacent();
     }
 
     /**
