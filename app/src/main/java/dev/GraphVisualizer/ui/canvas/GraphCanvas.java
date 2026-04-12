@@ -34,20 +34,8 @@ public class GraphCanvas extends Pane {
     public GraphCanvas() {    
         clipProperty().bind(Bindings.createObjectBinding(() -> {
             Rectangle clip = new Rectangle(getWidth(), getHeight());
-            // clip.setArcWidth(14);
-            // clip.setArcHeight(14);
             return clip;
         }, widthProperty(), heightProperty()));
-
-        // // Create a border as a Rectangle instance
-        // Rectangle border = new Rectangle();
-        // border.setFill(Color.TRANSPARENT);   // make transparent inside border
-        // border.setStroke(Color.GRAY);       // border color
-        // border.setStrokeWidth(2);           // border width
-        // border.setArcWidth(14);             // rounded corners
-        // border.setArcHeight(14);            // rounded corners
-        // border.widthProperty().bind(widthProperty());
-        // border.heightProperty().bind(heightProperty());
 
         zoomControls.setAlignment(Pos.CENTER);
         zoomControls.setPadding(new Insets(4));
@@ -70,9 +58,8 @@ public class GraphCanvas extends Pane {
         getChildren().addAll(
             graphGroup,
             zoomControls
-            // adding border breaks zoomControls
         );
-        drawSampleGraph(); // hardcoded graph shape
+        // drawSampleGraph(); // hardcoded graph shape
         addPanHandlers();
     }
 
@@ -114,6 +101,7 @@ public class GraphCanvas extends Pane {
         });
     }
 
+    /** Draw hardcoded graph shape for testing */
     private void drawSampleGraph() {
         // Node positions
         double[] x = {200, 400, 150, 350, 300};
