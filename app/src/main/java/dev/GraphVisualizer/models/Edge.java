@@ -105,7 +105,7 @@ public class Edge {
 	public boolean equals(Object edge) {
 		if (this == edge)
 			return true;
-		if (edge instanceof Edge e && e.getSource() == source && e.getTarget() == target)
+		if (edge instanceof Edge e && e.getSource().equals(source) && e.getTarget().equals(target))
 			return true;
 		return false;
 	}

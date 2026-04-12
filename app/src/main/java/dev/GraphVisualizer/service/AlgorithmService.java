@@ -21,14 +21,17 @@ public class AlgorithmService {
     }
 
     public void runBFS(AlgorithmService service, Node sourceNode) {
+        resetState();
         BFS.runBFS(service, sourceNode);
     }
 
     public void runDFS(AlgorithmService service, Node sourceNode) {
+        resetState();
         DFS.runDFS(service, sourceNode);
     }
 
     public void runDijkstra(AlgorithmService service, Node sourceNode) {
+        resetState();
         Dijkstra.runDijkstra(service, sourceNode);
     }
 
@@ -40,5 +43,11 @@ public class AlgorithmService {
         return state;
     }
 
+    private void resetState() {
+        state.clear();
+        for(Node i : service.getGraph().getAllNodes()) {
+            state.put(i, new ExtraInfo());
+        }
+    }
 }
 

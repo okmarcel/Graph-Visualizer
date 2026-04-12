@@ -32,8 +32,10 @@ public class GraphService {
         }
         for(Edge j : this.graph.getAllEdges()) {
             adjacent.get(j.getSource()).add(j.getTarget());
+            if(!this.graph.isDirected()) {
+                adjacent.get(j.getTarget()).add(j.getSource());
+            }
         }
-        
     }
 
     /**
@@ -90,6 +92,9 @@ public class GraphService {
         }
         for(Edge j : this.graph.getAllEdges()) {
             adjacent.get(j.getSource()).add(j.getTarget());
+            if(!this.graph.isDirected()) {
+                adjacent.get(j.getTarget()).add(j.getSource());
+            }
         }
     }
 
