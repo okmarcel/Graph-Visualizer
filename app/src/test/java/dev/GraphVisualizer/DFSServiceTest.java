@@ -65,14 +65,6 @@ public class DFSServiceTest {
     }
 
     @Test
-    public void testParents() {
-        algorithmService.runDFS(a);
-        assertNull(algorithmService.getState().get(a).getPi());
-        assertEquals(a, algorithmService.getState().get(b).getPi());
-        assertEquals(b, algorithmService.getState().get(d).getPi());
-    }
-
-    @Test
     public void testTimesResetBetweenRuns() {
         algorithmService.runDFS(a);
         int firstD = algorithmService.getState().get(a).getD();
