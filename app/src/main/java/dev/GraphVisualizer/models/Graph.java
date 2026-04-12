@@ -91,7 +91,7 @@ public class Graph {
      * 
      * @return true if graph is directed, otherwise false
      */
-    public boolean getDirected() {
+    public boolean isDirected() {
         return directed;
     }
 
@@ -109,7 +109,7 @@ public class Graph {
      * 
      * @return true if graph is weighted, otherwise false
      */
-    public boolean getWeighted() {
+    public boolean isWeighted() {
         return weighted;
     }
 
