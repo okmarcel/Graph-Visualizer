@@ -47,7 +47,7 @@ public class DijkstraServiceTest {
         assertEquals(0.0, algorithmService.getState().get(a).getD());
         assertEquals(2.0, algorithmService.getState().get(b).getD());
         assertEquals(4.0, algorithmService.getState().get(c).getD());
-        assertEquals(3.0, algorithmService.getState().get(d).getD()); // przez B: 2+1=3
+        assertEquals(3.0, algorithmService.getState().get(d).getD());
     }
 
     @Test
@@ -56,7 +56,7 @@ public class DijkstraServiceTest {
         assertNull(algorithmService.getState().get(a).getPi());
         assertEquals(a, algorithmService.getState().get(b).getPi());
         assertEquals(a, algorithmService.getState().get(c).getPi());
-        assertEquals(b, algorithmService.getState().get(d).getPi()); // przez B jest krótsza
+        assertEquals(b, algorithmService.getState().get(d).getPi());
     }
 
     @Test
