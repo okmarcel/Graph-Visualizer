@@ -4,31 +4,23 @@ import java.util.UUID;
 import java.util.Objects;
 
 /**
- * Represents a node in a graph with a label and optional position.
+ * Represents a node in a graph with a label and position on canvas
  */
 public class Node {
-	/**
-	 * Unique identifier, assigned once at construction and never changed
-	 */
+	/** Unique identifier, assigned once at construction and never changed */
 	private final String id;
 
-	/**
-	 * Node label
-	 */
+	/** Label displayed in GUI */
 	private String label;
 
-	/**
-	 * Node x-axis position on canvas
-	 */
+	/** x-axis position on canvas */
 	private double x;
 
-	/**
-	 * Node y-axis position on canvas
-	 */
+	/* y-axis position on canvas */
 	private double y;
 
 	/**
-	 * Constructs Node object from label string and x, y position arguments.
+	 * Constructs Node object from label string and x, y position arguments
 	 * @param label node label string
 	 * @param x x-axis position on canvas
 	 * @param y y-axis position on canvas
@@ -73,7 +65,7 @@ public class Node {
 
 	/**
 	 * Sets node label string
-	 * @param label new node label string
+	 * @param label new label string
 	 * @throws NullPointerException if label string is null
 	 */
 	public void setLabel(String label) {

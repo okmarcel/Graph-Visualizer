@@ -4,32 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representats a graph data structure
+ * Represents a graph data structure
  */
 public class Graph {
-    /** 
-     * List of all nodes in the graph
-     */
+    /** List of all nodes in the graph */
     private List<Node> nodes;
 
-    /**
-     * List of all edges in the graph
-     */
+    /** List of all edges in the graph */
     private List<Edge> edges;
 
-    /**
-     * Member directed - boolean flag to hold information whether the graph is directed or not
-     */
+    /** Information whether the graph is directed or not */
     private boolean directed;
 
-    /**
-     * Member weighted - boolean flag to hold information whether the graph is weighted or not
-     */
+    /** Information whether the graph is weighted or not */
     private boolean weighted;
 
     /**
      * Constructs Graph object based on argument values
-     * 
      * @param directed indicating whether graph is directed or not
      * @param weighted indicating whether graph is weighted or not  
      */
