@@ -1,4 +1,9 @@
 # Graph Visualizer
+Standalone application to visualize graphs and algorithms on graphs.
+
+## Dependencies
+- Java SDK 21
+- JUnit 5
 
 ## Building
 Use gradle to build and run the project automatically with:
