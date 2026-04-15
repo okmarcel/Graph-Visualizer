@@ -10,6 +10,10 @@ TODO for MVP:
   - Saving and loading graph structure from files (GraphRepository implementation)
 
 (In Progress)
+  Graph
+    - Change private values to inheritance classes
+    - adjecents stored and calculated in graph
+
   Edge class
     - fix Node API calls after major Node class rewrite
     - write tests
