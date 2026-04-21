@@ -3,25 +3,27 @@ List should be completed top to bottom prioritizing tasks (In Progress) before (
 TODO for MVP:
 
 (Missing Features)
-  - UI Layer
-  - DFS implementation
-  - Dijkstra implementation
   - AlgorithmService
-  - Saving and loading graph structure from files (GraphRepository implementation)
 
 (In Progress)
   Graph
     - Change private values to inheritance classes
     - adjecents stored and calculated in graph
 
-  Edge class
-    - fix Node API calls after major Node class rewrite
-    - write tests
+  Saving and loading graph structure from files (GraphRepository implementation)
 
   GraphService
     - business logic for Graph class
 
+  UI Layer
+    - load a graph from repository
+    - modify graph using toolbar buttons
+    - save graph to repository
+
 (Done)
   Node model class + tests
-  Graph model class + tests
+  Edge model class + tests
   BFS implementation + tests
+  DFS implementation + tests
+  Dijkstra implementation + tests
+
