@@ -3,9 +3,7 @@ package dev.GraphVisualizer.models;
 import java.util.UUID;
 import java.util.Objects;
 
-/**
- * Represents a node in a graph with a label and position on canvas
- */
+/** Class Node - represents a node in a graph with a label and position on canvas */
 public class Node {
 	/** Unique identifier, assigned once at construction and never changed */
 	private final String id;

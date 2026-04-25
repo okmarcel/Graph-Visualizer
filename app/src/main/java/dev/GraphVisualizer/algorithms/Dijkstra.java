@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.PriorityQueue;
 
 /**
- * class Dijkstra
+ * Class Dijkstra - implementation of Dijkstra algorithm
  */
 public class Dijkstra { 
 

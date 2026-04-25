@@ -7,15 +7,10 @@ import java.util.HashMap;
 import java.util.Map; 
 
 public class AlgorithmService {
-
-    /**
-     * graph representation plus the adjacency list for every node
-     */
+    /** Graph representation plus the adjacency list for every node */
     private GraphService service;
 
-    /**
-     * Map holding the state of ExtraInfo needed for algorithm maped to every node in graph
-     */
+    /** Map holding the state of ExtraInfo needed for algorithm maped to every node in graph */
     private Map<Node, ExtraInfo> state;
 
     /**
@@ -37,7 +32,7 @@ public class AlgorithmService {
      */
     public void runBFS(Node sourceNode) {
         resetState();
-        BFS.runBFS(service.getAdjacent(), state, sourceNode);
+        BFS.runBFS(service.getGraph().getAdjacent(), state, sourceNode);
     }
 
     /**
@@ -48,7 +43,7 @@ public class AlgorithmService {
     public void runDFS(Node sourceNode) {
         resetState();
         double[] time = {0.0};
-        DFS.runDFS(service.getAdjacent(), state, time, sourceNode);
+        DFS.runDFS(service.getGraph().getAdjacent(), state, time, sourceNode);
     }
 
     /**
@@ -58,7 +53,7 @@ public class AlgorithmService {
      */
     public void runDijkstra(Node sourceNode) {
         resetState();
-        Dijkstra.runDijkstra(service.getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode);
+        Dijkstra.runDijkstra(service.getGraph().getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode);
     }
 
     /**

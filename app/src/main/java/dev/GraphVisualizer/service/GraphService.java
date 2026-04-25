@@ -1,56 +1,18 @@
 package dev.GraphVisualizer.service;
 
 import dev.GraphVisualizer.models.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map; 
 
-/**
- * class GraphService
- */
+/** Class GraphService */
 public class GraphService {
-    /**
-     * Member graph - instance of class Graph
-     */
+    /** Member graph - instance of class Graph */
     private Graph graph;
 
     /**
-     * List of Adjacent Nodes for every Node in graph
-     */
-    private Map<Node, List<Node>> adjacent;
-
-    /**
-     * Constructor which crates list of Adjacent Nodes for every Node in the graph
-     * works well not only for not directed but also for directed graphs
-     * @param graph
+     * Constructor taking one argument
+     * @param graph graph wich is passed to the GraphService object
      */
     public GraphService(Graph graph) {
         this.graph = graph;
-        this.adjacent = new HashMap<>();
-        for(Node i : this.graph.getAllNodes()) {
-            adjacent.put(i, new ArrayList<>());
-        }
-        for(Edge j : this.graph.getAllEdges()) {
-            adjacent.get(j.getSource()).add(j.getTarget());
-            if(!this.graph.isDirected()) {
-                adjacent.get(j.getTarget()).add(j.getSource());
-            }
-        }
-    }
-
-    /**
-     * Sets private member directed in graph
-     */
-    public void setDirected(boolean directed) {
-        graph.setDirected(directed);
-    }
-
-    /**
-     * Sets private member weighted in graph
-     */
-    public void setWeighted(boolean weighted) {
-        graph.setWeighted(weighted);
     }
 
     /**
@@ -82,29 +44,6 @@ public class GraphService {
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
-
-    /**
-     * Private method to rebuild the adjacent list after graph change
-     */
-    private void rebuildAdjacent() {
-        this.adjacent = new HashMap<>();
-        for(Node i : this.graph.getAllNodes()) {
-            adjacent.put(i, new ArrayList<>());
-        }
-        for(Edge j : this.graph.getAllEdges()) {
-            adjacent.get(j.getSource()).add(j.getTarget());
-            if(!this.graph.isDirected()) {
-                adjacent.get(j.getTarget()).add(j.getSource());
-            }
-        }
-    }
-
-    /**
-     * Return map od adjacent list of nodes for every node
-     * @return
-     */
-    public Map<Node, List<Node>> getAdjacent() {
-        return adjacent;
-    }
+  
 }
 

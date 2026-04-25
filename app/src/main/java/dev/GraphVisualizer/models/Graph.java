@@ -2,48 +2,35 @@ package dev.GraphVisualizer.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Represents a graph data structure
- */
-public class Graph {
+/** Class Graph - abstract class that represents a graph data structure */
+public abstract class Graph {
     /** List of all nodes in the graph */
-    private List<Node> nodes;
+    protected List<Node> nodes;
 
     /** List of all edges in the graph */
-    private List<Edge> edges;
+    protected List<Edge> edges;
 
-    /** Information whether the graph is directed or not */
-    private boolean directed;
-
-    /** Information whether the graph is weighted or not */
-    private boolean weighted;
+    /** Boolean flag cache marks whether the graph was changed and if the rebuild of Adjacent table is necessary */
+    protected boolean cache;
 
     /**
-     * Constructs Graph object based on argument values
-     * @param directed indicating whether graph is directed or not
-     * @param weighted indicating whether graph is weighted or not  
+     * Constructor with the predefined list of nodes and edges
+     * @param nodes list of predefined nodes
+     * @param edges list of predefined edges
      */
-    public Graph(boolean directed, boolean weighted) {
-        nodes = new ArrayList<Node>();
-        edges = new ArrayList<Edge>();
-        this.directed = directed;
-        this.weighted = weighted;
+    public Graph(List<Node> nodes, List<Edge> edges) {
+        this.nodes = nodes;
+        this.edges = edges;
+        this.cache = false;
     }
 
     /**
-     * Constructs Graph object based on 'directed' value, defaults weighted to false
-     * @param directed indicating whether graph is directed or not
-     */
-    public Graph(boolean directed) {
-        this(directed, false);
-    }
-
-    /**
-     * Constructs a non-directed, non-weighted graph
+     * No argument constructor
      */
     public Graph() {
-        this(false, false);
+        this(new ArrayList<Node>(), new ArrayList<Edge>());
     }
 
     /**
@@ -52,6 +39,7 @@ public class Graph {
      */
     public void addNode(Node node) {
         nodes.add(node);
+        cache = true;
     }
 
     /**
@@ -60,6 +48,7 @@ public class Graph {
      */
     public void addEdge(Edge edge) {
         edges.add(edge);
+        cache = true;
     }
 
     /**
@@ -67,8 +56,11 @@ public class Graph {
      * @param node node to be removed from graph
      */
     public void removeNode(Node node) {
-        if (!nodes.remove(node))
+        cache = true;
+        if (!nodes.remove(node)) {
             System.out.println("Tried to remove a node that is not part of the graph.");
+            cache = false;
+        }
     }
 
     /**
@@ -76,40 +68,11 @@ public class Graph {
      * @param edge edge to be removed from graph
      */
     public void removeEdge(Edge edge) {
-        if (!edges.remove(edge))
+        cache = true;
+        if (!edges.remove(edge)) {
             System.out.println("Tried to remove an edge that is not part of the graph.");
-    }
-
-    /**
-     * Returns whether the graph is directed or not
-     * @return true if graph is directed, otherwise false
-     */
-    public boolean isDirected() {
-        return directed;
-    }
-
-    /**
-     * Sets graph as directed or non-directed
-     * @param directed indicating whether graph is directed or not
-     */
-    public void setDirected(boolean directed) {
-        this.directed = directed;
-    }
-
-    /**
-     * Returns whether the graph is weighted or not
-     * @return true if graph is weighted, otherwise false
-     */
-    public boolean isWeighted() {
-        return weighted;
-    }
-
-    /**
-     * Sets graph as wighted or non-weighted
-     * @param weighted indicating whether graph is weighted or not
-     */
-    public void setWeighted(boolean weighted) {
-        this.weighted = weighted;
+            cache = false;
+        }
     }
 
     /**
@@ -121,7 +84,7 @@ public class Graph {
     }
 
     /**
-     * Returns a number of Edge variables in graph
+     * Returns a number of edges in the graph
      * @return Number of edges
      */
     public int getNumberOfEdges() {
@@ -142,6 +105,7 @@ public class Graph {
      */
     public void setAllNodes(List<Node> nodes) {
         this.nodes = nodes;
+        cache = true;
     }
 
     /**
@@ -158,5 +122,34 @@ public class Graph {
      */
     public void setAllEdges(List<Edge> edges) {
         this.edges = edges;
+        cache = true;
     }
+
+    /**
+     * Cache getter return boolean cache flag
+     * @return
+     */
+    public boolean getCache() {
+        return cache;
+    }
+
+    /**
+     * Cache setter sets boolean cache glaf
+     * @param cache
+     */
+    public void setCache(boolean cache) {
+        this.cache = cache;
+    }
+
+    /**
+     * Abstract method building Adjacent table for the graph
+     * @param adjacent
+     */
+    public abstract void buildAdjacent();
+
+    /**
+     * Abstract method getter of Adjacent table for the graph
+     * @return Adjacent table
+     */
+    public abstract Map<Node, List<Node>> getAdjacent();
 }

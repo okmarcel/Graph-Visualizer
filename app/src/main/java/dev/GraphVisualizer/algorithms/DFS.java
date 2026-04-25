@@ -10,7 +10,7 @@ import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
 /**
- * class DFS
+ * Class DFS - implementation of depth first search algorithm
  */
 public class DFS {
     /**

@@ -3,9 +3,7 @@ package dev.GraphVisualizer.ui;
 import dev.GraphVisualizer.ui.canvas.GraphCanvas;
 import dev.GraphVisualizer.ui.toolbar.GraphToolBar;
 import dev.GraphVisualizer.service.GraphService;
-import dev.GraphVisualizer.models.Graph;
-import dev.GraphVisualizer.models.Node;
-import dev.GraphVisualizer.models.Edge;
+import dev.GraphVisualizer.models.*;
 
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
@@ -33,7 +31,7 @@ public class MainWindow {
      */
     public MainWindow(Stage stage) {
         this.stage = stage;
-        Graph graph = new Graph();
+        Graph graph = new UndirectedGraph();
         // TEST with hardcoded graph
         initializeSampleGraph(graph);
         this.graphService = new GraphService(graph);

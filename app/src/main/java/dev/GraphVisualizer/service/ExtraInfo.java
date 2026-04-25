@@ -6,24 +6,16 @@ import dev.GraphVisualizer.models.*;
  * class ExtraInfo provides some additional fields required for the algorithms
  */
 public class ExtraInfo {
-    /**
-     * Member algorithmcolor - algorithmcolor of the Node used in the algorithm - WHITE, GREY or BLACK
-     */
+    /** Member algorithmcolor - algorithmcolor of the Node used in the algorithm - WHITE, GREY or BLACK */
     private AlgorithmColor algorithmcolor;
 
-    /**
-     * Member d - distance from the source Node - the one from which the algorithm started 
-     */
+    /** Member d - distance from the source Node - the one from which the algorithm started */
     private double d;
 
-    /**
-     * Member pi - parent of the Node - the one that was previously visited by the algorithm
-     */
+    /** Member pi - parent of the Node - the one that was previously visited by the algorithm */
     private Node pi;
 
-    /**
-     * Time of proceed time used by DFS specifically
-     */
+    /** Time of proceed time used by DFS specifically */
     private double f;
     
     /**

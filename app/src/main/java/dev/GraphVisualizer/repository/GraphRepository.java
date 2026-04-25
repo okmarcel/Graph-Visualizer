@@ -1,11 +1,9 @@
 package dev.GraphVisualizer.repository;
 
-import dev.GraphVisualizer.models.Graph;
+import dev.GraphVisualizer.models.*;
 import java.io.File;
 
-/**
- * Graph repository interface
- */
+/** Graph repository interface */
 public interface GraphRepository {
     /**
      * Method to save the representation of a graph to a file

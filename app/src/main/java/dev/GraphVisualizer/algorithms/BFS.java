@@ -12,7 +12,7 @@ import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
 /**
- * class BFS
+ * Class BFS - implementation of breadth first search algorithm
  */
 public class BFS {
     /**
