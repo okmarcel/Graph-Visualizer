@@ -1,4 +1,4 @@
-package dev.GraphVisualizer.algorithms;
+package dev.GraphVisualizer.service;
 
 /** Custom Exception thrown when graph provided to Dijkstra algorithm has negative weights */
 public class NegativeWeightException extends RuntimeException {

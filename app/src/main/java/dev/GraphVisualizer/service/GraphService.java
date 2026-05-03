@@ -13,6 +13,7 @@ public class GraphService {
      */
     public GraphService(Graph graph) {
         this.graph = graph;
+        this.graph.buildAdjacent();
     }
 
     /**

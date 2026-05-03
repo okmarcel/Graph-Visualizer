@@ -10,8 +10,8 @@ public class AlgorithmService {
     /** Graph representation plus the adjacency list for every node */
     private GraphService service;
 
-    /** Map holding the state of ExtraInfo needed for algorithm maped to every node in graph */
-    private Map<Node, ExtraInfo> state;
+    /** Map holding the state of AlgorithmAddInfo needed for algorithm maped to every node in graph */
+    private Map<Node, AlgorithmAddInfo> state;
 
     /**
      * Constructor - sets the initial state of nodes neeeded for BFS and DFS algorithms
@@ -21,7 +21,7 @@ public class AlgorithmService {
         this.service = service;
         this.state = new HashMap<>();
         for(Node i : this.service.getGraph().getAllNodes()) {
-            state.put(i, new ExtraInfo());
+            state.put(i, new AlgorithmAddInfo());
         }
     }
 
@@ -53,6 +53,15 @@ public class AlgorithmService {
      */
     public void runDijkstra(Node sourceNode) {
         resetState();
+        if(!(service.getGraph() instanceof WeightedDirectedGraph) && !(service.getGraph() instanceof WeightedUndirectedGraph)) {
+            throw new UnweightedGraphException("Dijkstra requires a weighted graph.");
+        }
+        for(Edge e : service.getGraph().getAllEdges()) {
+            if(e.getWeight() < 0.0) {
+                throw new NegativeWeightException("Dijkstra cannot run on graphs with negative weights. Edge: "
+                    + e.getSource().getLabel() + " -> " + e.getTarget().getLabel());
+            }
+        }
         Dijkstra.runDijkstra(service.getGraph().getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode);
     }
 
@@ -68,7 +77,7 @@ public class AlgorithmService {
      * state getter
      * @return state
      */
-    public Map<Node, ExtraInfo> getState() {
+    public Map<Node, AlgorithmAddInfo> getState() {
         return state;
     }
 
@@ -78,7 +87,7 @@ public class AlgorithmService {
     private void resetState() {
         state.clear();
         for(Node i : service.getGraph().getAllNodes()) {
-            state.put(i, new ExtraInfo());
+            state.put(i, new AlgorithmAddInfo());
         }
     }
 }

@@ -1,6 +1,6 @@
 package dev.GraphVisualizer;
 
-import dev.GraphVisualizer.algorithms.NegativeWeightException;
+import dev.GraphVisualizer.algorithms.*;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DijkstraServiceTest {
 
-    private Graph graph;
+    private WeightedDirectedGraph graph;
     private GraphService graphService;
     private AlgorithmService algorithmService;
     private Node a, b, c, d;
@@ -22,20 +22,15 @@ public class DijkstraServiceTest {
         d = new Node("D", 3.0, 0.0);
 
         // A -2-> B, A -4-> C, B -1-> D, C -1-> D
-        Edge ab = new Edge(a, b, 2.0);
-        Edge ac = new Edge(a, c, 4.0);
-        Edge bd = new Edge(b, d, 1.0);
-        Edge cd = new Edge(c, d, 1.0);
-
-        graph = new Graph(true, true);
+        graph = new WeightedDirectedGraph();
         graph.addNode(a);
         graph.addNode(b);
         graph.addNode(c);
         graph.addNode(d);
-        graph.addEdge(ab);
-        graph.addEdge(ac);
-        graph.addEdge(bd);
-        graph.addEdge(cd);
+        graph.addEdge(new Edge(a, b, 2.0));
+        graph.addEdge(new Edge(a, c, 4.0));
+        graph.addEdge(new Edge(b, d, 1.0));
+        graph.addEdge(new Edge(c, d, 1.0));
 
         graphService = new GraphService(graph);
         algorithmService = new AlgorithmService(graphService);
@@ -70,15 +65,24 @@ public class DijkstraServiceTest {
     }
 
     @Test
-    public void testNegativeWeightThrowsException() {
+    public void testNegativeWeightThrows() {
+        WeightedDirectedGraph g = new WeightedDirectedGraph();
         Node x = new Node("X", 0.0, 0.0);
         Node y = new Node("Y", 1.0, 0.0);
-        Graph g = new Graph(true, true);
         g.addNode(x);
         g.addNode(y);
         g.addEdge(new Edge(x, y, -1.0));
         AlgorithmService as = new AlgorithmService(new GraphService(g));
         assertThrows(NegativeWeightException.class, () -> as.runDijkstra(x));
+    }
+
+    @Test
+    public void testUnweightedGraphThrows() {
+        DirectedGraph g = new DirectedGraph();
+        Node x = new Node("X", 0.0, 0.0);
+        g.addNode(x);
+        AlgorithmService as = new AlgorithmService(new GraphService(g));
+        assertThrows(UnweightedGraphException.class, () -> as.runDijkstra(x));
     }
 
     @Test
@@ -90,13 +94,23 @@ public class DijkstraServiceTest {
     }
 
     @Test
-    public void testSingleNode() {
+    public void testWeightedUndirectedGraph() {
         Node x = new Node("X", 0.0, 0.0);
-        Graph g = new Graph(true, true);
+        Node y = new Node("Y", 1.0, 0.0);
+        Node z = new Node("Z", 2.0, 0.0);
+
+        WeightedUndirectedGraph g = new WeightedUndirectedGraph();
         g.addNode(x);
+        g.addNode(y);
+        g.addNode(z);
+        g.addEdge(new Edge(x, y, 1.0));
+        g.addEdge(new Edge(y, z, 2.0));
+
         AlgorithmService as = new AlgorithmService(new GraphService(g));
         as.runDijkstra(x);
+
         assertEquals(0.0, as.getState().get(x).getD());
-        assertNull(as.getState().get(x).getPi());
+        assertEquals(1.0, as.getState().get(y).getD());
+        assertEquals(3.0, as.getState().get(z).getD());
     }
 }

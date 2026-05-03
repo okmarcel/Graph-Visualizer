@@ -2,12 +2,10 @@ package dev.GraphVisualizer.service;
 
 import dev.GraphVisualizer.models.*;
 
-/**
- * class ExtraInfo provides some additional fields required for the algorithms
- */
-public class ExtraInfo {
-    /** Member algorithmcolor - algorithmcolor of the Node used in the algorithm - WHITE, GREY or BLACK */
-    private AlgorithmColor algorithmcolor;
+/** Class AlgorithmAddInfo provides some additional fields required for the algorithms */
+public class AlgorithmAddInfo {
+    /** Member nodeColor - nodeColor of the Node used in the algorithm - WHITE, GREY or BLACK */
+    private NodeColor nodeColor;
 
     /** Member d - distance from the source Node - the one from which the algorithm started */
     private double d;
@@ -19,14 +17,22 @@ public class ExtraInfo {
     private double f;
     
     /**
+     * Enum NodeColor used by BFS and DFS algorithms holds three possible states of Node's nodeColor field:
+     * WHITE, GREY or BLACK
+     */
+    public enum NodeColor {
+        WHITE, GREY, BLACK;
+    }
+
+    /**
      * Constructor taking four paramethers:
-     * @param algorithmcolor algorithmcolor
+     * @param nodeColor nodeColor
      * @param d distance
      * @param pi parent
      * @param f proceed time
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, double d, Node pi, double f) {
-        this.algorithmcolor = algorithmcolor;
+    public AlgorithmAddInfo(NodeColor nodeColor, double d, Node pi, double f) {
+        this.nodeColor = nodeColor;
         this.d = d; 
         this.pi = pi;
         this.f = f;
@@ -34,62 +40,62 @@ public class ExtraInfo {
 
     /**
      * Constructor taking three paramethers:
-     * @param algorithmcolor algorithmcolor
+     * @param nodeColor nodeColor
      * @param d distance
      * @param pi parent
      * f = 0 by default;
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, double d, Node pi) {
-        this(algorithmcolor, d, pi, 0.0);
+    public AlgorithmAddInfo(NodeColor nodeColor, double d, Node pi) {
+        this(nodeColor, d, pi, 0.0);
     }
     
     /**
      * Constructor taking two paramethers:
-     * @param algorithmcolor algorithmcolor
+     * @param nodeColor nodeColor
      * @param d distance
      * pi = null by default;
      * f = 0.0 by default;
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor, double d) {
-        this(algorithmcolor, d, null);
+    public AlgorithmAddInfo(NodeColor nodeColor, double d) {
+        this(nodeColor, d, null);
     }
     
     /**
      * Constructor taking one paramether:
-     * @param algorithmcolor algorithmcolor
+     * @param nodeColor nodeColor
      * d = 2147483647 by default;
      * pi = null by default;
      * f = 0.0 by default;
      */
-    public ExtraInfo(AlgorithmColor algorithmcolor) {
-        this(algorithmcolor, Double.POSITIVE_INFINITY);
+    public AlgorithmAddInfo(NodeColor nodeColor) {
+        this(nodeColor, Double.POSITIVE_INFINITY);
     }
 
     /**
      * Constructor taking no paramethers:
-     * algorithmcolor = WHITE  by default;
+     * nodeColor = WHITE  by default;
      * d = 2147483647 by default;
      * pi = null by default;
      * f = 0.0 by default;
      */
-    public ExtraInfo(){
-        this(AlgorithmColor.WHITE);
+    public AlgorithmAddInfo(){
+        this(NodeColor.WHITE);
     }
 
     /**
-     * algorithmcolor setter
-     * @param algorithmcolor
+     * nodeColor setter
+     * @param nodeColor
      */
-    public void setAlgorithmColor(AlgorithmColor algorithmcolor) {
-        this.algorithmcolor = algorithmcolor;
+    public void setNodeColor(NodeColor nodeColor) {
+        this.nodeColor = nodeColor;
     }
 
     /**
-     * algorithmcolor getter
+     * nodeColor getter
      * @return
      */
-    public AlgorithmColor getAlgorithmColor() {
-        return algorithmcolor;
+    public NodeColor getNodeColor() {
+        return nodeColor;
     }
 
     /**
@@ -140,27 +146,27 @@ public class ExtraInfo {
     }
 
     /**
-     * One big setter to set the state of ExtraInfo used in context of BFS algorithm
-     * @param algorithmcolor
+     * One big setter to set the state of AlgorithmAddInfo used in context of BFS algorithm
+     * @param nodeColor
      * @param d
      * @param pi
      */
-    public void setAllBFS(AlgorithmColor algorithmcolor, double d, Node pi) {
-        this.algorithmcolor = algorithmcolor;
+    public void setAllBFS(NodeColor nodeColor, double d, Node pi) {
+        this.nodeColor = nodeColor;
         this.d = d;
         this.pi = pi;
         this.f = 0.0;
     }
 
     /**
-     * One big setter to set the state of ExtraInfo used in context of DFS algorithm
-     * @param algorithmcolor
+     * One big setter to set the state of AlgorithmAddInfo used in context of DFS algorithm
+     * @param nodeColor
      * @param d
      * @param pi
      * @param f
      */
-    public void setAllDFS(AlgorithmColor algorithmcolor, double d, Node pi, double f) {
-        this.algorithmcolor = algorithmcolor;
+    public void setAllDFS(NodeColor nodeColor, double d, Node pi, double f) {
+        this.nodeColor = nodeColor;
         this.d = d;
         this.pi = pi;
         this.f = f;
@@ -171,7 +177,7 @@ public class ExtraInfo {
      */
 	@Override
 	public String toString() {
-		return "ExtraInfo{algorithmcolor = " + algorithmcolor + "d=" + d + "pi=" + pi + "}";
+		return "AlgorithmAddInfo{nodeColor = " + nodeColor + "d=" + d + "pi=" + pi + "}";
 	}
 
 }

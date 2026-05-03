@@ -1,127 +1,136 @@
 package dev.GraphVisualizer;
 
-import dev.GraphVisualizer.models.Graph;
-import dev.GraphVisualizer.models.Node;
-import dev.GraphVisualizer.models.Edge;
-
-import org.junit.jupiter.api.*;
+import dev.GraphVisualizer.models.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
 
 public class GraphTest {
-    @Test
-    void testFullConstructor() {
-        Graph graph = new Graph(true, true);
-        assertTrue(graph.isDirected());
-        assertTrue(graph.isWeighted());
 
-        graph = new Graph(false, false);
-        assertFalse(graph.isDirected());
-        assertFalse(graph.isWeighted());
+    private Node a, b, c;
+    private Edge ab, bc;
+
+    @BeforeEach
+    public void setUp() {
+        a = new Node("A", 0.0, 0.0);
+        b = new Node("B", 1.0, 0.0);
+        c = new Node("C", 2.0, 0.0);
+        ab = new Edge(a, b);
+        bc = new Edge(b, c);
+    }
+
+    // DirectedGraph tests
+    @Test
+    public void testDirectedGraphAddNode() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        assertEquals(1, g.getNumberOfNodes());
     }
 
     @Test
-    void testConstructorDirected() {
-        Graph graph = new Graph(true);
-        assertTrue(graph.isDirected());
-        assertFalse(graph.isWeighted());
-
-        graph = new Graph(false);
-        assertFalse(graph.isDirected());
-        assertFalse(graph.isWeighted());
+    public void testDirectedGraphAddEdge() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(ab);
+        assertEquals(1, g.getNumberOfEdges());
     }
 
     @Test
-    void testDefaultConstructor() {
-        Graph graph = new Graph();
-        assertFalse(graph.isDirected());
-        assertFalse(graph.isWeighted());
+    public void testDirectedGraphRejectsWeightedEdge() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        assertThrows(WeightedEdgeException.class, () -> g.addEdge(new Edge(a, b, 5.0)));
     }
 
     @Test
-    void addNodeIncreasesNodeCount() {
-        Graph graph = new Graph();
-        assertEquals(0, graph.getNumberOfNodes());
-
-        graph.addNode(new Node("Test"));
-        assertEquals(1, graph.getNumberOfNodes());
+    public void testDirectedGraphAdjacentOnlyOneDirection() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(ab);
+        g.buildAdjacent();
+        assertTrue(g.getAdjacent().get(a).contains(b));
+        assertFalse(g.getAdjacent().get(b).contains(a));
     }
 
     @Test
-    void addedNodeIsStored() {
-        Graph graph = new Graph();
-        Node node = new Node("Test");
-        graph.addNode(node);
-        assertTrue(graph.getAllNodes().contains(node));
+    public void testDirectedGraphRemoveNode() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        g.removeNode(a);
+        assertEquals(0, g.getNumberOfNodes());
     }
 
     @Test
-    void removeNodeDecreasesCount() {
-        Graph graph = new Graph();
-        Node node = new Node("Test");
-        graph.addNode(node);
-        assertEquals(1, graph.getNumberOfNodes());
+    public void testDirectedGraphCacheSetOnAdd() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        assertTrue(g.getCache());
+    }
 
-        graph.removeNode(node);
-        assertEquals(0, graph.getNumberOfNodes());
+    // UndirectedGraph tests
+    @Test
+    public void testUndirectedGraphAdjacentBothDirections() {
+        UndirectedGraph g = new UndirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(ab);
+        g.buildAdjacent();
+        assertTrue(g.getAdjacent().get(a).contains(b));
+        assertTrue(g.getAdjacent().get(b).contains(a));
     }
 
     @Test
-    void removedNodeIsNotStored() {
-        Graph graph = new Graph();
-        Node node = new Node("Test");
-        graph.addNode(node);
-        graph.removeNode(node);
-        assertFalse(graph.getAllNodes().contains(node));
+    public void testUndirectedGraphRejectsWeightedEdge() {
+        UndirectedGraph g = new UndirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        assertThrows(WeightedEdgeException.class, () -> g.addEdge(new Edge(a, b, 5.0)));
+    }
+
+    // WeightedDirectedGraph tests
+    @Test
+    public void testWeightedDirectedGraphAcceptsWeightedEdge() {
+        WeightedDirectedGraph g = new WeightedDirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        assertDoesNotThrow(() -> g.addEdge(new Edge(a, b, 5.0)));
     }
 
     @Test
-    void removeNodeNotInGraphDoesNotThrow() {
-        Graph graph = new Graph();
-        Node node = new Node("Test");
-        assertDoesNotThrow(() -> graph.removeNode(node));
+    public void testWeightedDirectedGraphAdjacentOneDirection() {
+        WeightedDirectedGraph g = new WeightedDirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(new Edge(a, b, 2.0));
+        g.buildAdjacent();
+        assertTrue(g.getAdjacent().get(a).contains(b));
+        assertFalse(g.getAdjacent().get(b).contains(a));
+    }
+
+    // WeightedUndirectedGraph tests
+    @Test
+    public void testWeightedUndirectedGraphAdjacentBothDirections() {
+        WeightedUndirectedGraph g = new WeightedUndirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(new Edge(a, b, 3.0));
+        g.buildAdjacent();
+        assertTrue(g.getAdjacent().get(a).contains(b));
+        assertTrue(g.getAdjacent().get(b).contains(a));
     }
 
     @Test
-    void addEdgeIncreasesEdgeCount() {
-        Graph graph = new Graph();
-        assertEquals(0, graph.getNumberOfEdges());
-
-        graph.addEdge(new Edge(new Node("Source"), new Node("Target")));
-        assertEquals(1, graph.getNumberOfEdges());
-    }
-
-    @Test
-    void addedEdgeIsStored() {
-        Graph graph = new Graph();
-        Edge edge = new Edge(new Node("Source"), new Node("Target"));
-        graph.addEdge(edge);
-        assertTrue(graph.getAllEdges().contains(edge));
-    }
-
-    @Test
-    void removeEdgeDecreasesCount() {
-        Graph graph = new Graph();
-        Edge edge = new Edge(new Node("Source"), new Node("Target"));
-        graph.addEdge(edge);
-        assertEquals(1, graph.getNumberOfEdges());
-
-        graph.removeEdge(edge);
-        assertEquals(0, graph.getNumberOfEdges());
-    }
-
-    @Test
-    void removedEdgeIsNotStored() {
-        Graph graph = new Graph();
-        Edge edge = new Edge(new Node("Source"), new Node("Target"));
-        graph.addEdge(edge);
-        graph.removeEdge(edge);
-        assertFalse(graph.getAllEdges().contains(edge));
-    }
-
-    @Test
-    void removeEdgeNotInGraphDoesNotThrow() {
-        Graph graph = new Graph();
-        Edge edge = new Edge(new Node("Source"), new Node("Target"));
-        assertDoesNotThrow(() -> graph.removeEdge(edge));
+    public void testRebuildAdjacentResetsCache() {
+        DirectedGraph g = new DirectedGraph();
+        g.addNode(a);
+        g.addNode(b);
+        g.addEdge(ab);
+        assertTrue(g.getCache());
+        g.rebuildAdjacent();
+        assertFalse(g.getCache());
     }
 }

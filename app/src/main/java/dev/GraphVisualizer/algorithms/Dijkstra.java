@@ -3,9 +3,11 @@ import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
  * Class Dijkstra - implementation of Dijkstra algorithm
@@ -15,39 +17,38 @@ public class Dijkstra {
     /**
      * Classical CLRS implementation of Dijkstra algorithm
      * @param adjacent Adjacency List for all nodes
-     * @param state Map of ExtraInfo for all nodes
+     * @param state Map of AlgorithmAddInfo for all nodes
      * @param edges List of all edges in the graph
      * @param sourceNode Node from which the algorithm runs
      */
-    public static void runDijkstra(Map<Node, List<Node>> adjacent, Map<Node, ExtraInfo> state, List<Edge> edges, Node sourceNode) {
-        for(Edge e : edges) {
-            if(e.getWeight() < 0.0) {
-                throw new NegativeWeightException("Dijkstra cannot run on graphs with negative weights. Edge: "
-                    + e.getSource().getLabel() + " -> " + e.getTarget().getLabel());
-            }
-        }
+    public static void runDijkstra(Map<Node, List<Node>> adjacent, Map<Node, AlgorithmAddInfo> state, List<Edge> edges, Node sourceNode) {
         InitializeSingleSource(state, sourceNode);
-        PriorityQueue<Node> q = new PriorityQueue<>(
-            Comparator.comparingDouble(n -> state.get(n).getD())
-        );
-        q.addAll(adjacent.keySet());
-        while(!q.isEmpty()) {
-            Node u = q.poll();
+        Set<Node> visited = new HashSet<>();
+        while(visited.size() < adjacent.size()) {
+            Node u = null;
+            for(Node n : adjacent.keySet()) {
+                if(!visited.contains(n)) {
+                    if(u == null || state.get(n).getD() < state.get(u).getD()) {
+                        u = n;
+                    }
+                }
+            }
+            if(u == null || state.get(u).getD() == Double.POSITIVE_INFINITY)
+                break;
+            visited.add(u);
             for(Node v : adjacent.get(u)) {
                 double w = getWeight(edges, u, v);
                 Relax(state, u, v, w);
-                q.remove(v);
-                q.add(v);
             }
         }
     }
 
     /**
      * Initializes single source for Dijkstra
-     * @param state Map of ExtraInfo for all nodes
+     * @param state Map of AlgorithmAddInfo for all nodes
      * @param sourceNode Node from which the algorithm runs
      */
-    public static void InitializeSingleSource(Map<Node, ExtraInfo> state, Node sourceNode) {
+    public static void InitializeSingleSource(Map<Node, AlgorithmAddInfo> state, Node sourceNode) {
         for(Node v : state.keySet()) {
             state.get(v).setD(Double.POSITIVE_INFINITY);
             state.get(v).setPi(null);
@@ -57,12 +58,12 @@ public class Dijkstra {
 
     /**
      * Relaxes edge between u and v
-     * @param state Map of ExtraInfo for all nodes
+     * @param state Map of AlgorithmAddInfo for all nodes
      * @param u source node
      * @param v target node
      * @param w weight of edge between u and v
      */
-    public static void Relax(Map<Node, ExtraInfo> state, Node u, Node v, double w) {
+    public static void Relax(Map<Node, AlgorithmAddInfo> state, Node u, Node v, double w) {
         double distU = state.get(u).getD();
         double distV = state.get(v).getD();
         if(distU != Double.POSITIVE_INFINITY && distV > distU + w) {

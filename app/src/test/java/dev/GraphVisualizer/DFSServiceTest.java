@@ -8,7 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class DFSServiceTest {
 
-    private Graph graph;
+    private DirectedGraph graph;
     private GraphService graphService;
     private AlgorithmService algorithmService;
     private Node a, b, c, d;
@@ -20,18 +20,14 @@ public class DFSServiceTest {
         c = new Node("C", 2.0, 0.0);
         d = new Node("D", 3.0, 0.0);
 
-        Edge ab = new Edge(a, b);
-        Edge ac = new Edge(a, c);
-        Edge bd = new Edge(b, d);
-
-        graph = new Graph(true, false);
+        graph = new DirectedGraph();
         graph.addNode(a);
         graph.addNode(b);
         graph.addNode(c);
         graph.addNode(d);
-        graph.addEdge(ab);
-        graph.addEdge(ac);
-        graph.addEdge(bd);
+        graph.addEdge(new Edge(a, b));
+        graph.addEdge(new Edge(a, c));
+        graph.addEdge(new Edge(b, d));
 
         graphService = new GraphService(graph);
         algorithmService = new AlgorithmService(graphService);
@@ -41,8 +37,9 @@ public class DFSServiceTest {
     public void testAllNodesVisited() {
         algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
-            assertEquals(AlgorithmColor.BLACK, algorithmService.getState().get(node).getAlgorithmColor(),
-                "Node " + node.getLabel() + " should be BLACK after DFS");
+            assertEquals(AlgorithmAddInfo.NodeColor.BLACK,
+                algorithmService.getState().get(node).getNodeColor(),
+                "Node " + node.getLabel() + " should be BLACK");
         }
     }
 
@@ -50,8 +47,8 @@ public class DFSServiceTest {
     public void testDiscoveryBeforeFinish() {
         algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
-            assertTrue(algorithmService.getState().get(node).getD() < algorithmService.getState().get(node).getF(),
-                "Discovery time should be less than finish time for " + node.getLabel());
+           assertTrue(algorithmService.getState().get(node).getD() < 
+    algorithmService.getState().get(node).getF());
         }
     }
 
@@ -62,6 +59,14 @@ public class DFSServiceTest {
             assertTrue(algorithmService.getState().get(node).getD() > 0);
             assertTrue(algorithmService.getState().get(node).getF() > 0);
         }
+    }
+
+    @Test
+    public void testParentOfD() {
+        algorithmService.runDFS(a);
+        System.out.println("Parent of D: " + algorithmService.getState().get(d).getPi().getLabel());
+        assertNull(algorithmService.getState().get(a).getPi());
+        assertEquals(b, algorithmService.getState().get(d).getPi());
     }
 
     @Test
@@ -79,18 +84,18 @@ public class DFSServiceTest {
         Node y = new Node("Y", 1.0, 0.0);
         Node z = new Node("Z", 2.0, 0.0);
 
-        Graph undirected = new Graph(false, false);
-        undirected.addNode(x);
-        undirected.addNode(y);
-        undirected.addNode(z);
-        undirected.addEdge(new Edge(x, y));
-        undirected.addEdge(new Edge(y, z));
+        UndirectedGraph g = new UndirectedGraph();
+        g.addNode(x);
+        g.addNode(y);
+        g.addNode(z);
+        g.addEdge(new Edge(x, y));
+        g.addEdge(new Edge(y, z));
 
-        AlgorithmService as = new AlgorithmService(new GraphService(undirected));
+        AlgorithmService as = new AlgorithmService(new GraphService(g));
         as.runDFS(z);
 
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(x).getAlgorithmColor());
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(y).getAlgorithmColor());
-        assertEquals(AlgorithmColor.BLACK, as.getState().get(z).getAlgorithmColor());
+        assertEquals(AlgorithmAddInfo.NodeColor.BLACK, as.getState().get(x).getNodeColor());
+        assertEquals(AlgorithmAddInfo.NodeColor.BLACK, as.getState().get(y).getNodeColor());
+        assertEquals(AlgorithmAddInfo.NodeColor.BLACK, as.getState().get(z).getNodeColor());
     }
 }
