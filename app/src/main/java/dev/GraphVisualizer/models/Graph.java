@@ -26,9 +26,7 @@ public abstract class Graph {
         this.cache = false;
     }
 
-    /**
-     * No argument constructor
-     */
+    /** No argument constructor */
     public Graph() {
         this(new ArrayList<Node>(), new ArrayList<Edge>());
     }

@@ -24,17 +24,13 @@ public class UndirectedGraph extends Graph{
         buildAdjacent();
     }
 
-    /**
-     * Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments
-     */
+    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
     public UndirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /**
-     * Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0
-     */
+    /** Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0 */
     @Override
     public void addEdge(Edge edge) {
         if(edge.getWeight() != 1.0)
@@ -42,9 +38,7 @@ public class UndirectedGraph extends Graph{
         super.addEdge(edge);
     }
 
-    /**
-     * Method used to build Adjacent table for every node
-     */
+    /** Method used to build Adjacent table for every node */
     public void buildAdjacent(){
         this.adjacent = new HashMap<>();
         for(Node i : getAllNodes()) {
@@ -56,9 +50,7 @@ public class UndirectedGraph extends Graph{
         }
     }
 
-    /**
-     * Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache
-     */
+    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();

@@ -7,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Class Dijkstra - implementation of Dijkstra algorithm
- */
+/** Class Dijkstra - implementation of Dijkstra algorithm */
 public class Dijkstra { 
     /**
      * Classical CLRS implementation of Dijkstra algorithm
