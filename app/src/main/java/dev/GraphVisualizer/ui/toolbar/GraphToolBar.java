@@ -1,8 +1,8 @@
 package dev.GraphVisualizer.ui.toolbar;
 
 import dev.GraphVisualizer.service.GraphService;
-import dev.GraphVisualizer.ui.canvas.CanvasMode;
 import dev.GraphVisualizer.ui.canvas.GraphCanvas;
+import dev.GraphVisualizer.ui.canvas.GraphCanvas.CanvasMode;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Separator;

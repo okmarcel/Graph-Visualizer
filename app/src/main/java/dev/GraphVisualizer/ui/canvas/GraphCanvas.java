@@ -56,6 +56,10 @@ public class GraphCanvas extends Pane {
     private static final Color LABEL_COLOR   = Color.web("#f3f4f6");
     private static final Color WEIGHT_COLOR  = Color.web("#a78bfa");
 
+    public enum CanvasMode {
+        PAN, ADD_NODE, ADD_EDGE, REMOVE
+    }
+
     public GraphCanvas(GraphService graphService, boolean directed, boolean weighted) {
         this.graphService = graphService;
         this.directed = directed;
