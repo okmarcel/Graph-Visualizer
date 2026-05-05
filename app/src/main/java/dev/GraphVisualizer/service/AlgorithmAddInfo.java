@@ -140,6 +140,7 @@ public class AlgorithmAddInfo {
 
     /**
      * f getter
+     * @return
      */
     public double getF() {
         return f;

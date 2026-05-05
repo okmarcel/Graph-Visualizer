@@ -2,7 +2,6 @@ package dev.GraphVisualizer.algorithms;
 
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
-import dev.GraphVisualizer.service.AlgorithmAddInfo.NodeColor;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +9,7 @@ import java.util.Map;
 import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
-/**
- * Class DFS - implementation of depth first search algorithm
- */
+/** Class DFS - implementation of depth first search algorithm */
 public class DFS {
     /**
      * Classical CLRS implementation of Depth First Search algorithm

@@ -16,11 +16,11 @@ public class UndirectedGraph extends Graph{
      * @param edges list of predefined edges
      */
     public UndirectedGraph(List<Node> nodes, List<Edge> edges) {
-        super(nodes, edges);
         for(Edge edge : edges) {
             if(edge.getWeight() != 1.0)
                 throw new WeightedEdgeException("UndirectedGraph does not support weighted edges. Could not construct graph!");
         }
+        super(nodes, edges);
         buildAdjacent();
     }
 
