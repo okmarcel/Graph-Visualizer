@@ -4,6 +4,14 @@ import dev.GraphVisualizer.models.*;
 
 /** Class AlgorithmAddInfo provides some additional fields required for the algorithms */
 public class AlgorithmAddInfo {
+    /**
+     * Enum NodeColor used by BFS and DFS algorithms holds three possible states of Node's nodeColor field:
+     * WHITE, GREY or BLACK
+     */
+    public enum NodeColor {
+        WHITE, GREY, BLACK;
+    }
+
     /** Member nodeColor - nodeColor of the Node used in the algorithm - WHITE, GREY or BLACK */
     private NodeColor nodeColor;
 
@@ -16,14 +24,6 @@ public class AlgorithmAddInfo {
     /** Time of proceed time used by DFS specifically */
     private double f;
     
-    /**
-     * Enum NodeColor used by BFS and DFS algorithms holds three possible states of Node's nodeColor field:
-     * WHITE, GREY or BLACK
-     */
-    public enum NodeColor {
-        WHITE, GREY, BLACK;
-    }
-
     /**
      * Constructor taking four paramethers:
      * @param nodeColor nodeColor

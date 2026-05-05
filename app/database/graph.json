@@ -1,0 +1,32 @@
+{
+  "type" : "WeightedDirectedGraph",
+  "nodes" : [ {
+    "id" : "03f1c93c-1dd9-493d-96e9-fa8460631c02",
+    "label" : "A",
+    "x" : 0.0,
+    "y" : 0.0
+  }, {
+    "id" : "d9ac2a62-05b5-4a94-832b-37fca65fb2a9",
+    "label" : "B",
+    "x" : 1.0,
+    "y" : 0.0
+  }, {
+    "id" : "b03a759d-3d9d-4f71-a90d-ef886b16babe",
+    "label" : "C",
+    "x" : 2.0,
+    "y" : 0.0
+  } ],
+  "edges" : [ {
+    "sourceId" : "03f1c93c-1dd9-493d-96e9-fa8460631c02",
+    "targetId" : "d9ac2a62-05b5-4a94-832b-37fca65fb2a9",
+    "weight" : 2.5
+  }, {
+    "sourceId" : "d9ac2a62-05b5-4a94-832b-37fca65fb2a9",
+    "targetId" : "b03a759d-3d9d-4f71-a90d-ef886b16babe",
+    "weight" : 1.0
+  }, {
+    "sourceId" : "03f1c93c-1dd9-493d-96e9-fa8460631c02",
+    "targetId" : "b03a759d-3d9d-4f71-a90d-ef886b16babe",
+    "weight" : 4.0
+  } ]
+}

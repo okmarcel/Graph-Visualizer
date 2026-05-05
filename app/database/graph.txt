@@ -1,0 +1,9 @@
+TYPE WeightedDirectedGraph
+NODES 3
+03f1c93c-1dd9-493d-96e9-fa8460631c02 A 0.0 0.0
+d9ac2a62-05b5-4a94-832b-37fca65fb2a9 B 1.0 0.0
+b03a759d-3d9d-4f71-a90d-ef886b16babe C 2.0 0.0
+EDGES 3
+03f1c93c-1dd9-493d-96e9-fa8460631c02 d9ac2a62-05b5-4a94-832b-37fca65fb2a9 2.5
+d9ac2a62-05b5-4a94-832b-37fca65fb2a9 b03a759d-3d9d-4f71-a90d-ef886b16babe 1.0
+03f1c93c-1dd9-493d-96e9-fa8460631c02 b03a759d-3d9d-4f71-a90d-ef886b16babe 4.0

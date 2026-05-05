@@ -8,25 +8,27 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.beans.binding.Bindings;
+import javafx.scene.input.MouseEvent;
 
-/**
- * Canvas where graph is drawn
- */
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 public class GraphCanvas extends Pane {
     private final Group graphGroup = new Group();
-    private double dragStartX;
-    private double dragStartY;
-    private double translateX;
-    private double translateY;
+    private double dragStartX, dragStartY, translateX, translateY;
     private boolean isPanning = false;
 
     private final VBox zoomControls = new VBox(4);
@@ -34,105 +36,309 @@ public class GraphCanvas extends Pane {
     private static final double SCALE_STEP = 0.2;
     private static final double SCALE_MIN  = 0.2;
     private static final double SCALE_MAX  = 3.0;
+    private static final double NODE_RADIUS = 22.0;
 
     private final GraphService graphService;
+    private CanvasMode mode = CanvasMode.PAN;
+    private Node selectedNode = null;
+    private int nodeCounter = 0;
+    private boolean directed;
+    private boolean weighted;
 
-    public GraphCanvas(GraphService graphService) { 
+    private final Map<Circle, Node> circleToNode = new HashMap<>();
+    private final Map<Line, Edge>   lineToEdge   = new HashMap<>();
+
+    // colors
+    private static final Color NODE_FILL     = Color.web("#7c3aed");
+    private static final Color NODE_STROKE   = Color.web("#a78bfa");
+    private static final Color NODE_SELECTED = Color.web("#f59e0b");
+    private static final Color EDGE_COLOR    = Color.web("#6b7280");
+    private static final Color LABEL_COLOR   = Color.web("#f3f4f6");
+    private static final Color WEIGHT_COLOR  = Color.web("#a78bfa");
+
+    public GraphCanvas(GraphService graphService, boolean directed, boolean weighted) {
         this.graphService = graphService;
+        this.directed = directed;
+        this.weighted = weighted;
 
-        clipProperty().bind(Bindings.createObjectBinding(() -> {
-            Rectangle clip = new Rectangle(getWidth(), getHeight());
-            return clip;
-        }, widthProperty(), heightProperty()));
+        setStyle("-fx-background-color: #1e1e2e;");
+
+        clipProperty().bind(Bindings.createObjectBinding(
+            () -> new Rectangle(getWidth(), getHeight()),
+            widthProperty(), heightProperty()));
 
         zoomControls.setAlignment(Pos.CENTER);
         zoomControls.setPadding(new Insets(4));
+        zoomControls.setStyle(
+            "-fx-background-color: #2d2d3f; -fx-background-radius: 8; -fx-border-radius: 8;");
 
-        Button zoomIn = new Button("+");
-        Button zoomOut = new Button("-");
-
-        zoomIn.setMinSize(28, 28);
-        zoomOut.setMinSize(28, 28);
-        
+        Button zoomIn  = makeZoomBtn("+");
+        Button zoomOut = makeZoomBtn("-");
         zoomIn.setOnAction(e -> applyZoom(SCALE_STEP));
         zoomOut.setOnAction(e -> applyZoom(-SCALE_STEP));
-
         zoomControls.getChildren().addAll(zoomIn, zoomOut);
+        zoomControls.layoutXProperty().bind(
+            widthProperty().subtract(zoomControls.widthProperty()).subtract(12));
+        zoomControls.setLayoutY(12);
 
-        zoomControls.layoutXProperty().bind(widthProperty().subtract(zoomControls.widthProperty()).subtract(8));
-        zoomControls.setLayoutY(8);
-
-        // Add elements from bottom to top layer
-        getChildren().addAll(
-            graphGroup,
-            zoomControls
-        );
-        // drawSampleGraph(); // hardcoded graph shape
+        getChildren().addAll(graphGroup, zoomControls);
         addPanHandlers();
+        addCanvasClickHandler();
         refresh();
     }
 
-    private void refresh() {
+    private Button makeZoomBtn(String text) {
+        Button b = new Button(text);
+        b.setMinSize(32, 32);
+        b.setStyle(
+            "-fx-background-color: #3d3d5c; -fx-text-fill: #f3f4f6; " +
+            "-fx-font-size: 16; -fx-cursor: hand; -fx-border-radius: 6; -fx-background-radius: 6;");
+        return b;
+    }
+
+    public void setMode(CanvasMode mode) {
+        this.mode = mode;
+        this.selectedNode = null;
+        refresh();
+    }
+
+    public void setDirected(boolean directed) {
+        this.directed = directed;
+        refresh();
+    }
+
+    public void setWeighted(boolean weighted) {
+        this.weighted = weighted;
+        refresh();
+    }
+
+    public void refresh() {
         graphGroup.getChildren().clear();
+        circleToNode.clear();
+        lineToEdge.clear();
         drawEdges();
         drawNodes();
     }
 
     private void drawNodes() {
         for (Node node : graphService.getGraph().getAllNodes()) {
-            Circle circle = new Circle(node.getPositionX(), node.getPositionY(), 20, Color.BLUE);
-            circle.setStroke(Color.DARKBLUE);
+            Color fill = (node == selectedNode) ? NODE_SELECTED : NODE_FILL;
+
+            Circle circle = new Circle(node.getPositionX(), node.getPositionY(), NODE_RADIUS, fill);
+            circle.setStroke(NODE_STROKE);
             circle.setStrokeWidth(2);
 
-            Text label = new Text(node.getPositionX(), node.getPositionY(), node.getLabel());
-            label.setFill(Color.WHITE);
-            label.setFont(new Font(14));
+            Text label = new Text(node.getLabel());
+            label.setFill(LABEL_COLOR);
+            label.setFont(Font.font("System", FontWeight.BOLD, 13));
+            label.setX(node.getPositionX() - label.getLayoutBounds().getWidth() / 2);
+            label.setY(node.getPositionY() + label.getLayoutBounds().getHeight() / 4);
 
+            circle.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2) {
+                    handleNodeDoubleClick(node);
+                } else {
+                    handleNodeClick(node, e);
+                }
+                e.consume();
+            });
+
+            circleToNode.put(circle, node);
             graphGroup.getChildren().addAll(circle, label);
         }
     }
 
     private void drawEdges() {
         for (Edge edge : graphService.getGraph().getAllEdges()) {
-            Node source = edge.getSource();
-            Node target = edge.getTarget();
-            if (source == null || target == null) continue;
+            Node src = edge.getSource();
+            Node tgt = edge.getTarget();
+            if (src == null || tgt == null) continue;
 
             Line line = new Line(
-                source.getPositionX(), source.getPositionY(),
-                target.getPositionX(), target.getPositionY()
-            );
-            line.setStroke(Color.GRAY);
+                src.getPositionX(), src.getPositionY(),
+                tgt.getPositionX(), tgt.getPositionY());
+            line.setStroke(EDGE_COLOR);
             line.setStrokeWidth(2);
-
+            line.setOnMouseClicked(e -> {
+                if (e.getClickCount() == 2) handleEdgeDoubleClick(edge);
+                else handleEdgeClick(edge, e);
+                e.consume();
+            });
+            lineToEdge.put(line, edge);
             graphGroup.getChildren().add(line);
+
+            // arrowhead for directed graphs
+            if (directed) {
+                Polygon arrow = buildArrow(src, tgt);
+                arrow.setFill(EDGE_COLOR);
+                graphGroup.getChildren().add(arrow);
+            }
+
+            // weight label
+            if (weighted) {
+                double mx = (src.getPositionX() + tgt.getPositionX()) / 2;
+                double my = (src.getPositionY() + tgt.getPositionY()) / 2;
+                Text wLabel = new Text(String.format("%.1f", edge.getWeight()));
+                wLabel.setFill(WEIGHT_COLOR);
+                wLabel.setFont(Font.font("System", FontWeight.BOLD, 12));
+                wLabel.setX(mx + 4);
+                wLabel.setY(my - 4);
+                graphGroup.getChildren().add(wLabel);
+            }
         }
     }
 
-    private void applyZoom(double delta) {
-        scale += delta;
-        if (scale < SCALE_MIN)
-            scale = SCALE_MIN;
-        else if (scale > SCALE_MAX)
-            scale = SCALE_MAX;
+    private Polygon buildArrow(Node src, Node tgt) {
+        double dx = tgt.getPositionX() - src.getPositionX();
+        double dy = tgt.getPositionY() - src.getPositionY();
+        double len = Math.sqrt(dx * dx + dy * dy);
+        if (len == 0) return new Polygon();
 
+        double ux = dx / len;
+        double uy = dy / len;
+
+        // tip of arrow at edge of target circle
+        double tipX = tgt.getPositionX() - ux * NODE_RADIUS;
+        double tipY = tgt.getPositionY() - uy * NODE_RADIUS;
+
+        double arrowLen  = 14;
+        double arrowHalf = 6;
+
+        double baseX = tipX - ux * arrowLen;
+        double baseY = tipY - uy * arrowLen;
+
+        double perpX = -uy * arrowHalf;
+        double perpY =  ux * arrowHalf;
+
+        return new Polygon(
+            tipX, tipY,
+            baseX + perpX, baseY + perpY,
+            baseX - perpX, baseY - perpY
+        );
+    }
+
+    private void addCanvasClickHandler() {
+        addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) return;
+            if (mode == CanvasMode.ADD_NODE) {
+                double wx = (e.getX() - translateX) / scale;
+                double wy = (e.getY() - translateY) / scale;
+                if (!isOverNode(wx, wy)) addNode(wx, wy);
+            }
+        });
+    }
+
+    private void handleNodeClick(Node node, MouseEvent e) {
+        switch (mode) {
+            case ADD_EDGE -> {
+                if (selectedNode == null) {
+                    selectedNode = node;
+                    refresh();
+                } else if (selectedNode != node) {
+                    graphService.getGraph().addEdge(new Edge(selectedNode, node));
+                    selectedNode = null;
+                    refresh();
+                }
+            }
+            case REMOVE -> {
+                graphService.getGraph().getAllEdges()
+                    .removeIf(edge -> edge.getSource().equals(node) || edge.getTarget().equals(node));
+                graphService.getGraph().removeNode(node);
+                refresh();
+            }
+            default -> {}
+        }
+    }
+
+    private void handleEdgeClick(Edge edge, MouseEvent e) {
+        if (mode == CanvasMode.REMOVE) {
+            graphService.getGraph().removeEdge(edge);
+            refresh();
+        }
+    }
+
+    private void handleNodeDoubleClick(Node node) {
+        TextInputDialog dialog = new TextInputDialog(node.getLabel());
+        dialog.setTitle("Rename node");
+        dialog.setHeaderText(null);
+        dialog.setContentText("New label:");
+        styleDialog(dialog);
+        Optional<String> result = dialog.showAndWait();
+        result.filter(s -> !s.isBlank()).ifPresent(s -> {
+            node.setLabel(s);
+            refresh();
+        });
+    }
+
+    private void handleEdgeDoubleClick(Edge edge) {
+        if (!weighted) return;
+        TextInputDialog dialog = new TextInputDialog(String.valueOf(edge.getWeight()));
+        dialog.setTitle("Edit weight");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Weight:");
+        styleDialog(dialog);
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(s -> {
+            try {
+                edge.setWeight(Double.parseDouble(s));
+                refresh();
+            } catch (NumberFormatException ignored) {}
+        });
+    }
+
+    private void styleDialog(TextInputDialog dialog) {
+        dialog.getDialogPane().setStyle(
+            "-fx-background-color: #2d2d3f; -fx-font-size: 13px;");
+        dialog.getDialogPane().lookup(".content.label")
+            .setStyle("-fx-text-fill: #f3f4f6;");
+    }
+
+    private void addNode(double x, double y) {
+        Node node = new Node(generateLabel(), x, y);
+        graphService.getGraph().addNode(node);
+        refresh();
+    }
+
+    private String generateLabel() {
+        int n = nodeCounter++;
+        StringBuilder sb = new StringBuilder();
+        do {
+            sb.insert(0, (char) ('A' + n % 26));
+            n = n / 26 - 1;
+        } while (n >= 0);
+        return sb.toString();
+    }
+
+    private boolean isOverNode(double x, double y) {
+        for (Node node : graphService.getGraph().getAllNodes()) {
+            double dx = node.getPositionX() - x;
+            double dy = node.getPositionY() - y;
+            if (Math.sqrt(dx * dx + dy * dy) < NODE_RADIUS) return true;
+        }
+        return false;
+    }
+
+    private void applyZoom(double delta) {
+        scale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale + delta));
         graphGroup.setScaleX(scale);
         graphGroup.setScaleY(scale);
     }
 
     private void addPanHandlers() {
-        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_PRESSED, e -> {
+        addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
             if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) {
                 isPanning = false;
-                return; // let the event reach the buttons
+                return;
             }
-            isPanning = true;
-            dragStartX = e.getX() - translateX;
-            dragStartY = e.getY() - translateY;
+            if (mode == CanvasMode.PAN) {
+                isPanning = true;
+                dragStartX = e.getX() - translateX;
+                dragStartY = e.getY() - translateY;
+            }
             e.consume();
         });
 
-        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_DRAGGED, e -> {
+        addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
             if (isPanning) {
                 translateX = e.getX() - dragStartX;
                 translateY = e.getY() - dragStartY;
@@ -142,40 +348,6 @@ public class GraphCanvas extends Pane {
             }
         });
 
-        addEventFilter(javafx.scene.input.MouseEvent.MOUSE_RELEASED, e -> {
-            isPanning = false;
-        });
-    }
-
-    /** Draw hardcoded graph shape for testing */
-    private void drawSampleGraph() {
-        // Node positions
-        double[] x = {200, 400, 150, 350, 300};
-        double[] y = {100, 100, 250, 250, 400};
-        String[] labels = {"A", "B", "C", "D", "E"};
-
-        // Edges (index pairs)
-        int[][] edges = {{0,1}, {0,2}, {1,3}, {2,3}, {2,4}, {3,4}};
-
-        // Draw edges first so nodes render on top
-        for (int[] edge : edges) {
-            Line line = new Line(x[edge[0]], y[edge[0]], x[edge[1]], y[edge[1]]);
-            line.setStroke(Color.GRAY);
-            line.setStrokeWidth(2);
-            graphGroup.getChildren().add(line);
-        }
-
-        // Draw nodes
-        for (int i = 0; i < x.length; i++) {
-            Circle circle = new Circle(x[i], y[i], 20, Color.STEELBLUE);
-            circle.setStroke(Color.DARKBLUE);
-            circle.setStrokeWidth(2);
-
-            Text label = new Text(x[i] - 6, y[i] + 5, labels[i]);
-            label.setFill(Color.WHITE);
-            label.setFont(new Font(14));
-
-            graphGroup.getChildren().addAll(circle, label);
-        }
+        addEventFilter(MouseEvent.MOUSE_RELEASED, e -> isPanning = false);
     }
 }
