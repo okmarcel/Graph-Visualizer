@@ -5,7 +5,7 @@ import dev.GraphVisualizer.repository.*;
 import java.io.File;
 
 /** Class GraphService */
-public class GraphService {
+public final class GraphService {
     /** Member graph - instance of class Graph */
     private Graph graph;
 

@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Class TxtGraphRepository - implementation of GraphRepository for TXT files */
-public class TxtGraphRepository implements GraphRepository {
-
+public final class TxtGraphRepository implements GraphRepository {
     /**
      * Saves graph to a TXT file as adjacency list
      * Format:

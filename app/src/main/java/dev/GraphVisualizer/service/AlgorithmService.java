@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map; 
 
 /** Class AlgorithmService - responsible for running the algorithms */
-public class AlgorithmService {
+public final class AlgorithmService {
     /** Graph representation plus the adjacency list for every node */
     private GraphService service;
 

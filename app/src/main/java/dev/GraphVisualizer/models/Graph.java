@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Class Graph - abstract class that represents a graph data structure */
-public abstract class Graph {
+public abstract sealed class Graph permits UndirectedGraph, DirectedGraph,  WeightedUndirectedGraph, WeightedDirectedGraph {
     /** List of all nodes in the graph */
     protected List<Node> nodes;
 

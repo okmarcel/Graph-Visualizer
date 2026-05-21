@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Class JsonGraphRepository - implementation of GraphRepository for JSON files */
-public class JsonGraphRepository implements GraphRepository {
+public final class JsonGraphRepository implements GraphRepository {
 
     private final ObjectMapper mapper = new ObjectMapper();
 

@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Class CsvGraphRepository - implementation of GraphRepository for CSV files */
-public class CsvGraphRepository implements GraphRepository {
-
+public final class CsvGraphRepository implements GraphRepository {
     /**
      * Saves graph to a CSV file
      * Format:

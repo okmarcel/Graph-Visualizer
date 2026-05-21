@@ -4,7 +4,7 @@ import dev.GraphVisualizer.models.*;
 import java.io.File;
 
 /** Graph repository interface */
-public interface GraphRepository {
+public sealed interface GraphRepository permits TxtGraphRepository, CsvGraphRepository, JsonGraphRepository {
     /**
      * Method to save the representation of a graph to a file
      * @param graph which is going to be saved

@@ -4,7 +4,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 /** Class Edge - represents an edge in a graph */
-public class Edge {
+public final class Edge {
     /** Unique identifier, assigned once at construction and never changed */
 	private final String id;
 

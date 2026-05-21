@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Class Dijkstra - implementation of Dijkstra algorithm */
-public class Dijkstra { 
+public final class Dijkstra { 
     /**
      * Classical CLRS implementation of Dijkstra algorithm
      * @param adjacent Adjacency List for all nodes

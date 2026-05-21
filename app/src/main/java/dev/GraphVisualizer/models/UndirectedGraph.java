@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map; 
 
 /** Class UndirectedGraph - class that represents an undirected graph data structure */
-public class UndirectedGraph extends Graph{
+public final class UndirectedGraph extends Graph {
     /** Map holding Adjacent list of nodes for every node in the directed graph */
     private Map<Node, List<Node>> adjacent;
 

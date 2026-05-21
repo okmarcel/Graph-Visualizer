@@ -4,7 +4,7 @@ import java.util.UUID;
 import java.util.Objects;
 
 /** Class Node - represents a node in a graph with a label and position on canvas */
-public class Node {
+public final class Node {
 	/** Unique identifier, assigned once at construction and never changed */
 	private final String id;
 

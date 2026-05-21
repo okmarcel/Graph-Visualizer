@@ -1,32 +1,32 @@
 {
   "type" : "WeightedDirectedGraph",
   "nodes" : [ {
-    "id" : "53f99db4-e68d-4e3d-9260-e801471001a0",
+    "id" : "167a26d3-4336-4c11-9beb-81036ee339c9",
     "label" : "A",
     "x" : 0.0,
     "y" : 0.0
   }, {
-    "id" : "2ece2fe2-f5b4-439e-ae23-dd2cdf9f3d58",
+    "id" : "6afe10ef-2415-4ef5-a2d4-d8b5a8e22459",
     "label" : "B",
     "x" : 1.0,
     "y" : 0.0
   }, {
-    "id" : "15a190c6-c26a-4a6c-86ca-b4387a2ffa4b",
+    "id" : "7bcdf602-2a11-45aa-949d-a6931ef2e3ec",
     "label" : "C",
     "x" : 2.0,
     "y" : 0.0
   } ],
   "edges" : [ {
-    "sourceId" : "53f99db4-e68d-4e3d-9260-e801471001a0",
-    "targetId" : "2ece2fe2-f5b4-439e-ae23-dd2cdf9f3d58",
+    "sourceId" : "167a26d3-4336-4c11-9beb-81036ee339c9",
+    "targetId" : "6afe10ef-2415-4ef5-a2d4-d8b5a8e22459",
     "weight" : 2.5
   }, {
-    "sourceId" : "2ece2fe2-f5b4-439e-ae23-dd2cdf9f3d58",
-    "targetId" : "15a190c6-c26a-4a6c-86ca-b4387a2ffa4b",
+    "sourceId" : "6afe10ef-2415-4ef5-a2d4-d8b5a8e22459",
+    "targetId" : "7bcdf602-2a11-45aa-949d-a6931ef2e3ec",
     "weight" : 1.0
   }, {
-    "sourceId" : "53f99db4-e68d-4e3d-9260-e801471001a0",
-    "targetId" : "15a190c6-c26a-4a6c-86ca-b4387a2ffa4b",
+    "sourceId" : "167a26d3-4336-4c11-9beb-81036ee339c9",
+    "targetId" : "7bcdf602-2a11-45aa-949d-a6931ef2e3ec",
     "weight" : 4.0
   } ]
 }

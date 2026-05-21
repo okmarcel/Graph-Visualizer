@@ -6,9 +6,9 @@ import java.util.HashMap;
 import java.util.Map; 
 
 /** Class WeightedDirectedGraph - class that represents a directed graph with weighted edges data structure */
-public class WeightedDirectedGraph extends Graph {
+public final class WeightedDirectedGraph extends Graph {
     /** Map holding Adjacent list of nodes for every node in the directed graph */
-    protected Map<Node, List<Node>> adjacent;
+    private Map<Node, List<Node>> adjacent;
 
     /**
      * Constructor invoking constructor of the base class - intializes Adjacent table, takes two arguments

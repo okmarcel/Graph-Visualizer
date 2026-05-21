@@ -12,7 +12,7 @@ import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
 /** Class BFS - implementation of breadth first search algorithm */
-public class BFS {
+public final class BFS {
     /**
      * Classical CLRS implementation of Breadth First Search algorithm
      * @param service API with representation of graph and Adjacency List for all nodes

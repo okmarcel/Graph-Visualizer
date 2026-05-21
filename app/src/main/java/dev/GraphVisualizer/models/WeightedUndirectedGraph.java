@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map; 
 
 /** Class WeightedUndirectedGraph - class that represents a undirected graph with weighted edges data structure */
-public class WeightedUndirectedGraph extends Graph{
+public final class WeightedUndirectedGraph extends Graph {
     /** Map holding Adjacent list of nodes for every node in the directed graph */
     private Map<Node, List<Node>> adjacent;
 

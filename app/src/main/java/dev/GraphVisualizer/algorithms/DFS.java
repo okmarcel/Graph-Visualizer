@@ -10,7 +10,7 @@ import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
 /** Class DFS - implementation of depth first search algorithm */
-public class DFS {
+public final class DFS {
     /**
      * Classical CLRS implementation of Depth First Search algorithm
      * @param adjacent Adjacency List for all nodes
