@@ -7,6 +7,8 @@ import dev.GraphVisualizer.models.Edge;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
@@ -86,6 +88,7 @@ public class GraphCanvas extends Pane {
         zoomControls.setLayoutY(12);
 
         getChildren().addAll(graphGroup, zoomControls);
+        applyViewportTransform();
         addPanHandlers();
         addCanvasClickHandler();
         refresh();
@@ -222,13 +225,21 @@ public class GraphCanvas extends Pane {
         );
     }
 
+    private double screenToGraphX(double screenX) {
+        return (screenX - scale) / scale;
+    }
+
+    private double screenToGraphY(double screenY) {
+        return (screenY - translateY) / scale;
+    }
+
     private void addCanvasClickHandler() {
         addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) return;
             if (mode == CanvasMode.ADD_NODE) {
-                double wx = (e.getX() - translateX) / scale;
-                double wy = (e.getY() - translateY) / scale;
-                if (!isOverNode(wx, wy)) addNode(wx, wy);
+                double graphX = screenToGraphX(e.getX());
+                double graphY = screenToGraphY(e.getY());
+                if (!isOverNode(graphX, graphY)) addNode(graphX, graphY);
             }
         });
     }
@@ -325,8 +336,14 @@ public class GraphCanvas extends Pane {
 
     private void applyZoom(double delta) {
         scale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale + delta));
-        graphGroup.setScaleX(scale);
-        graphGroup.setScaleY(scale);
+        applyViewportTransform();
+    }
+
+    private void applyViewportTransform() {
+        graphGroup.getTransforms().setAll(
+            new Translate(translateX, translateY),
+            new Scale(scale, scale, 0, 0)
+        );
     }
 
     private void addPanHandlers() {
@@ -347,8 +364,7 @@ public class GraphCanvas extends Pane {
             if (isPanning) {
                 translateX = e.getX() - dragStartX;
                 translateY = e.getY() - dragStartY;
-                graphGroup.setTranslateX(translateX);
-                graphGroup.setTranslateY(translateY);
+                applyViewportTransform();
                 e.consume();
             }
         });
