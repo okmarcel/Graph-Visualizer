@@ -115,7 +115,7 @@ public final class AlgorithmAddInfo {
     }
 
     /**
-     * pi getter
+     * pi setter
      * @param pi
      */
     public void setPi(Node pi) {
@@ -176,7 +176,7 @@ public final class AlgorithmAddInfo {
     /** Overrided method toString to pretty-print debug info */
 	@Override
 	public String toString() {
-		return "AlgorithmAddInfo{nodeColor = " + nodeColor + "d=" + d + "pi=" + pi + "}";
+		return "AlgorithmAddInfo{nodeColor= " + nodeColor + ", d= " + d + ", pi= " + pi + "}";
 	}
 
 }

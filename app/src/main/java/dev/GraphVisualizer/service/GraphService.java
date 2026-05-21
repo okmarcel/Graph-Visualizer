@@ -81,6 +81,31 @@ public final class GraphService {
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
+
+    /**
+     * Migrates the current graph to a new type determined by the directed/weighted flags.
+     * All nodes are copied by reference. Edges are rebuilt; weights are reset to 1.0
+     * when switching to an unweighted graph type.
+     * @param directed whether the new graph should be directed
+     * @param weighted whether the new graph should have weighted edges
+     */
+    public void switchGraphType(boolean directed, boolean weighted) {
+        Graph target;
+        if      (directed && weighted)  target = new WeightedDirectedGraph();
+        else if (directed)              target = new DirectedGraph();
+        else if (weighted)              target = new WeightedUndirectedGraph();
+        else                            target = new UndirectedGraph();
+
+        for (Node n : graph.getAllNodes())
+            target.addNode(n);
+        for (Edge e : graph.getAllEdges()) {
+            double w = weighted ? e.getWeight() : 1.0;
+            target.addEdge(new Edge(e.getSource(), e.getTarget(), w));
+        }
+        this.graph = target;
+        this.graph.buildAdjacent();
+        this.graph.setCache(false);
+    }
   
 }
 

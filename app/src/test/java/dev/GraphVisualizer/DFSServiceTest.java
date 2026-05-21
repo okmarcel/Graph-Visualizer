@@ -2,6 +2,7 @@ package dev.GraphVisualizer;
 
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +35,7 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("DFS visits every node and marks it BLACK")
     public void testAllNodesVisited() {
         algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
@@ -44,6 +46,7 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("Discovery time d is always less than finish time f for each node")
     public void testDiscoveryBeforeFinish() {
         algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
@@ -53,6 +56,7 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("Both discovery and finish times are positive after DFS")
     public void testTimesArePositive() {
         algorithmService.runDFS(a);
         for (Node node : graph.getAllNodes()) {
@@ -62,6 +66,7 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("Running DFS twice from the same source produces identical discovery times")
     public void testTimesResetBetweenRuns() {
         algorithmService.runDFS(a);
         double firstD = algorithmService.getState().get(a).getD();
@@ -71,6 +76,7 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("DFS works correctly on an undirected graph")
     public void testUndirectedDFS() {
         Node x = new Node("X", 0.0, 0.0);
         Node y = new Node("Y", 1.0, 0.0);

@@ -3,6 +3,7 @@ package dev.GraphVisualizer;
 import dev.GraphVisualizer.algorithms.*;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,6 +38,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("Dijkstra computes correct shortest distances from source")
     public void testDistances() {
         algorithmService.runDijkstra(a);
         assertEquals(0.0, algorithmService.getState().get(a).getD());
@@ -46,6 +48,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("Dijkstra sets correct parent pointers along the shortest path")
     public void testParents() {
         algorithmService.runDijkstra(a);
         assertNull(algorithmService.getState().get(a).getPi());
@@ -55,6 +58,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("Node with no path from source has infinite distance")
     public void testUnreachableNode() {
         Node e = new Node("E", 4.0, 0.0);
         graph.addNode(e);
@@ -65,6 +69,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("NegativeWeightException is thrown for a graph with negative edge weights")
     public void testNegativeWeightThrows() {
         WeightedDirectedGraph g = new WeightedDirectedGraph();
         Node x = new Node("X", 0.0, 0.0);
@@ -77,6 +82,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("UnweightedGraphException is thrown when running Dijkstra on an unweighted graph")
     public void testUnweightedGraphThrows() {
         DirectedGraph g = new DirectedGraph();
         Node x = new Node("X", 0.0, 0.0);
@@ -86,6 +92,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("State resets correctly when Dijkstra runs a second time from a different source")
     public void testStateResetsBeforeSecondRun() {
         algorithmService.runDijkstra(a);
         algorithmService.runDijkstra(b);
@@ -94,6 +101,7 @@ public class DijkstraServiceTest {
     }
 
     @Test
+    @DisplayName("Dijkstra works correctly on a weighted undirected graph")
     public void testWeightedUndirectedGraph() {
         Node x = new Node("X", 0.0, 0.0);
         Node y = new Node("Y", 1.0, 0.0);

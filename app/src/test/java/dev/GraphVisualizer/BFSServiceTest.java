@@ -2,6 +2,7 @@ package dev.GraphVisualizer;
 
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,6 +35,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("All nodes start as WHITE before BFS runs")
     public void testInitialStateIsWhite() {
         for (Node node : graph.getAllNodes()) {
             assertEquals(AlgorithmAddInfo.NodeColor.WHITE,
@@ -42,6 +44,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("BFS visits every reachable node and marks it BLACK")
     public void testAllNodesVisited() {
         algorithmService.runBFS(a);
         for (Node node : graph.getAllNodes()) {
@@ -52,6 +55,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("BFS computes correct shortest distances from source")
     public void testDistances() {
         algorithmService.runBFS(a);
         assertEquals(0.0, algorithmService.getState().get(a).getD());
@@ -61,6 +65,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("BFS sets correct parent (pi) pointers for each node")
     public void testParents() {
         algorithmService.runBFS(a);
         assertNull(algorithmService.getState().get(a).getPi());
@@ -70,6 +75,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("Unreachable node stays WHITE with infinite distance")
     public void testUnreachableNode() {
         algorithmService.runBFS(b);
         assertEquals(Double.POSITIVE_INFINITY, algorithmService.getState().get(a).getD());
@@ -78,6 +84,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("State resets correctly when BFS runs a second time from a different source")
     public void testStateResetsBeforeSecondRun() {
         algorithmService.runBFS(a);
         algorithmService.runBFS(b);
@@ -86,6 +93,7 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("BFS works correctly on an undirected graph")
     public void testUndirectedBFS() {
         Node x = new Node("X", 0.0, 0.0);
         Node y = new Node("Y", 1.0, 0.0);

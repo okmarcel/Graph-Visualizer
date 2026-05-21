@@ -2,6 +2,7 @@ package dev.GraphVisualizer;
 
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.repository.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.AfterEach;
@@ -29,6 +30,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Directed graph is saved and loaded with correct type, node count, and edge count")
     public void testSaveAndLoadDirectedGraph() {
         DirectedGraph original = new DirectedGraph();
         original.addNode(a);
@@ -48,6 +50,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Undirected graph is saved and loaded with correct type and structure")
     public void testSaveAndLoadUndirectedGraph() {
         UndirectedGraph original = new UndirectedGraph();
         original.addNode(a);
@@ -65,6 +68,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Weighted directed graph preserves edge weights after save and load")
     public void testSaveAndLoadWeightedDirectedGraph() {
         WeightedDirectedGraph original = new WeightedDirectedGraph();
         original.addNode(a);
@@ -81,6 +85,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Weighted undirected graph preserves edge weights after save and load")
     public void testSaveAndLoadWeightedUndirectedGraph() {
         WeightedUndirectedGraph original = new WeightedUndirectedGraph();
         original.addNode(a);
@@ -97,6 +102,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Node labels are preserved after save and load")
     public void testNodeLabelsPreserved() {
         DirectedGraph original = new DirectedGraph();
         original.addNode(a);
@@ -115,6 +121,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Node canvas positions are preserved after save and load")
     public void testNodePositionsPreserved() {
         DirectedGraph original = new DirectedGraph();
         original.addNode(a);
@@ -130,6 +137,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Edge source and target labels are preserved after save and load")
     public void testEdgeConnectionsPreserved() {
         DirectedGraph original = new DirectedGraph();
         original.addNode(a);
@@ -147,12 +155,14 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Loading from a non-existent file throws GraphIOException")
     public void testLoadNonExistentFileThrows() {
         File file = tempDir.resolve("nonexistent.json").toFile();
         assertThrows(GraphIOException.class, () -> repository.load(file));
     }
 
     @Test
+    @DisplayName("Saving creates the output file on disk")
     public void testSaveCreatesFile() {
         DirectedGraph original = new DirectedGraph();
         original.addNode(a);
@@ -166,6 +176,7 @@ public class JsonGraphRepositoryTest {
     }
 
     @Test
+    @DisplayName("Empty graph is saved and loaded with zero nodes and zero edges")
     public void testEmptyGraphSaveAndLoad() {
         DirectedGraph original = new DirectedGraph();
 

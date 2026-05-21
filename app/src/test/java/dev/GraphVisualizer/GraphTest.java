@@ -1,6 +1,7 @@
 package dev.GraphVisualizer;
 
 import dev.GraphVisualizer.models.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +23,7 @@ public class GraphTest {
 
     // DirectedGraph tests
     @Test
+    @DisplayName("DirectedGraph: adding a node increases node count by one")
     public void testDirectedGraphAddNode() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -29,6 +31,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("DirectedGraph: adding an edge increases edge count by one")
     public void testDirectedGraphAddEdge() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -38,6 +41,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("DirectedGraph: throws WeightedEdgeException when a weighted edge is added")
     public void testDirectedGraphRejectsWeightedEdge() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -46,6 +50,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("DirectedGraph: adjacency list contains edge only in the source-to-target direction")
     public void testDirectedGraphAdjacentOnlyOneDirection() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -57,6 +62,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("DirectedGraph: removing a node reduces node count to zero")
     public void testDirectedGraphRemoveNode() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -65,6 +71,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("DirectedGraph: cache flag is set to true after adding a node")
     public void testDirectedGraphCacheSetOnAdd() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);
@@ -73,6 +80,7 @@ public class GraphTest {
 
     // UndirectedGraph tests
     @Test
+    @DisplayName("UndirectedGraph: adjacency list contains edge in both directions")
     public void testUndirectedGraphAdjacentBothDirections() {
         UndirectedGraph g = new UndirectedGraph();
         g.addNode(a);
@@ -84,6 +92,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("UndirectedGraph: throws WeightedEdgeException when a weighted edge is added")
     public void testUndirectedGraphRejectsWeightedEdge() {
         UndirectedGraph g = new UndirectedGraph();
         g.addNode(a);
@@ -93,6 +102,7 @@ public class GraphTest {
 
     // WeightedDirectedGraph tests
     @Test
+    @DisplayName("WeightedDirectedGraph: accepts edges with custom weights without throwing")
     public void testWeightedDirectedGraphAcceptsWeightedEdge() {
         WeightedDirectedGraph g = new WeightedDirectedGraph();
         g.addNode(a);
@@ -101,6 +111,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("WeightedDirectedGraph: adjacency list contains edge only in the source-to-target direction")
     public void testWeightedDirectedGraphAdjacentOneDirection() {
         WeightedDirectedGraph g = new WeightedDirectedGraph();
         g.addNode(a);
@@ -113,6 +124,7 @@ public class GraphTest {
 
     // WeightedUndirectedGraph tests
     @Test
+    @DisplayName("WeightedUndirectedGraph: adjacency list contains edge in both directions")
     public void testWeightedUndirectedGraphAdjacentBothDirections() {
         WeightedUndirectedGraph g = new WeightedUndirectedGraph();
         g.addNode(a);
@@ -124,6 +136,7 @@ public class GraphTest {
     }
 
     @Test
+    @DisplayName("rebuildAdjacent clears the cache flag after rebuilding the adjacency list")
     public void testRebuildAdjacentResetsCache() {
         DirectedGraph g = new DirectedGraph();
         g.addNode(a);

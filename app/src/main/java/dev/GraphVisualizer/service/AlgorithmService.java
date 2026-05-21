@@ -3,8 +3,10 @@ package dev.GraphVisualizer.service;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.algorithms.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map; 
+import java.util.List;
+import java.util.Map;
 
 /** Class AlgorithmService - responsible for running the algorithms */
 public final class AlgorithmService {
@@ -13,6 +15,12 @@ public final class AlgorithmService {
 
     /** Map holding the state of AlgorithmAddInfo needed for algorithm maped to every node in graph */
     private Map<Node, AlgorithmAddInfo> state;
+
+    /** Snapshots of state recorded after each significant algorithm step */
+    private List<Map<Node, AlgorithmAddInfo>> steps = new ArrayList<>();
+
+    /** Index into steps currently shown on the canvas */
+    private int stepIndex = -1;
 
     /**
      * Constructor - sets the initial state of nodes neeeded for BFS and DFS algorithms
@@ -31,7 +39,7 @@ public final class AlgorithmService {
      */
     public void runBFS(Node sourceNode) {
         resetState();
-        BFS.runBFS(service.getGraph().getAdjacent(), state, sourceNode);
+        BFS.runBFS(service.getGraph().getAdjacent(), state, sourceNode, this::recordStep);
     }
 
     /**
@@ -42,7 +50,7 @@ public final class AlgorithmService {
     public void runDFS(Node sourceNode) {
         resetState();
         double[] time = {0.0};
-        DFS.runDFS(service.getGraph().getAdjacent(), state, time, sourceNode);
+        DFS.runDFS(service.getGraph().getAdjacent(), state, time, sourceNode, this::recordStep);
     }
 
     /**
@@ -61,7 +69,7 @@ public final class AlgorithmService {
                     + e.getSource().getLabel() + " -> " + e.getTarget().getLabel());
             }
         }
-        Dijkstra.runDijkstra(service.getGraph().getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode);
+        Dijkstra.runDijkstra(service.getGraph().getAdjacent(), state, service.getGraph().getAllEdges(), sourceNode, this::recordStep);
     }
 
     /**
@@ -93,10 +101,59 @@ public final class AlgorithmService {
         state.keySet().retainAll(service.getGraph().getAllNodes());
     }   
 
-    /** Resets the state of the state Map which holds the state of algorithm */
+    /** Returns the state snapshot at the current step index (or final state if no steps). */
+    public Map<Node, AlgorithmAddInfo> getStepState() {
+        if (steps.isEmpty()) return state;
+        return steps.get(stepIndex);
+    }
+
+    /** Returns true if there are recorded steps to navigate. */
+    public boolean hasSteps() { return steps.size() > 1; }
+
+    /** Returns the 1-based current step number for display. */
+    public int getStepIndex() { return stepIndex + 1; }
+
+    /** Returns the total number of recorded steps. */
+    public int getStepCount() { return steps.size(); }
+
+    /** Advances to the next step. Returns true if the move was possible. */
+    public boolean stepForward() {
+        if (stepIndex < steps.size() - 1) { stepIndex++; return true; }
+        return false;
+    }
+
+    /** Goes back to the previous step. Returns true if the move was possible. */
+    public boolean stepBack() {
+        if (stepIndex > 0) { stepIndex--; return true; }
+        return false;
+    }
+
+    /** Rewinds to the first recorded step. */
+    public void goToStart() {
+        if (!steps.isEmpty()) stepIndex = 0;
+    }
+
+    /** Resets the state Map and rebuilds the adjacency list before a new algorithm run */
     private void resetState() {
-        state.clear();
+        state = new HashMap<>();
+        steps = new ArrayList<>();
+        stepIndex = -1;
+        if (service.getGraph().getCache()) {
+            service.getGraph().buildAdjacent();
+            service.getGraph().setCache(false);
+        }
         syncState();
+    }
+
+    /** Snapshots the current state and appends it to the steps list. */
+    private void recordStep() {
+        Map<Node, AlgorithmAddInfo> snapshot = new HashMap<>();
+        for (Map.Entry<Node, AlgorithmAddInfo> entry : state.entrySet()) {
+            AlgorithmAddInfo o = entry.getValue();
+            snapshot.put(entry.getKey(), new AlgorithmAddInfo(o.getNodeColor(), o.getD(), o.getPi(), o.getF()));
+        }
+        steps.add(snapshot);
+        stepIndex = steps.size() - 1;
     }
 }
 

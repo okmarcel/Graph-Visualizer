@@ -17,7 +17,7 @@ public final class UndirectedGraph extends Graph {
      */
     public UndirectedGraph(List<Node> nodes, List<Edge> edges) {
         for(Edge edge : edges) {
-            if(edge.getWeight() != 1.0)
+            if(Math.abs(edge.getWeight() - 1.0) > 1e-9)
                 throw new WeightedEdgeException("UndirectedGraph does not support weighted edges. Could not construct graph!");
         }
         super(nodes, edges);
@@ -33,7 +33,7 @@ public final class UndirectedGraph extends Graph {
     /** Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0 */
     @Override
     public void addEdge(Edge edge) {
-        if(edge.getWeight() != 1.0)
+        if(Math.abs(edge.getWeight() - 1.0) > 1e-9)
             throw new WeightedEdgeException("UndirectedGraph does not support weighted edges.");
         super.addEdge(edge);
     }
