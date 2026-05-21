@@ -10,6 +10,8 @@ import dev.GraphVisualizer.service.GraphService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.transform.Scale;
+import javafx.scene.transform.Translate;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
@@ -339,14 +341,22 @@ public class GraphCanvas extends Pane {
         );
     }
 
+    private double screenToGraphX(double screenX) {
+        return (screenX - scale) / scale;
+    }
+
+    private double screenToGraphY(double screenY) {
+        return (screenY - translateY) / scale;
+    }
+
     private void addCanvasClickHandler() {
         addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
             if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) return;
             if (legend.isVisible() && legend.getBoundsInParent().contains(e.getX(), e.getY())) return;
             if (mode == CanvasMode.ADD_NODE) {
-                double wx = (e.getX() - translateX) / scale;
-                double wy = (e.getY() - translateY) / scale;
-                if (!isOverNode(wx, wy)) addNode(wx, wy);
+                double graphX = screenToGraphX(e.getX());
+                double graphY = screenToGraphY(e.getY());
+                if (!isOverNode(graphX, graphY)) addNode(graphX, graphY);
             }
         });
     }
