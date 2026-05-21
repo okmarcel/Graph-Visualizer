@@ -6,46 +6,12 @@
  */
 
 plugins {
-    // Apply the application plugin to add support for building a CLI application in Java.
     application
-	id("org.openjfx.javafxplugin") version "0.1.0"
+    id("org.openjfx.javafxplugin") version "0.1.0"
 }
 
 repositories {
-    // Use Maven Central for resolving dependencies.
     mavenCentral()
-}
-
-dependencies {
-    // Use JUnit Jupiter for testing.
-    testImplementation(libs.junit.jupiter)
-
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-    // This dependency is used by the application.
-    implementation(libs.guava)
-}
-
-// Apply a specific Java toolchain to ease working on different environments.
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-javafx {
-	version = "21"
-	modules = listOf("javafx.controls", "javafx.fxml")
-}
-
-application {
-    // Define the main class for the application.
-    mainClass = "dev.GraphVisualizer.App"
-}
-
-tasks.named<Test>("test") {
-    // Use JUnit Platform for unit tests.
-    useJUnitPlatform()
 }
 
 dependencies {
@@ -53,4 +19,37 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     implementation(libs.guava)
     implementation("com.fasterxml.jackson.core:jackson-databind:2.17.0")
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(25)
+    }
+}
+
+javafx {
+    version = "21"
+    modules = listOf("javafx.controls", "javafx.fxml")
+}
+
+application {
+    mainClass = "dev.GraphVisualizer.App"
+}
+
+tasks.withType<JavaCompile> {
+    options.compilerArgs.addAll(listOf("--enable-preview", "--release", "25"))
+}
+
+tasks.withType<Test> {
+    jvmArgs("--enable-preview")
+}
+
+tasks.withType<JavaExec> {
+    jvmArgs("--enable-preview")
+    jvmArgs("--enable-native-access=javafx.graphics")
+    jvmArgs("--sun-misc-unsafe-memory-access=allow")
+}
+
+tasks.named<Test>("test") {
+    useJUnitPlatform()
 }

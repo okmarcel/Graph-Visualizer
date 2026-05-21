@@ -11,9 +11,7 @@ import java.util.Queue;
 import javax.xml.transform.Source;
 import javafx.scene.paint.Color;
 
-/**
- * Class BFS - implementation of breadth first search algorithm
- */
+/** Class BFS - implementation of breadth first search algorithm */
 public class BFS {
     /**
      * Classical CLRS implementation of Breadth First Search algorithm

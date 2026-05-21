@@ -6,6 +6,7 @@ import dev.GraphVisualizer.algorithms.*;
 import java.util.HashMap;
 import java.util.Map; 
 
+/** Class AlgorithmService - responsible for running the algorithms */
 public class AlgorithmService {
     /** Graph representation plus the adjacency list for every node */
     private GraphService service;
@@ -20,9 +21,7 @@ public class AlgorithmService {
     public AlgorithmService(GraphService service) {
         this.service = service;
         this.state = new HashMap<>();
-        for(Node i : this.service.getGraph().getAllNodes()) {
-            state.put(i, new AlgorithmAddInfo());
-        }
+        syncState();
     }
 
     /**
@@ -81,14 +80,23 @@ public class AlgorithmService {
         return state;
     }
 
-    /**
-     * Resets the state of the state Map which holds the state of algorithm
+    /** Synchronization of state between:
+     * - service: graph from graph service
+     * - state:   map of nodes and their algorithm state
+     * needed when graph changes representation betweeen 
+     * algorithm calls could also use some form of cache or observer pattern 
      */
+    private void syncState() {
+        for(Node i : service.getGraph().getAllNodes()) {
+            state.putIfAbsent(i, new AlgorithmAddInfo());
+        }
+        state.keySet().retainAll(service.getGraph().getAllNodes());
+    }   
+
+    /** Resets the state of the state Map which holds the state of algorithm */
     private void resetState() {
         state.clear();
-        for(Node i : service.getGraph().getAllNodes()) {
-            state.put(i, new AlgorithmAddInfo());
-        }
+        syncState();
     }
 }
 

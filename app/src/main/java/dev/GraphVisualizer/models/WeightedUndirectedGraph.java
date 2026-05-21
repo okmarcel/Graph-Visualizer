@@ -20,17 +20,13 @@ public class WeightedUndirectedGraph extends Graph{
         buildAdjacent();
     }
 
-    /**
-     * Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments
-     */
+    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
     public WeightedUndirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /**
-     * Method used to build Adjacent table for every node
-     */
+    /** Method used to build Adjacent table for every node */
     public void buildAdjacent(){
         this.adjacent = new HashMap<>();
         for(Node i : getAllNodes()) {
@@ -42,9 +38,7 @@ public class WeightedUndirectedGraph extends Graph{
         }
     }
 
-    /**
-     * Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache
-     */
+    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();

@@ -137,6 +137,7 @@ public class GraphCanvas extends Pane {
             label.setFont(Font.font("System", FontWeight.BOLD, 13));
             label.setX(node.getPositionX() - label.getLayoutBounds().getWidth() / 2);
             label.setY(node.getPositionY() + label.getLayoutBounds().getHeight() / 4);
+            label.setMouseTransparent(true);
 
             circle.setOnMouseClicked(e -> {
                 if (e.getClickCount() == 2) {

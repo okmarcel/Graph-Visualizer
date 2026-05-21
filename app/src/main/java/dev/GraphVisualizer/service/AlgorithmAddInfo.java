@@ -140,6 +140,7 @@ public class AlgorithmAddInfo {
 
     /**
      * f getter
+     * @return
      */
     public double getF() {
         return f;
@@ -172,9 +173,7 @@ public class AlgorithmAddInfo {
         this.f = f;
     }
 
-    /**
-     * Overrided method toString to pretty-print debug info
-     */
+    /** Overrided method toString to pretty-print debug info */
 	@Override
 	public String toString() {
 		return "AlgorithmAddInfo{nodeColor = " + nodeColor + "d=" + d + "pi=" + pi + "}";

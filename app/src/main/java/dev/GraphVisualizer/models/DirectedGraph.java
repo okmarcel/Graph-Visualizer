@@ -14,27 +14,24 @@ public class DirectedGraph extends Graph {
      * Constructor invoking constructor of the base class - intializes Adjacent table, takes two arguments
      * @param nodes list of predefined nodes
      * @param edges list of predefined edges
+     * Uses Java 25 flexible constructor bodies featuees
      */
     public DirectedGraph(List<Node> nodes, List<Edge> edges) {
-        super(nodes, edges);
         for(Edge edge : edges) {
             if(edge.getWeight() != 1.0)
                 throw new WeightedEdgeException("DirectedGraph does not support weighted edges. Could not construct graph!");
         }
+        super(nodes, edges);
         buildAdjacent();
     }
 
-    /**
-     * Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments
-     */
+    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
     public DirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /**
-     * Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0
-     */
+    /** Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0 */
     @Override
     public void addEdge(Edge edge) {
         if(edge.getWeight() != 1.0)
@@ -42,9 +39,7 @@ public class DirectedGraph extends Graph {
         super.addEdge(edge);
     }
 
-    /**
-     * Method used to build Adjacent table for every node
-     */
+    /** Method used to build Adjacent table for every node */
     public void buildAdjacent(){
         this.adjacent = new HashMap<>();
         for(Node i : getAllNodes()) {
@@ -55,9 +50,7 @@ public class DirectedGraph extends Graph {
         }
     }
 
-    /**
-     * Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache
-     */
+    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();

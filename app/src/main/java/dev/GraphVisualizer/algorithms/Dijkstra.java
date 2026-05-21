@@ -2,18 +2,13 @@ package dev.GraphVisualizer.algorithms;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.service.*;
 
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 
-/**
- * Class Dijkstra - implementation of Dijkstra algorithm
- */
+/** Class Dijkstra - implementation of Dijkstra algorithm */
 public class Dijkstra { 
-
     /**
      * Classical CLRS implementation of Dijkstra algorithm
      * @param adjacent Adjacency List for all nodes
