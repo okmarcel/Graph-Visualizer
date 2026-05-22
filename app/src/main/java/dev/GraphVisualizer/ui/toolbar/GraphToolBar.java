@@ -39,9 +39,10 @@ public class GraphToolBar extends ToolBar {
     private final ToggleButton directedBtn = flagBtn("Directed");
     private final ToggleButton weightedBtn = flagBtn("Weighted");
 
-    private final Button bfsBtn      = algoBtn("BFS");
-    private final Button dfsBtn      = algoBtn("DFS");
-    private final Button dijkstraBtn = algoBtn("Dijkstra");
+    private final Button bfsBtn       = algoBtn("BFS");
+    private final Button dfsBtn       = algoBtn("DFS");
+    private final Button dijkstraBtn  = algoBtn("Dijkstra");
+    private final Button showPathBtn  = subtleBtn("Path to…");
     private final Button clearAlgoBtn = subtleBtn("Clear Results");
 
     private final Button undoBtn = subtleBtn("Undo");
@@ -55,6 +56,7 @@ public class GraphToolBar extends ToolBar {
 
     private boolean directed;
     private boolean weighted;
+    private Node    lastDijkstraSource = null;
 
     public GraphToolBar(GraphService graphService, GraphCanvas canvas,
                         boolean directed, boolean weighted,
@@ -88,7 +90,7 @@ public class GraphToolBar extends ToolBar {
             new Separator(),
             directedBtn, weightedBtn,
             new Separator(),
-            bfsBtn, dfsBtn, dijkstraBtn, clearAlgoBtn,
+            bfsBtn, dfsBtn, dijkstraBtn, showPathBtn, clearAlgoBtn,
             stepBackBtn, stepLabel, stepFwdBtn,
             new Separator(),
             undoBtn, redoBtn,
@@ -117,6 +119,7 @@ public class GraphToolBar extends ToolBar {
                 () -> { savedNodes.forEach(graph::addNode); savedEdges.forEach(graph::addEdge); }
             );
             canvas.clearAlgorithmResult();
+            canvas.resetNodeCounter();
             canvas.setMode(CanvasMode.PAN);
         });
 
@@ -153,8 +156,15 @@ public class GraphToolBar extends ToolBar {
         bfsBtn.setOnAction(e      -> runAlgorithm("BFS"));
         dfsBtn.setOnAction(e      -> runAlgorithm("DFS"));
         dijkstraBtn.setOnAction(e -> runAlgorithm("Dijkstra"));
+
+        showPathBtn.setDisable(true);
+        showPathBtn.setOnAction(e -> showDijkstraPath());
+
         clearAlgoBtn.setOnAction(e -> {
             canvas.clearAlgorithmResult();
+            canvas.clearPath();
+            showPathBtn.setDisable(true);
+            lastDijkstraSource = null;
             stepBackBtn.setDisable(true);
             stepFwdBtn.setDisable(true);
             stepLabel.setText("—");
@@ -244,6 +254,46 @@ public class GraphToolBar extends ToolBar {
         if (modeChoice.get() == stepByStepType) algorithmService.goToStart();
         canvas.showAlgorithmResult(algorithmService.getStepState());
         updateStepControls();
+
+        if (type.equals("Dijkstra")) {
+            lastDijkstraSource = source;
+            showPathBtn.setDisable(false);
+        } else {
+            showPathBtn.setDisable(true);
+            lastDijkstraSource = null;
+        }
+    }
+
+    private void showDijkstraPath() {
+        if (lastDijkstraSource == null) return;
+        List<Node> nodes = graphService.getGraph().getAllNodes();
+        List<String> targetLabels = nodes.stream()
+            .filter(n -> !n.equals(lastDijkstraSource))
+            .map(Node::getLabel)
+            .toList();
+        if (targetLabels.isEmpty()) return;
+
+        ChoiceDialog<String> dialog = new ChoiceDialog<>(targetLabels.get(0), targetLabels);
+        dialog.setTitle("Highlight shortest path");
+        dialog.setHeaderText(null);
+        dialog.setContentText("Path to:");
+        dialog.initOwner(canvas.getScene().getWindow());
+        dialog.getDialogPane().setStyle("-fx-background-color: #2d2d3f; -fx-font-size: 13px;");
+        dialog.showAndWait().ifPresent(label -> {
+            Node target = nodes.stream().filter(n -> n.getLabel().equals(label)).findFirst().orElse(null);
+            if (target == null) return;
+            List<Node> path = algorithmService.reconstructPath(target);
+            if (path.size() < 2) {
+                Alert info = new Alert(Alert.AlertType.INFORMATION,
+                    label + " is not reachable from " + lastDijkstraSource.getLabel(), ButtonType.OK);
+                info.setTitle("No path");
+                info.setHeaderText(null);
+                info.initOwner(canvas.getScene().getWindow());
+                info.showAndWait();
+                return;
+            }
+            canvas.showPath(path);
+        });
     }
 
     private static ToggleButton modeBtn(String text) {

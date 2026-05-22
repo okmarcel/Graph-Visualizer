@@ -9,8 +9,8 @@ import java.util.Map;
 /** Class DFS - implementation of depth first search algorithm */
 public final class DFS {
     /**
-     * Classical CLRS implementation of Depth First Search algorithm.
-     * Visits sourceNode first, then any remaining unvisited nodes (full-forest DFS).
+     * Classical CLRS implementation of Depth First Search (Chapter 22.3).
+     * Visits sourceNode first, then continues from any remaining WHITE nodes (full-forest).
      * @param adjacent Adjacency List for all nodes
      * @param state Map of AlgorithmAddInfo for all nodes
      * @param time array of size 1 used as mutable integer counter

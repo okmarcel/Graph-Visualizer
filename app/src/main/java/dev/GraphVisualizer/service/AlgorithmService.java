@@ -133,6 +133,19 @@ public final class AlgorithmService {
         if (!steps.isEmpty()) stepIndex = 0;
     }
 
+    /** Follows pi pointers from target back to the source and returns the ordered path. */
+    public List<Node> reconstructPath(Node target) {
+        List<Node> path = new ArrayList<>();
+        Node current = target;
+        while (current != null) {
+            path.add(0, current);
+            AlgorithmAddInfo info = state.get(current);
+            if (info == null) break;
+            current = info.getPi();
+        }
+        return path;
+    }
+
     /** Resets the state Map and rebuilds the adjacency list before a new algorithm run */
     private void resetState() {
         state = new HashMap<>();

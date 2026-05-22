@@ -31,6 +31,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,17 @@ public class GraphCanvas extends Pane {
     private boolean directed;
     private boolean weighted;
     private boolean darkTheme = true;
+
+    // node dragging state
+    private Node    draggingNode      = null;
+    private double  dragNodeOrigX     = 0;
+    private double  dragNodeOrigY     = 0;
+    private boolean isDraggingNode    = false;
+    private boolean nodeDragConsumed  = false;
+
+    // highlighted shortest path (Dijkstra)
+    private List<Node> highlightedPath = new ArrayList<>();
+    private static final Color PATH_COLOR = Color.web("#fde047");
 
     private final Affine viewTransform = new Affine();
 
@@ -87,6 +99,7 @@ public class GraphCanvas extends Pane {
         this.directed       = directed;
         this.weighted       = weighted;
         this.commandManager = commandManager;
+        this.nodeCounter    = graphService.getGraph().getAllNodes().size();
 
         applyTheme();
 
@@ -182,6 +195,7 @@ public class GraphCanvas extends Pane {
     /** Overlays algorithm result colors and distance labels on the canvas. */
     public void showAlgorithmResult(Map<Node, AlgorithmAddInfo> state) {
         this.algorithmState = state;
+        this.highlightedPath = new ArrayList<>();
         buildLegend();
         legend.setVisible(true);
         refresh();
@@ -191,7 +205,21 @@ public class GraphCanvas extends Pane {
     public void clearAlgorithmResult() {
         this.algorithmState = null;
         legend.setVisible(false);
+        clearPath();
+    }
+
+    public void showPath(List<Node> path) {
+        this.highlightedPath = path;
         refresh();
+    }
+
+    public void clearPath() {
+        this.highlightedPath = new ArrayList<>();
+        refresh();
+    }
+
+    public void resetNodeCounter() {
+        nodeCounter = 0;
     }
 
     public void refresh() {
@@ -216,8 +244,9 @@ public class GraphCanvas extends Pane {
             }
 
             Circle circle = new Circle(node.getPositionX(), node.getPositionY(), NODE_RADIUS, fill);
-            circle.setStroke((node == selectedNode) ? NODE_SELECTED : NODE_STROKE);
-            circle.setStrokeWidth(2);
+            boolean nodeOnPath = highlightedPath.contains(node);
+            circle.setStroke(nodeOnPath ? PATH_COLOR : (node == selectedNode) ? NODE_SELECTED : NODE_STROKE);
+            circle.setStrokeWidth(nodeOnPath ? 4 : 2);
 
             Text label = new Text(node.getLabel());
             label.setFill(LABEL_COLOR);
@@ -265,17 +294,25 @@ public class GraphCanvas extends Pane {
             Node tgt = edge.getTarget();
             if (src == null || tgt == null) continue;
 
+            boolean onPath = false;
+            for (int i = 0; i < highlightedPath.size() - 1; i++) {
+                Node p = highlightedPath.get(i);
+                Node q = highlightedPath.get(i + 1);
+                if ((src.equals(p) && tgt.equals(q)) || (src.equals(q) && tgt.equals(p))) { onPath = true; break; }
+            }
+            Color lineColor = onPath ? PATH_COLOR : EDGE_COLOR;
+
             Line line = new Line(
                 src.getPositionX(), src.getPositionY(),
                 tgt.getPositionX(), tgt.getPositionY());
-            line.setStroke(EDGE_COLOR);
-            line.setStrokeWidth(3);
+            line.setStroke(lineColor);
+            line.setStrokeWidth(onPath ? 5 : 3);
             lineToEdge.put(line, edge);
             graphGroup.getChildren().add(line);
 
             if (directed) {
                 Polygon arrow = buildArrow(src, tgt);
-                arrow.setFill(EDGE_COLOR);
+                arrow.setFill(lineColor);
                 graphGroup.getChildren().add(arrow);
             }
 
@@ -342,7 +379,7 @@ public class GraphCanvas extends Pane {
     }
 
     private double screenToGraphX(double screenX) {
-        return (screenX - scale) / scale;
+        return (screenX - translateX) / scale;
     }
 
     private double screenToGraphY(double screenY) {
@@ -351,6 +388,7 @@ public class GraphCanvas extends Pane {
 
     private void addCanvasClickHandler() {
         addEventFilter(MouseEvent.MOUSE_CLICKED, e -> {
+            if (nodeDragConsumed) { nodeDragConsumed = false; e.consume(); return; }
             if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) return;
             if (legend.isVisible() && legend.getBoundsInParent().contains(e.getX(), e.getY())) return;
             if (mode == CanvasMode.ADD_NODE) {
@@ -368,7 +406,23 @@ public class GraphCanvas extends Pane {
                     selectedNode = node;
                     refresh();
                 } else if (selectedNode != node) {
-                    Edge newEdge = new Edge(selectedNode, node);
+                    double w = 1.0;
+                    if (weighted) {
+                        TextInputDialog wd = new TextInputDialog("1.0");
+                        wd.setTitle("Edge weight");
+                        String sep = directed ? " → " : " — ";
+                        wd.setHeaderText(selectedNode.getLabel() + sep + node.getLabel());
+                        wd.setContentText("Weight:");
+                        wd.initOwner(getScene().getWindow());
+                        styleDialog(wd);
+                        Optional<String> wr = wd.showAndWait();
+                        if (wr.isEmpty()) { selectedNode = null; refresh(); return; }
+                        try { w = Double.parseDouble(wr.get()); }
+                        catch (NumberFormatException ignored) { selectedNode = null; refresh(); return; }
+                    }
+                    double finalW = w;
+                    Node src = selectedNode;
+                    Edge newEdge = new Edge(src, node, finalW);
                     Graph graph = graphService.getGraph();
                     commandManager.push(
                         () -> graph.addEdge(newEdge),
@@ -502,12 +556,16 @@ public class GraphCanvas extends Pane {
     }
 
     private boolean isOverNode(double x, double y) {
+        return getNodeAt(x, y) != null;
+    }
+
+    private Node getNodeAt(double x, double y) {
         for (Node node : graphService.getGraph().getAllNodes()) {
             double dx = node.getPositionX() - x;
             double dy = node.getPositionY() - y;
-            if (Math.sqrt(dx * dx + dy * dy) < NODE_RADIUS) return true;
+            if (Math.sqrt(dx * dx + dy * dy) < NODE_RADIUS) return node;
         }
-        return false;
+        return null;
     }
 
     private void applyZoom(double delta) {
@@ -531,8 +589,17 @@ public class GraphCanvas extends Pane {
                 isPanning = false;
                 return;
             }
-            if (mode == CanvasMode.PAN) {
-                isPanning = true;
+            double gx  = screenToGraphX(e.getX());
+            double gy  = screenToGraphY(e.getY());
+            Node   hit = getNodeAt(gx, gy);
+            if (hit != null && e.getButton() == MouseButton.PRIMARY) {
+                draggingNode  = hit;
+                dragNodeOrigX = hit.getPositionX();
+                dragNodeOrigY = hit.getPositionY();
+                isDraggingNode = true;
+                isPanning      = false;
+            } else if (mode == CanvasMode.PAN && e.getButton() == MouseButton.PRIMARY) {
+                isPanning  = true;
                 dragStartX = e.getX() - translateX;
                 dragStartY = e.getY() - translateY;
             }
@@ -540,7 +607,13 @@ public class GraphCanvas extends Pane {
         });
 
         addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
-            if (isPanning) {
+            if (isDraggingNode && draggingNode != null) {
+                draggingNode.setPositionX(screenToGraphX(e.getX()));
+                draggingNode.setPositionY(screenToGraphY(e.getY()));
+                graphService.getGraph().setCache(true);
+                refresh();
+                e.consume();
+            } else if (isPanning) {
                 translateX = e.getX() - dragStartX;
                 translateY = e.getY() - dragStartY;
                 viewTransform.setTx(translateX);
@@ -549,6 +622,24 @@ public class GraphCanvas extends Pane {
             }
         });
 
-        addEventFilter(MouseEvent.MOUSE_RELEASED, e -> isPanning = false);
+        addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
+            if (isDraggingNode && draggingNode != null) {
+                Node   node  = draggingNode;
+                double newX  = node.getPositionX();
+                double newY  = node.getPositionY();
+                double origX = dragNodeOrigX;
+                double origY = dragNodeOrigY;
+                if (newX != origX || newY != origY) {
+                    nodeDragConsumed = true;
+                    commandManager.push(
+                        () -> { node.setPositionX(newX);  node.setPositionY(newY);  refresh(); },
+                        () -> { node.setPositionX(origX); node.setPositionY(origY); refresh(); }
+                    );
+                }
+            }
+            isDraggingNode = false;
+            draggingNode   = null;
+            isPanning      = false;
+        });
     }
 }

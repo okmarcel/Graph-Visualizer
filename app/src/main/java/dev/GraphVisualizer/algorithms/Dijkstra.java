@@ -83,9 +83,8 @@ public final class Dijkstra {
      */
     private static double getWeight(List<Edge> edges, Node u, Node v) {
         for (Edge e : edges) {
-            if (e.getSource().equals(u) && e.getTarget().equals(v)) {
-                return e.getWeight();
-            }
+            if (e.getSource().equals(u) && e.getTarget().equals(v)) return e.getWeight();
+            if (e.getSource().equals(v) && e.getTarget().equals(u)) return e.getWeight();
         }
         return Double.POSITIVE_INFINITY;
     }

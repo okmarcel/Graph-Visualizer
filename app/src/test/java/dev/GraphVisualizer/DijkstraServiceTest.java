@@ -121,4 +121,47 @@ public class DijkstraServiceTest {
         assertEquals(1.0, as.getState().get(y).getD());
         assertEquals(3.0, as.getState().get(z).getD());
     }
+
+    @Test
+    @DisplayName("Dijkstra finds correct distance when edge is stored in reverse direction")
+    public void testWeightedUndirectedReverseEdge() {
+        // Simulates user clicking the target node first when drawing an edge in the UI.
+        // Edge is stored as Edge(y, x) but the graph is undirected so x should still reach y.
+        Node x = new Node("X", 0.0, 0.0);
+        Node y = new Node("Y", 1.0, 0.0);
+
+        WeightedUndirectedGraph g = new WeightedUndirectedGraph();
+        g.addNode(x);
+        g.addNode(y);
+        g.addEdge(new Edge(y, x, 3.0));
+
+        AlgorithmService as = new AlgorithmService(new GraphService(g));
+        as.runDijkstra(x);
+
+        assertEquals(0.0, as.getState().get(x).getD());
+        assertEquals(3.0, as.getState().get(y).getD());
+    }
+
+    @Test
+    @DisplayName("Dijkstra finds shortest path when some edges are stored in reverse direction")
+    public void testWeightedUndirectedMixedEdgeDirections() {
+        Node x = new Node("X", 0.0, 0.0);
+        Node y = new Node("Y", 1.0, 0.0);
+        Node z = new Node("Z", 2.0, 0.0);
+
+        WeightedUndirectedGraph g = new WeightedUndirectedGraph();
+        g.addNode(x);
+        g.addNode(y);
+        g.addNode(z);
+        // x->y stored normally, z->y stored in reverse — z should be reachable from x
+        g.addEdge(new Edge(x, y, 1.0));
+        g.addEdge(new Edge(z, y, 2.0));
+
+        AlgorithmService as = new AlgorithmService(new GraphService(g));
+        as.runDijkstra(x);
+
+        assertEquals(0.0, as.getState().get(x).getD());
+        assertEquals(1.0, as.getState().get(y).getD());
+        assertEquals(3.0, as.getState().get(z).getD());
+    }
 }

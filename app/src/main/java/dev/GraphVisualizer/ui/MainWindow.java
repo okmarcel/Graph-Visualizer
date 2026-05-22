@@ -71,8 +71,11 @@ public class MainWindow {
         Node nodeE = new Node("E", 220, 520);
         graph.addNode(nodeA); graph.addNode(nodeB); graph.addNode(nodeC);
         graph.addNode(nodeD); graph.addNode(nodeE);
-        graph.addEdge(new Edge(nodeA, nodeB)); graph.addEdge(new Edge(nodeA, nodeC));
-        graph.addEdge(new Edge(nodeB, nodeD)); graph.addEdge(new Edge(nodeB, nodeE));
-        graph.addEdge(new Edge(nodeC, nodeD)); graph.addEdge(new Edge(nodeC, nodeE));
+        graph.addEdge(new Edge(nodeA, nodeB));
+        graph.addEdge(new Edge(nodeA, nodeC));
+        graph.addEdge(new Edge(nodeB, nodeD)); 
+        graph.addEdge(new Edge(nodeB, nodeE));
+        graph.addEdge(new Edge(nodeC, nodeD)); 
+        graph.addEdge(new Edge(nodeC, nodeE));
     }
 }

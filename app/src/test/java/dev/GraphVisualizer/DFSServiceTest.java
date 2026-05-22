@@ -76,6 +76,31 @@ public class DFSServiceTest {
     }
 
     @Test
+    @DisplayName("Full-forest DFS visits nodes unreachable from source in separate DFS trees (CLRS 22.3)")
+    public void testFullForestVisitsUnreachableNodes() {
+        // CLRS DFS outer loop visits every WHITE node even if not reachable from sourceNode.
+        // F and G have edges F->A and G->A so they are NOT reachable from A, but the
+        // full-forest loop still visits them — they just have pi==null (no parent from A).
+        Node f = new Node("F", 4.0, 0.0);
+        Node g = new Node("G", 5.0, 0.0);
+        graph.addNode(f);
+        graph.addNode(g);
+        graph.addEdge(new Edge(f, a));
+        graph.addEdge(new Edge(g, a));
+
+        GraphService gs = new GraphService(graph);
+        AlgorithmService as = new AlgorithmService(gs);
+        as.runDFS(a);
+
+        assertEquals(AlgorithmAddInfo.NodeColor.BLACK, as.getState().get(f).getNodeColor(),
+            "Full-forest DFS visits F eventually");
+        assertEquals(AlgorithmAddInfo.NodeColor.BLACK, as.getState().get(g).getNodeColor(),
+            "Full-forest DFS visits G eventually");
+        assertNull(as.getState().get(f).getPi(), "F is not reachable from A so pi must be null");
+        assertNull(as.getState().get(g).getPi(), "G is not reachable from A so pi must be null");
+    }
+
+    @Test
     @DisplayName("DFS works correctly on an undirected graph")
     public void testUndirectedDFS() {
         Node x = new Node("X", 0.0, 0.0);

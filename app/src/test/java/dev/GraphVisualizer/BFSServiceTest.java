@@ -93,6 +93,28 @@ public class BFSServiceTest {
     }
 
     @Test
+    @DisplayName("Nodes with edges pointing into the source are not visited from that source")
+    public void testIncomingOnlyNodesNotVisited() {
+        Node f = new Node("F", 4.0, 0.0);
+        Node g = new Node("G", 5.0, 0.0);
+        graph.addNode(f);
+        graph.addNode(g);
+        graph.addEdge(new Edge(f, a));
+        graph.addEdge(new Edge(g, a));
+
+        GraphService gs = new GraphService(graph);
+        AlgorithmService as = new AlgorithmService(gs);
+        as.runBFS(a);
+
+        assertEquals(AlgorithmAddInfo.NodeColor.WHITE, as.getState().get(f).getNodeColor(),
+            "F has no edge from A so it must stay WHITE");
+        assertEquals(AlgorithmAddInfo.NodeColor.WHITE, as.getState().get(g).getNodeColor(),
+            "G has no edge from A so it must stay WHITE");
+        assertEquals(Double.POSITIVE_INFINITY, as.getState().get(f).getD());
+        assertEquals(Double.POSITIVE_INFINITY, as.getState().get(g).getD());
+    }
+
+    @Test
     @DisplayName("BFS works correctly on an undirected graph")
     public void testUndirectedBFS() {
         Node x = new Node("X", 0.0, 0.0);
