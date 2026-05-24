@@ -57,6 +57,7 @@ public class GraphToolBar extends ToolBar {
     private boolean directed;
     private boolean weighted;
     private Node    lastDijkstraSource = null;
+    private ToggleGroup modeGroup;
 
     public GraphToolBar(GraphService graphService, GraphCanvas canvas,
                         boolean directed, boolean weighted,
@@ -69,12 +70,15 @@ public class GraphToolBar extends ToolBar {
         this.algorithmService = algorithmService;
         this.commandManager   = commandManager;
 
-        ToggleGroup modeGroup = new ToggleGroup();
+        modeGroup = new ToggleGroup();
         panBtn.setToggleGroup(modeGroup);
         addNodeBtn.setToggleGroup(modeGroup);
         addEdgeBtn.setToggleGroup(modeGroup);
         removeBtn.setToggleGroup(modeGroup);
         panBtn.setSelected(true);
+        modeGroup.selectedToggleProperty().addListener((obs, oldSel, newSel) -> {
+            if (newSel == null && oldSel != null) oldSel.setSelected(true);
+        });
 
         directedBtn.setSelected(directed);
         weightedBtn.setSelected(weighted);
@@ -121,6 +125,7 @@ public class GraphToolBar extends ToolBar {
             canvas.clearAlgorithmResult();
             canvas.resetNodeCounter();
             canvas.setMode(CanvasMode.PAN);
+            panBtn.setSelected(true);
         });
 
         directedBtn.setOnAction(e -> {
