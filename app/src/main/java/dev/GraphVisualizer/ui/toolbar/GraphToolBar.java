@@ -83,6 +83,7 @@ public class GraphToolBar extends ToolBar {
         directedBtn.setSelected(directed);
         weightedBtn.setSelected(weighted);
         themeBtn.setSelected(true);
+        updateThemeButtonText(true);
 
         stepBackBtn.setDisable(true);
         stepFwdBtn.setDisable(true);
@@ -194,10 +195,15 @@ public class GraphToolBar extends ToolBar {
         themeBtn.setOnAction(e -> {
             boolean dark = themeBtn.isSelected();
             canvas.setDarkTheme(dark);
+            updateThemeButtonText(dark);
             setStyle(dark
                 ? "-fx-background-color: #1e293b; -fx-padding: 6 10;"
                 : "-fx-background-color: #e2e8f0; -fx-padding: 6 10;");
         });
+    }
+
+    private void updateThemeButtonText(boolean darkTheme) {
+        themeBtn.setText(darkTheme ? "Light Theme" : "Dark Theme");
     }
 
     private void updateStepControls() {
