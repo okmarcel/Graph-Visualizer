@@ -592,7 +592,7 @@ public class GraphCanvas extends Pane {
             double gx  = screenToGraphX(e.getX());
             double gy  = screenToGraphY(e.getY());
             Node   hit = getNodeAt(gx, gy);
-            if (hit != null && e.getButton() == MouseButton.PRIMARY) {
+            if (mode == CanvasMode.PAN && hit != null && e.getButton() == MouseButton.PRIMARY) {
                 draggingNode  = hit;
                 dragNodeOrigX = hit.getPositionX();
                 dragNodeOrigY = hit.getPositionY();
@@ -607,7 +607,7 @@ public class GraphCanvas extends Pane {
         });
 
         addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
-            if (isDraggingNode && draggingNode != null) {
+            if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
                 draggingNode.setPositionX(screenToGraphX(e.getX()));
                 draggingNode.setPositionY(screenToGraphY(e.getY()));
                 graphService.getGraph().setCache(true);
@@ -623,7 +623,7 @@ public class GraphCanvas extends Pane {
         });
 
         addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
-            if (isDraggingNode && draggingNode != null) {
+            if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
                 Node   node  = draggingNode;
                 double newX  = node.getPositionX();
                 double newY  = node.getPositionY();
