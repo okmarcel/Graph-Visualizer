@@ -10,8 +10,6 @@ import dev.GraphVisualizer.service.GraphService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
-import javafx.scene.transform.Scale;
-import javafx.scene.transform.Translate;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
@@ -182,12 +180,8 @@ public class GraphCanvas extends Pane {
         refresh();
     }
 
-    public void setDirected(boolean directed) {
+    public void updateGraphType(boolean directed, boolean weighted) {
         this.directed = directed;
-        refresh();
-    }
-
-    public void setWeighted(boolean weighted) {
         this.weighted = weighted;
         refresh();
     }
@@ -220,6 +214,17 @@ public class GraphCanvas extends Pane {
 
     public void resetNodeCounter() {
         nodeCounter = 0;
+    }
+
+    public void syncNodeCounterWithGraph() {
+        nodeCounter = graphService.getGraph().getAllNodes().size();
+    }
+
+    public void resetViewport() {
+        scale = 1.0;
+        translateX = 0.0;
+        translateY = 0.0;
+        viewTransform.setToIdentity();
     }
 
     public void refresh() {

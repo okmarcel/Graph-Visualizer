@@ -9,3 +9,7 @@ build
 
 # VS Code settings
 .vscode
+
+.project
+.classpath
+.settings

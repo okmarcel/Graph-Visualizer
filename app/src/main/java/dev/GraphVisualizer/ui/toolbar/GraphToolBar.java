@@ -3,27 +3,54 @@ package dev.GraphVisualizer.ui.toolbar;
 import dev.GraphVisualizer.models.Edge;
 import dev.GraphVisualizer.models.Graph;
 import dev.GraphVisualizer.models.Node;
+import dev.GraphVisualizer.repository.GraphIOException;
 import dev.GraphVisualizer.service.AlgorithmService;
 import dev.GraphVisualizer.service.CommandManager;
 import dev.GraphVisualizer.service.GraphService;
 import dev.GraphVisualizer.ui.canvas.GraphCanvas;
 import dev.GraphVisualizer.ui.canvas.GraphCanvas.CanvasMode;
 
+import javafx.stage.FileChooser;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Separator;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.ToolBar;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class GraphToolBar extends ToolBar {
+
+    private enum SaveFormat {
+        JSON("JSON", ".json"),
+        CSV("CSV", ".csv"),
+        TXT("Text", ".txt");
+
+        private final String label;
+        private final String extension;
+
+        SaveFormat(String label, String extension) {
+            this.label = label;
+            this.extension = extension;
+        }
+
+        private MenuItem toMenuItem() {
+            return new MenuItem(label);
+        }
+
+        private FileChooser.ExtensionFilter toExtensionFilter() {
+            return new FileChooser.ExtensionFilter(label + " files", "*" + extension);
+        }
+    }
 
     private final GraphService     graphService;
     private final AlgorithmService algorithmService;
@@ -35,6 +62,8 @@ public class GraphToolBar extends ToolBar {
     private final ToggleButton addEdgeBtn = modeBtn("Add Edge");
     private final ToggleButton removeBtn  = modeBtn("Remove");
     private final Button       clearBtn   = dangerBtn("Clear");
+    private final MenuButton   saveBtn    = menuBtn("Save");
+    private final Button       loadBtn    = subtleBtn("Load");
 
     private final ToggleButton directedBtn = flagBtn("Directed");
     private final ToggleButton weightedBtn = flagBtn("Weighted");
@@ -84,6 +113,7 @@ public class GraphToolBar extends ToolBar {
         weightedBtn.setSelected(weighted);
         themeBtn.setSelected(true);
         updateThemeButtonText(true);
+        initializeSaveMenu();
 
         stepBackBtn.setDisable(true);
         stepFwdBtn.setDisable(true);
@@ -91,7 +121,7 @@ public class GraphToolBar extends ToolBar {
 
         setStyle("-fx-background-color: #1e293b; -fx-padding: 6 10;");
         getItems().addAll(
-            panBtn, addNodeBtn, addEdgeBtn, removeBtn, clearBtn,
+            panBtn, addNodeBtn, addEdgeBtn, removeBtn, clearBtn, saveBtn, loadBtn,
             new Separator(),
             directedBtn, weightedBtn,
             new Separator(),
@@ -123,18 +153,20 @@ public class GraphToolBar extends ToolBar {
                 () -> { graph.getAllNodes().clear(); graph.getAllEdges().clear(); graph.setCache(true); },
                 () -> { savedNodes.forEach(graph::addNode); savedEdges.forEach(graph::addEdge); }
             );
-            canvas.clearAlgorithmResult();
+            resetAlgorithmUi();
             canvas.resetNodeCounter();
             canvas.setMode(CanvasMode.PAN);
             panBtn.setSelected(true);
         });
 
+        loadBtn.setOnAction(e -> loadGraph());
+
         directedBtn.setOnAction(e -> {
             directed = directedBtn.isSelected();
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
-            canvas.clearAlgorithmResult();
-            canvas.setDirected(directed);
+            resetAlgorithmUi();
+            canvas.updateGraphType(directed, weighted);
         });
 
         weightedBtn.setOnAction(e -> {
@@ -155,8 +187,8 @@ public class GraphToolBar extends ToolBar {
             weighted = nowWeighted;
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
-            canvas.clearAlgorithmResult();
-            canvas.setWeighted(weighted);
+            resetAlgorithmUi();
+            canvas.updateGraphType(directed, weighted);
         });
 
         bfsBtn.setOnAction(e      -> runAlgorithm("BFS"));
@@ -166,15 +198,7 @@ public class GraphToolBar extends ToolBar {
         showPathBtn.setDisable(true);
         showPathBtn.setOnAction(e -> showDijkstraPath());
 
-        clearAlgoBtn.setOnAction(e -> {
-            canvas.clearAlgorithmResult();
-            canvas.clearPath();
-            showPathBtn.setDisable(true);
-            lastDijkstraSource = null;
-            stepBackBtn.setDisable(true);
-            stepFwdBtn.setDisable(true);
-            stepLabel.setText("—");
-        });
+        clearAlgoBtn.setOnAction(e -> resetAlgorithmUi());
 
         undoBtn.setOnAction(e -> { commandManager.undo(); canvas.refresh(); });
         redoBtn.setOnAction(e -> { commandManager.redo(); canvas.refresh(); });
@@ -200,6 +224,94 @@ public class GraphToolBar extends ToolBar {
                 ? "-fx-background-color: #1e293b; -fx-padding: 6 10;"
                 : "-fx-background-color: #e2e8f0; -fx-padding: 6 10;");
         });
+    }
+
+    private void initializeSaveMenu() {
+        for (SaveFormat format : SaveFormat.values()) {
+            MenuItem item = format.toMenuItem();
+            item.setOnAction(e -> saveGraph(format));
+            saveBtn.getItems().add(item);
+        }
+    }
+
+    private void saveGraph(SaveFormat format) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Save Graph");
+        FileChooser.ExtensionFilter filter = format.toExtensionFilter();
+        chooser.getExtensionFilters().add(filter);
+        chooser.setSelectedExtensionFilter(filter);
+        chooser.setInitialFileName("graph" + format.extension);
+
+        File selected = chooser.showSaveDialog(canvas.getScene().getWindow());
+        if (selected == null) return;
+
+        try {
+            graphService.save(withRequiredExtension(selected, format.extension));
+        } catch (GraphIOException ex) {
+            showIoError("Save failed", ex.getMessage());
+        }
+    }
+
+    private void loadGraph() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Load Graph");
+        chooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Graph files", "*.json", "*.csv", "*.txt"));
+        for (SaveFormat format : SaveFormat.values()) {
+            chooser.getExtensionFilters().add(format.toExtensionFilter());
+        }
+
+        File selected = chooser.showOpenDialog(canvas.getScene().getWindow());
+        if (selected == null) return;
+
+        try {
+            graphService.load(selected);
+            syncUiToLoadedGraph();
+        } catch (GraphIOException ex) {
+            showIoError("Load failed", ex.getMessage());
+        }
+    }
+
+    private void syncUiToLoadedGraph() {
+        directed = graphService.isDirectedGraph();
+        weighted = graphService.isWeightedGraph();
+        directedBtn.setSelected(directed);
+        weightedBtn.setSelected(weighted);
+        commandManager.clear();
+        resetAlgorithmUi();
+        canvas.updateGraphType(directed, weighted);
+        canvas.syncNodeCounterWithGraph();
+        canvas.resetViewport();
+        canvas.setMode(CanvasMode.PAN);
+        panBtn.setSelected(true);
+    }
+
+    private void resetAlgorithmUi() {
+        canvas.clearAlgorithmResult();
+        showPathBtn.setDisable(true);
+        lastDijkstraSource = null;
+        stepBackBtn.setDisable(true);
+        stepFwdBtn.setDisable(true);
+        stepLabel.setText("—");
+    }
+
+    private void showIoError(String title, String message) {
+        Alert err = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
+        err.setTitle(title);
+        err.setHeaderText(null);
+        err.initOwner(canvas.getScene().getWindow());
+        err.showAndWait();
+    }
+
+    private File withRequiredExtension(File file, String extension) {
+        String name = file.getName();
+        if (name.toLowerCase().endsWith(extension)) {
+            return file;
+        }
+
+        int dotIndex = name.lastIndexOf('.');
+        String baseName = dotIndex > 0 ? name.substring(0, dotIndex) : name;
+        return new File(file.getParentFile(), baseName + extension);
     }
 
     private void updateThemeButtonText(boolean darkTheme) {
@@ -353,6 +465,14 @@ public class GraphToolBar extends ToolBar {
 
     private static Button subtleBtn(String text) {
         Button b = new Button(text);
+        b.setStyle(
+            "-fx-background-color: #374151; -fx-text-fill: #9ca3af; " +
+            "-fx-background-radius: 6; -fx-cursor: hand;");
+        return b;
+    }
+
+    private static MenuButton menuBtn(String text) {
+        MenuButton b = new MenuButton(text);
         b.setStyle(
             "-fx-background-color: #374151; -fx-text-fill: #9ca3af; " +
             "-fx-background-radius: 6; -fx-cursor: hand;");

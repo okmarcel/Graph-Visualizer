@@ -3,6 +3,7 @@ package dev.GraphVisualizer.service;
 import dev.GraphVisualizer.models.*;
 import dev.GraphVisualizer.repository.*;
 import java.io.File;
+import java.util.Locale;
 
 /** Class GraphService */
 public final class GraphService {
@@ -24,46 +25,25 @@ public final class GraphService {
         this.graph.buildAdjacent();
     }
 
-    /** Method to save graph represenatation to json file */
-    public void saveJson(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".json");
-        jsonRepository.save(graph, file);
+    /** Saves the current graph to the file selected by the user. */
+    public void save(File file) {
+        File target = requireFile(file);
+        File parent = target.getAbsoluteFile().getParentFile();
+        if (parent != null && !parent.exists() && !parent.mkdirs() && !parent.exists()) {
+            throw new GraphIOException("Failed to create directory: " + parent.getPath(), null);
+        }
+        repositoryFor(target).save(graph, target);
     }
 
-    /** Method to load graph from json file */
-    public void loadJson(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".json");
-        if(!file.exists()) throw new GraphIOException("File not found: " + file.getPath(), null);
-        this.graph = jsonRepository.load(file);
+    /** Loads a graph from the file selected by the user. */
+    public void load(File file) {
+        File source = requireFile(file);
+        if (!source.exists()) {
+            throw new GraphIOException("File not found: " + source.getPath(), null);
+        }
+        this.graph = repositoryFor(source).load(source);
         this.graph.buildAdjacent();
-    }
-
-    /** Method to save graph represenatation to csv file */ 
-    public void saveCsv(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".csv");
-        csvRepository.save(graph, file);
-    }
-
-    /** Method to load graph from csv file */
-    public void loadCsv(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".csv");
-        if(!file.exists()) throw new GraphIOException("File not found: " + file.getPath(), null);
-        this.graph = csvRepository.load(file);
-        this.graph.buildAdjacent();
-    }
-
-    /** Method to save graph represenatation to txt file */
-    public void saveTxt(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".txt");
-        txtRepository.save(graph, file);
-    }
-
-    /** Method to load graph from txt file */
-    public void loadTxt(String path, String filename) {
-        File file = new File(path + File.separator + filename + ".txt");
-        if(!file.exists()) throw new GraphIOException("File not found: " + file.getPath(), null);
-        this.graph = txtRepository.load(file);
-        this.graph.buildAdjacent();
+        this.graph.setCache(false);
     }
 
     /**
@@ -72,6 +52,16 @@ public final class GraphService {
      */
     public Graph getGraph() {
         return graph;
+    }
+
+    /** Returns whether the current graph type is directed. */
+    public boolean isDirectedGraph() {
+        return graph instanceof DirectedGraph || graph instanceof WeightedDirectedGraph;
+    }
+
+    /** Returns whether the current graph type is weighted. */
+    public boolean isWeightedGraph() {
+        return graph instanceof WeightedDirectedGraph || graph instanceof WeightedUndirectedGraph;
     }
 
     /**
@@ -106,6 +96,27 @@ public final class GraphService {
         this.graph.buildAdjacent();
         this.graph.setCache(false);
     }
+
+    private File requireFile(File file) {
+        if (file == null) {
+            throw new GraphIOException("No file was selected.", null);
+        }
+        return file;
+    }
+
+    private GraphRepository repositoryFor(File file) {
+        String name = file.getName();
+        int dotIndex = name.lastIndexOf('.');
+        if (dotIndex < 0 || dotIndex == name.length() - 1) {
+            throw new GraphIOException("Unsupported graph file type: " + name, null);
+        }
+
+        return switch (name.substring(dotIndex + 1).toLowerCase(Locale.ROOT)) {
+            case "json" -> jsonRepository;
+            case "csv"  -> csvRepository;
+            case "txt"  -> txtRepository;
+            default -> throw new GraphIOException("Unsupported graph file type: " + name, null);
+        };
+    }
   
 }
-
