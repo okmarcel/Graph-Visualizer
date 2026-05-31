@@ -12,7 +12,7 @@ public final class CommandManager {
 
     /**
      * Runs doIt immediately and stores the pair for later undo.
-     * @param doIt   the action to perform
+     * @param doIt the action to perform
      * @param undoIt the action that reverses it
      */
     public void push(Runnable doIt, Runnable undoIt) {

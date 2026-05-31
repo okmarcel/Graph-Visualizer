@@ -81,10 +81,15 @@ public final class GraphService {
      */
     public void switchGraphType(boolean directed, boolean weighted) {
         Graph target;
-        if      (directed && weighted)  target = new WeightedDirectedGraph();
-        else if (directed)              target = new DirectedGraph();
-        else if (weighted)              target = new WeightedUndirectedGraph();
-        else                            target = new UndirectedGraph();
+        if (directed && weighted){
+            target = new WeightedDirectedGraph();
+        } else if (directed) {
+            target = new DirectedGraph();
+        } else if (weighted) {
+            target = new WeightedUndirectedGraph();
+        } else {
+            target = new UndirectedGraph();
+        }
 
         for (Node n : graph.getAllNodes())
             target.addNode(n);

@@ -52,52 +52,52 @@ public class GraphToolBar extends ToolBar {
         }
     }
 
-    private final GraphService     graphService;
+    private final GraphService graphService;
     private final AlgorithmService algorithmService;
-    private final CommandManager   commandManager;
+    private final CommandManager commandManager;
     private GraphCanvas canvas;
 
-    private final ToggleButton panBtn     = modeBtn("Pan");
+    private final ToggleButton panBtn = modeBtn("Pan");
     private final ToggleButton addNodeBtn = modeBtn("Add Node");
     private final ToggleButton addEdgeBtn = modeBtn("Add Edge");
-    private final ToggleButton removeBtn  = modeBtn("Remove");
-    private final Button       clearBtn   = dangerBtn("Clear");
-    private final MenuButton   saveBtn    = menuBtn("Save");
-    private final Button       loadBtn    = subtleBtn("Load");
+    private final ToggleButton removeBtn = modeBtn("Remove");
+    private final Button clearBtn = dangerBtn("Clear");
+    private final MenuButton saveBtn = menuBtn("Save");
+    private final Button loadBtn = subtleBtn("Load");
 
     private final ToggleButton directedBtn = flagBtn("Directed");
     private final ToggleButton weightedBtn = flagBtn("Weighted");
 
-    private final Button bfsBtn       = algoBtn("BFS");
-    private final Button dfsBtn       = algoBtn("DFS");
-    private final Button dijkstraBtn  = algoBtn("Dijkstra");
-    private final Button showPathBtn  = subtleBtn("Path to…");
+    private final Button bfsBtn = algoBtn("BFS");
+    private final Button dfsBtn = algoBtn("DFS");
+    private final Button dijkstraBtn = algoBtn("Dijkstra");
+    private final Button showPathBtn = subtleBtn("Path to…");
     private final Button clearAlgoBtn = subtleBtn("Clear Results");
 
     private final Button undoBtn = subtleBtn("Undo");
     private final Button redoBtn = subtleBtn("Redo");
 
-    private final Button       stepBackBtn = subtleBtn("◀");
-    private final Button       stepFwdBtn  = subtleBtn("▶");
-    private final Label        stepLabel   = new Label("—");
+    private final Button stepBackBtn = subtleBtn("◀");
+    private final Button stepFwdBtn = subtleBtn("▶");
+    private final Label  stepLabel = new Label("—");
 
-    private final ToggleButton themeBtn    = flagBtn("Dark Theme");
+    private final ToggleButton themeBtn = flagBtn("Dark Theme");
 
     private boolean directed;
     private boolean weighted;
-    private Node    lastDijkstraSource = null;
+    private Node lastDijkstraSource = null;
     private ToggleGroup modeGroup;
 
     public GraphToolBar(GraphService graphService, GraphCanvas canvas,
                         boolean directed, boolean weighted,
                         AlgorithmService algorithmService,
                         CommandManager commandManager) {
-        this.graphService     = graphService;
-        this.canvas           = canvas;
-        this.directed         = directed;
-        this.weighted         = weighted;
+        this.graphService = graphService;
+        this.canvas = canvas;
+        this.directed = directed;
+        this.weighted = weighted;
         this.algorithmService = algorithmService;
-        this.commandManager   = commandManager;
+        this.commandManager = commandManager;
 
         modeGroup = new ToggleGroup();
         panBtn.setToggleGroup(modeGroup);
@@ -106,7 +106,9 @@ public class GraphToolBar extends ToolBar {
         removeBtn.setToggleGroup(modeGroup);
         panBtn.setSelected(true);
         modeGroup.selectedToggleProperty().addListener((obs, oldSel, newSel) -> {
-            if (newSel == null && oldSel != null) oldSel.setSelected(true);
+            if (newSel == null && oldSel != null) {
+                oldSel.setSelected(true);
+            }
         });
 
         directedBtn.setSelected(directed);
@@ -140,7 +142,7 @@ public class GraphToolBar extends ToolBar {
     }
 
     private void wireHandlers() {
-        panBtn.setOnAction(e     -> canvas.setMode(CanvasMode.PAN));
+        panBtn.setOnAction(e -> canvas.setMode(CanvasMode.PAN));
         addNodeBtn.setOnAction(e -> canvas.setMode(CanvasMode.ADD_NODE));
         addEdgeBtn.setOnAction(e -> canvas.setMode(CanvasMode.ADD_EDGE));
         removeBtn.setOnAction(e  -> canvas.setMode(CanvasMode.REMOVE));
@@ -191,8 +193,8 @@ public class GraphToolBar extends ToolBar {
             canvas.updateGraphType(directed, weighted);
         });
 
-        bfsBtn.setOnAction(e      -> runAlgorithm("BFS"));
-        dfsBtn.setOnAction(e      -> runAlgorithm("DFS"));
+        bfsBtn.setOnAction(e -> runAlgorithm("BFS"));
+        dfsBtn.setOnAction(e -> runAlgorithm("DFS"));
         dijkstraBtn.setOnAction(e -> runAlgorithm("Dijkstra"));
 
         showPathBtn.setDisable(true);
@@ -243,7 +245,9 @@ public class GraphToolBar extends ToolBar {
         chooser.setInitialFileName("graph" + format.extension);
 
         File selected = chooser.showSaveDialog(canvas.getScene().getWindow());
-        if (selected == null) return;
+        if (selected == null) {
+            return;
+        }
 
         try {
             graphService.save(withRequiredExtension(selected, format.extension));
@@ -255,14 +259,15 @@ public class GraphToolBar extends ToolBar {
     private void loadGraph() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Load Graph");
-        chooser.getExtensionFilters().add(
-            new FileChooser.ExtensionFilter("Graph files", "*.json", "*.csv", "*.txt"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Graph files", "*.json", "*.csv", "*.txt"));
         for (SaveFormat format : SaveFormat.values()) {
             chooser.getExtensionFilters().add(format.toExtensionFilter());
         }
 
         File selected = chooser.showOpenDialog(canvas.getScene().getWindow());
-        if (selected == null) return;
+        if (selected == null) {
+            return;
+        }
 
         try {
             graphService.load(selected);
@@ -319,7 +324,7 @@ public class GraphToolBar extends ToolBar {
     }
 
     private void updateStepControls() {
-        int idx   = algorithmService.getStepIndex();
+        int idx = algorithmService.getStepIndex();
         int total = algorithmService.getStepCount();
         stepBackBtn.setDisable(idx <= 1);
         stepFwdBtn.setDisable(idx >= total);
@@ -328,7 +333,9 @@ public class GraphToolBar extends ToolBar {
 
     private void runAlgorithm(String type) {
         List<Node> nodes = graphService.getGraph().getAllNodes();
-        if (nodes.isEmpty()) return;
+        if (nodes.isEmpty()) {
+            return;
+        }
 
         // 1. Pick source node
         List<String> labels = nodes.stream().map(Node::getLabel).toList();
@@ -340,18 +347,22 @@ public class GraphToolBar extends ToolBar {
         sourceDialog.getDialogPane().setStyle("-fx-background-color: #2d2d3f; -fx-font-size: 13px;");
 
         Optional<String> sourceChoice = sourceDialog.showAndWait();
-        if (sourceChoice.isEmpty()) return;
+        if (sourceChoice.isEmpty()) {
+            return;
+        }
 
         Node source = nodes.stream()
             .filter(n -> n.getLabel().equals(sourceChoice.get()))
             .findFirst().orElse(null);
-        if (source == null) return;
+        if (source == null) {
+            return;
+        }
 
         // 2. Run the algorithm (records all steps internally)
         try {
             switch (type) {
-                case "BFS"      -> algorithmService.runBFS(source);
-                case "DFS"      -> algorithmService.runDFS(source);
+                case "BFS" -> algorithmService.runBFS(source);
+                case "DFS" -> algorithmService.runDFS(source);
                 case "Dijkstra" -> algorithmService.runDijkstra(source);
             }
         } catch (RuntimeException ex) {
@@ -362,7 +373,7 @@ public class GraphToolBar extends ToolBar {
         }
 
         // 3. Ask: show full result or navigate step by step?
-        ButtonType completeType   = new ButtonType("Complete");
+        ButtonType completeType = new ButtonType("Complete");
         ButtonType stepByStepType = new ButtonType("Step by Step");
         Alert modeAlert = new Alert(Alert.AlertType.CONFIRMATION);
         modeAlert.setTitle("Execution mode");
@@ -372,9 +383,13 @@ public class GraphToolBar extends ToolBar {
         modeAlert.initOwner(canvas.getScene().getWindow());
 
         Optional<ButtonType> modeChoice = modeAlert.showAndWait();
-        if (modeChoice.isEmpty()) return;
+        if (modeChoice.isEmpty()) {
+            return;
+        }
 
-        if (modeChoice.get() == stepByStepType) algorithmService.goToStart();
+        if (modeChoice.get() == stepByStepType) {
+            algorithmService.goToStart();
+        }
         canvas.showAlgorithmResult(algorithmService.getStepState());
         updateStepControls();
 
@@ -388,13 +403,17 @@ public class GraphToolBar extends ToolBar {
     }
 
     private void showDijkstraPath() {
-        if (lastDijkstraSource == null) return;
+        if (lastDijkstraSource == null) {
+            return;
+        }
         List<Node> nodes = graphService.getGraph().getAllNodes();
         List<String> targetLabels = nodes.stream()
             .filter(n -> !n.equals(lastDijkstraSource))
             .map(Node::getLabel)
             .toList();
-        if (targetLabels.isEmpty()) return;
+        if (targetLabels.isEmpty()) {
+            return;
+        }
 
         ChoiceDialog<String> dialog = new ChoiceDialog<>(targetLabels.get(0), targetLabels);
         dialog.setTitle("Highlight shortest path");
@@ -404,7 +423,9 @@ public class GraphToolBar extends ToolBar {
         dialog.getDialogPane().setStyle("-fx-background-color: #2d2d3f; -fx-font-size: 13px;");
         dialog.showAndWait().ifPresent(label -> {
             Node target = nodes.stream().filter(n -> n.getLabel().equals(label)).findFirst().orElse(null);
-            if (target == null) return;
+            if (target == null) {
+                return;
+            }
             List<Node> path = algorithmService.reconstructPath(target);
             if (path.size() < 2) {
                 Alert info = new Alert(Alert.AlertType.INFORMATION,

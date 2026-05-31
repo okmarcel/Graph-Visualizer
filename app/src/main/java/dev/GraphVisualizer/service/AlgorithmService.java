@@ -90,7 +90,7 @@ public final class AlgorithmService {
 
     /** Synchronization of state between:
      * - service: graph from graph service
-     * - state:   map of nodes and their algorithm state
+     * - state: map of nodes and their algorithm state
      * needed when graph changes representation betweeen 
      * algorithm calls could also use some form of cache or observer pattern 
      */
@@ -103,34 +103,47 @@ public final class AlgorithmService {
 
     /** Returns the state snapshot at the current step index (or final state if no steps). */
     public Map<Node, AlgorithmAddInfo> getStepState() {
-        if (steps.isEmpty()) return state;
+        if (steps.isEmpty())
+            return state;
         return steps.get(stepIndex);
     }
 
     /** Returns true if there are recorded steps to navigate. */
-    public boolean hasSteps() { return steps.size() > 1; }
+    public boolean hasSteps() {
+        return steps.size() > 1;
+    }
 
     /** Returns the 1-based current step number for display. */
-    public int getStepIndex() { return stepIndex + 1; }
+    public int getStepIndex() {
+        return stepIndex + 1;
+    }
 
     /** Returns the total number of recorded steps. */
-    public int getStepCount() { return steps.size(); }
+    public int getStepCount() {
+        return steps.size();
+    }
 
     /** Advances to the next step. Returns true if the move was possible. */
     public boolean stepForward() {
-        if (stepIndex < steps.size() - 1) { stepIndex++; return true; }
+        if (stepIndex < steps.size() - 1) {
+            stepIndex++; return true;
+        }
         return false;
     }
 
     /** Goes back to the previous step. Returns true if the move was possible. */
     public boolean stepBack() {
-        if (stepIndex > 0) { stepIndex--; return true; }
+        if (stepIndex > 0) {
+            stepIndex--;
+            return true;
+        }
         return false;
     }
 
     /** Rewinds to the first recorded step. */
     public void goToStart() {
-        if (!steps.isEmpty()) stepIndex = 0;
+        if (!steps.isEmpty())
+            stepIndex = 0;
     }
 
     /** Follows pi pointers from target back to the source and returns the ordered path. */
@@ -140,7 +153,8 @@ public final class AlgorithmService {
         while (current != null) {
             path.add(0, current);
             AlgorithmAddInfo info = state.get(current);
-            if (info == null) break;
+            if (info == null)
+                break;
             current = info.getPi();
         }
         return path;
