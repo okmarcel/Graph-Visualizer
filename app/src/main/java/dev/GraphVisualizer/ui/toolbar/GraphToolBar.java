@@ -28,8 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/** Class GraphToolBar - toolbar controlling editing, persistence and algorithms */
 public class GraphToolBar extends ToolBar {
 
+    /** Supported save formats exposed in the save menu */
     private enum SaveFormat {
         JSON("JSON", ".json"),
         CSV("CSV", ".csv"),
@@ -38,23 +40,40 @@ public class GraphToolBar extends ToolBar {
         private final String label;
         private final String extension;
 
+        /**
+         * Constructor taking menu label and file extension.
+         * @param label user-visible format label
+         * @param extension required file extension
+         */
         SaveFormat(String label, String extension) {
             this.label = label;
             this.extension = extension;
         }
 
+        /**
+         * Creates a menu item representing this save format.
+         * @return menu item for the format
+         */
         private MenuItem toMenuItem() {
             return new MenuItem(label);
         }
 
+        /**
+         * Creates a file chooser filter for this format.
+         * @return file extension filter
+         */
         private FileChooser.ExtensionFilter toExtensionFilter() {
             return new FileChooser.ExtensionFilter(label + " files", "*" + extension);
         }
     }
 
+    /** Graph service used by toolbar actions */
     private final GraphService graphService;
+    /** Algorithm execution service */
     private final AlgorithmService algorithmService;
+    /** Shared undo/redo manager */
     private final CommandManager commandManager;
+    /** Canvas controlled by this toolbar */
     private GraphCanvas canvas;
 
     private final ToggleButton panBtn = modeBtn("Pan");
@@ -65,29 +84,52 @@ public class GraphToolBar extends ToolBar {
     private final MenuButton saveBtn = menuBtn("Save");
     private final Button loadBtn = subtleBtn("Load");
 
+    /** Toggle switching graph directionality */
     private final ToggleButton directedBtn = flagBtn("Directed");
+    /** Toggle switching graph weighting */
     private final ToggleButton weightedBtn = flagBtn("Weighted");
 
+    /** Button running BFS */
     private final Button bfsBtn = algoBtn("BFS");
+    /** Button running DFS */
     private final Button dfsBtn = algoBtn("DFS");
+    /** Button running Dijkstra */
     private final Button dijkstraBtn = algoBtn("Dijkstra");
+    /** Button prompting for a Dijkstra target path */
     private final Button showPathBtn = subtleBtn("Path to…");
+    /** Button clearing algorithm overlays */
     private final Button clearAlgoBtn = subtleBtn("Clear Results");
 
     private final Button undoBtn = subtleBtn("Undo");
     private final Button redoBtn = subtleBtn("Redo");
 
+    /** Step-back button for recorded algorithm states */
     private final Button stepBackBtn = subtleBtn("◀");
+    /** Step-forward button for recorded algorithm states */
     private final Button stepFwdBtn = subtleBtn("▶");
+    /** Label showing current algorithm step index */
     private final Label  stepLabel = new Label("—");
 
     private final ToggleButton themeBtn = flagBtn("Dark Theme");
 
+    /** Current graph directionality flag */
     private boolean directed;
+    /** Current graph weighting flag */
     private boolean weighted;
+    /** Source node from the last successful Dijkstra run */
     private Node lastDijkstraSource = null;
+    /** Toggle group keeping editing modes mutually exclusive */
     private ToggleGroup modeGroup;
 
+    /**
+     * Constructor taking services, canvas and initial graph flags.
+     * @param graphService graph service used by the toolbar
+     * @param canvas canvas controlled by the toolbar
+     * @param directed whether the current graph is directed
+     * @param weighted whether the current graph is weighted
+     * @param algorithmService algorithm execution service
+     * @param commandManager shared undo/redo manager
+     */
     public GraphToolBar(GraphService graphService, GraphCanvas canvas,
                         boolean directed, boolean weighted,
                         AlgorithmService algorithmService,
@@ -136,11 +178,16 @@ public class GraphToolBar extends ToolBar {
         );
     }
 
+    /**
+     * Attaches the toolbar to the canvas after both controls are created.
+     * @param canvas canvas instance to control
+     */
     public void setCanvas(GraphCanvas canvas) {
         this.canvas = canvas;
         wireHandlers();
     }
 
+    /** Wires all toolbar button handlers to canvas and service actions. */
     private void wireHandlers() {
         panBtn.setOnAction(e -> canvas.setMode(CanvasMode.PAN));
         addNodeBtn.setOnAction(e -> canvas.setMode(CanvasMode.ADD_NODE));
@@ -228,6 +275,7 @@ public class GraphToolBar extends ToolBar {
         });
     }
 
+    /** Populates the save menu with supported output formats. */
     private void initializeSaveMenu() {
         for (SaveFormat format : SaveFormat.values()) {
             MenuItem item = format.toMenuItem();
@@ -236,6 +284,10 @@ public class GraphToolBar extends ToolBar {
         }
     }
 
+    /**
+     * Saves the current graph using the selected format.
+     * @param format chosen output format
+     */
     private void saveGraph(SaveFormat format) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Save Graph");
@@ -256,6 +308,7 @@ public class GraphToolBar extends ToolBar {
         }
     }
 
+    /** Opens a file chooser and loads a graph from the selected file. */
     private void loadGraph() {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Load Graph");
@@ -277,6 +330,7 @@ public class GraphToolBar extends ToolBar {
         }
     }
 
+    /** Synchronizes canvas and toolbar state after loading a graph from disk. */
     private void syncUiToLoadedGraph() {
         directed = graphService.isDirectedGraph();
         weighted = graphService.isWeightedGraph();
@@ -291,6 +345,7 @@ public class GraphToolBar extends ToolBar {
         panBtn.setSelected(true);
     }
 
+    /** Clears algorithm visualization state and disables related controls. */
     private void resetAlgorithmUi() {
         canvas.clearAlgorithmResult();
         showPathBtn.setDisable(true);
@@ -300,6 +355,11 @@ public class GraphToolBar extends ToolBar {
         stepLabel.setText("—");
     }
 
+    /**
+     * Shows an error alert for graph save/load failures.
+     * @param title dialog title
+     * @param message message to display
+     */
     private void showIoError(String title, String message) {
         Alert err = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         err.setTitle(title);
@@ -308,6 +368,12 @@ public class GraphToolBar extends ToolBar {
         err.showAndWait();
     }
 
+    /**
+     * Ensures that the selected save target has the expected extension.
+     * @param file file selected by the user
+     * @param extension required extension
+     * @return file with the required extension applied
+     */
     private File withRequiredExtension(File file, String extension) {
         String name = file.getName();
         if (name.toLowerCase().endsWith(extension)) {
@@ -319,10 +385,15 @@ public class GraphToolBar extends ToolBar {
         return new File(file.getParentFile(), baseName + extension);
     }
 
+    /**
+     * Updates the theme toggle label so it describes the next action.
+     * @param darkTheme whether dark theme is currently active
+     */
     private void updateThemeButtonText(boolean darkTheme) {
         themeBtn.setText(darkTheme ? "Light Theme" : "Dark Theme");
     }
 
+    /** Updates step navigation buttons and label from algorithm service state. */
     private void updateStepControls() {
         int idx = algorithmService.getStepIndex();
         int total = algorithmService.getStepCount();
@@ -331,6 +402,10 @@ public class GraphToolBar extends ToolBar {
         stepLabel.setText(idx + " / " + total);
     }
 
+    /**
+     * Runs the selected algorithm starting from a user-chosen source node.
+     * @param type algorithm identifier
+     */
     private void runAlgorithm(String type) {
         List<Node> nodes = graphService.getGraph().getAllNodes();
         if (nodes.isEmpty()) {
@@ -402,6 +477,7 @@ public class GraphToolBar extends ToolBar {
         }
     }
 
+    /** Prompts for a target node and highlights the reconstructed Dijkstra path. */
     private void showDijkstraPath() {
         if (lastDijkstraSource == null) {
             return;
@@ -440,6 +516,11 @@ public class GraphToolBar extends ToolBar {
         });
     }
 
+    /**
+     * Creates a styled toggle button used for mutually exclusive canvas modes.
+     * @param text button label
+     * @return configured toggle button
+     */
     private static ToggleButton modeBtn(String text) {
         ToggleButton b = new ToggleButton(text);
         b.setStyle(
@@ -454,6 +535,11 @@ public class GraphToolBar extends ToolBar {
         return b;
     }
 
+    /**
+     * Creates a styled toggle button used for persistent graph flags.
+     * @param text button label
+     * @return configured toggle button
+     */
     private static ToggleButton flagBtn(String text) {
         ToggleButton b = new ToggleButton(text);
         b.setStyle(
@@ -468,6 +554,11 @@ public class GraphToolBar extends ToolBar {
         return b;
     }
 
+    /**
+     * Creates a styled button for destructive actions.
+     * @param text button label
+     * @return configured button
+     */
     private static Button dangerBtn(String text) {
         Button b = new Button(text);
         b.setStyle(
@@ -476,6 +567,11 @@ public class GraphToolBar extends ToolBar {
         return b;
     }
 
+    /**
+     * Creates a styled button used for algorithm actions.
+     * @param text button label
+     * @return configured button
+     */
     private static Button algoBtn(String text) {
         Button b = new Button(text);
         b.setStyle(
@@ -484,6 +580,11 @@ public class GraphToolBar extends ToolBar {
         return b;
     }
 
+    /**
+     * Creates a styled button for secondary actions.
+     * @param text button label
+     * @return configured button
+     */
     private static Button subtleBtn(String text) {
         Button b = new Button(text);
         b.setStyle(
@@ -492,6 +593,11 @@ public class GraphToolBar extends ToolBar {
         return b;
     }
 
+    /**
+     * Creates a styled menu button.
+     * @param text button label
+     * @return configured menu button
+     */
     private static MenuButton menuBtn(String text) {
         MenuButton b = new MenuButton(text);
         b.setStyle(

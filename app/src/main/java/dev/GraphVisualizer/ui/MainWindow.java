@@ -12,6 +12,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 
+/** Class MainWindow - builds and shows the main application scene */
 public class MainWindow {
     private final int SCENE_WIDTH = 1280;
     private final int SCENE_HEIGHT = 720;
@@ -19,15 +20,24 @@ public class MainWindow {
     private final int MIN_SCENE_HEIGHT = 320;
     private final String WINDOW_TITLE = "Graph Visualizer";
 
+    /** Primary JavaFX stage */
     private final Stage stage;
+    /** Service managing graph persistence and graph type switching */
     private final GraphService graphService;
+    /** Service responsible for algorithm execution */
     private final AlgorithmService algorithmService;
+    /** Shared undo/redo manager */
     private final CommandManager commandManager;
 
-    // graph state flags — used when running algorithms
+    /** Graph direction flag mirrored by toolbar and canvas */
     private boolean directed = false;
+    /** Graph weighting flag mirrored by toolbar and canvas */
     private boolean weighted = false;
 
+    /**
+     * Constructor taking the primary stage and preparing the initial graph state.
+     * @param stage primary application stage
+     */
     public MainWindow(Stage stage) {
         this.stage = stage;
         Graph graph = new UndirectedGraph();
@@ -37,6 +47,7 @@ public class MainWindow {
         this.commandManager = new CommandManager();
     }
 
+    /** Builds the scene graph, wires shortcuts and shows the window. */
     public void show() {
         GraphCanvas  graphCanvas = new GraphCanvas(graphService, directed, weighted, commandManager);
         GraphToolBar toolBar = new GraphToolBar(graphService, graphCanvas, directed, weighted, algorithmService, commandManager);
@@ -68,6 +79,10 @@ public class MainWindow {
         stage.show();
     }
 
+    /**
+     * Populates the initial sample graph visible after application start.
+     * @param graph graph to populate
+     */
     private void initializeSampleGraph(Graph graph) {
         Node nodeA = new Node("A", 300, 150);
         Node nodeB = new Node("B", 500, 280);

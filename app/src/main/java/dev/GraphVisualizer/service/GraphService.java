@@ -123,5 +123,4 @@ public final class GraphService {
             default -> throw new GraphIOException("Unsupported graph file type: " + name, null);
         };
     }
-  
 }

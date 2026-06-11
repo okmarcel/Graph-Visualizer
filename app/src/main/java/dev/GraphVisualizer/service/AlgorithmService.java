@@ -88,7 +88,8 @@ public final class AlgorithmService {
         return state;
     }
 
-    /** Synchronization of state between:
+    /** 
+     * Synchronization of state between:
      * - service: graph from graph service
      * - state: map of nodes and their algorithm state
      * needed when graph changes representation betweeen 
@@ -183,4 +184,3 @@ public final class AlgorithmService {
         stepIndex = steps.size() - 1;
     }
 }
-

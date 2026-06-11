@@ -11,25 +11,38 @@ import java.util.Map;
 
 /** Class JsonGraphRepository - implementation of GraphRepository for JSON files */
 public final class JsonGraphRepository implements GraphRepository {
-
+    /** Jackson mapper used to serialize and deserialize graph DTOs */
     private final ObjectMapper mapper = new ObjectMapper();
 
+    /** DTO representing a single node inside JSON graph files */
     private static class NodeDTO {
+        /** Node identifier used to reconnect edges during loading */
         public String id;
+        /** User-visible node label */
         public String label;
+        /** Stored x position */
         public double x;
+        /** Stored y position */
         public double y;
     }
 
+    /** DTO representing a single edge inside JSON graph files */
     private static class EdgeDTO {
+        /** Identifier of the source node */
         public String sourceId;
+        /** Identifier of the target node */
         public String targetId;
+        /** Stored edge weight */
         public double weight;
     }
 
+    /** DTO representing the full serialized graph payload */
     private static class GraphDTO {
+        /** Concrete graph type name */
         public String type;
+        /** Serialized graph nodes */
         public List<NodeDTO> nodes;
+        /** Serialized graph edges */
         public List<EdgeDTO> edges;
     }
 
