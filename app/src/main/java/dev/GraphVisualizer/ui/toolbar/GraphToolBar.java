@@ -602,6 +602,7 @@ public class GraphToolBar extends ToolBar {
         MenuButton b = new MenuButton(text);
         b.setStyle(
             "-fx-background-color: #374151; -fx-text-fill: #9ca3af; " +
+            "-fx-text-base-color: #9ca3af; -fx-mark-color: #9ca3af; " +
             "-fx-background-radius: 6; -fx-cursor: hand;");
         return b;
     }
