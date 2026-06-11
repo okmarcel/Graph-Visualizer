@@ -23,8 +23,8 @@ public final class AlgorithmService {
     private int stepIndex = -1;
 
     /**
-     * Constructor - sets the initial state of nodes neeeded for BFS and DFS algorithms
-     * @param service
+     * Creates the algorithm service and initializes per-node state for the current graph.
+     * @param service graph service providing the active graph
      */
     public AlgorithmService(GraphService service) {
         this.service = service;
@@ -34,7 +34,6 @@ public final class AlgorithmService {
 
     /**
      * Runs BFS algorithm
-     * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
     public void runBFS(Node sourceNode) {
@@ -44,7 +43,6 @@ public final class AlgorithmService {
 
     /**
      * Runs DFS algorithm
-     * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
     public void runDFS(Node sourceNode) {
@@ -55,7 +53,6 @@ public final class AlgorithmService {
 
     /**
      * Runs Dijkstra algorithm
-     * @param service API with the representation of graph and adjacency list for every node
      * @param sourceNode from which the algorithm starts
      */
     public void runDijkstra(Node sourceNode) {

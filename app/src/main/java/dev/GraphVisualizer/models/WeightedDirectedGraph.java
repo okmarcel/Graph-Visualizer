@@ -7,11 +7,11 @@ import java.util.Map;
 
 /** Class WeightedDirectedGraph - class that represents a directed graph with weighted edges data structure */
 public final class WeightedDirectedGraph extends Graph {
-    /** Map holding Adjacent list of nodes for every node in the directed graph */
+    /** Adjacency list for every node in the weighted directed graph */
     private Map<Node, List<Node>> adjacent;
 
     /**
-     * Constructor invoking constructor of the base class - intializes Adjacent table, takes two arguments
+     * Creates a weighted directed graph with predefined nodes and edges.
      * @param nodes list of predefined nodes
      * @param edges list of predefined edges
      */
@@ -20,13 +20,13 @@ public final class WeightedDirectedGraph extends Graph {
         buildAdjacent();
     }
 
-    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
+    /** Creates an empty weighted directed graph. */
     public WeightedDirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /** Method used to build Adjacent table for every node */
+    /** Rebuilds the adjacency list for every node. */
     public void buildAdjacent(){
         this.adjacent = new HashMap<>();
         for(Node i : getAllNodes()) {
@@ -37,7 +37,7 @@ public final class WeightedDirectedGraph extends Graph {
         }
     }
 
-    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
+    /** Rebuilds adjacency data only when the graph has changed. */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();
@@ -46,8 +46,8 @@ public final class WeightedDirectedGraph extends Graph {
     }
 
     /**
-     * Adjacent table getter
-     * @return Adjacent table
+     * Returns the adjacency list.
+     * @return adjacency list
      */
     public Map<Node, List<Node>> getAdjacent() {
         return adjacent;

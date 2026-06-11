@@ -124,24 +124,23 @@ public abstract sealed class Graph permits UndirectedGraph, DirectedGraph,  Weig
     }
 
     /**
-     * Cache getter return boolean cache flag
-     * @return
+     * Returns whether the adjacency cache needs rebuilding.
+     * @return true when the graph structure changed since the last rebuild
      */
     public boolean getCache() {
         return cache;
     }
 
     /**
-     * Cache setter sets boolean cache glaf
-     * @param cache
+     * Marks whether the adjacency cache needs rebuilding.
+     * @param cache new cache state
      */
     public void setCache(boolean cache) {
         this.cache = cache;
     }
 
     /**
-     * Abstract method building Adjacent table for the graph
-     * @param adjacent
+     * Rebuilds the adjacency table for the graph from the current nodes and edges.
      */
     public abstract void buildAdjacent();
 

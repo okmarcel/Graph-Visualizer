@@ -10,11 +10,12 @@ import java.util.Set;
 /** Class Dijkstra - implementation of Dijkstra algorithm */
 public final class Dijkstra {
     /**
-     * Classical CLRS implementation of Dijkstra algorithm
-     * @param adjacent Adjacency List for all nodes
-     * @param state Map of AlgorithmAddInfo for all nodes
-     * @param edges List of all edges in the graph
-     * @param sourceNode Node from which the algorithm runs
+     * Classical CLRS implementation of Dijkstra's algorithm.
+     * @param adjacent adjacency list for all nodes
+     * @param state mutable algorithm state for all nodes
+     * @param edges list of all edges in the graph
+     * @param sourceNode node from which the algorithm starts
+     * @param step callback invoked after each significant state change
      */
     public static void runDijkstra(Map<Node, List<Node>> adjacent, Map<Node, AlgorithmAddInfo> state, List<Edge> edges, Node sourceNode, Runnable step) {
         initializeSingleSource(state, sourceNode);
@@ -44,9 +45,9 @@ public final class Dijkstra {
     }
 
     /**
-     * Initializes single source for Dijkstra
-     * @param state Map of AlgorithmAddInfo for all nodes
-     * @param sourceNode Node from which the algorithm runs
+     * Initializes distances and parents before a Dijkstra run.
+     * @param state mutable algorithm state for all nodes
+     * @param sourceNode node from which the algorithm starts
      */
     public static void initializeSingleSource(Map<Node, AlgorithmAddInfo> state, Node sourceNode) {
         for (Node v : state.keySet()) {
@@ -57,11 +58,12 @@ public final class Dijkstra {
     }
 
     /**
-     * Relaxes edge between u and v
-     * @param state Map of AlgorithmAddInfo for all nodes
+     * Relaxes the edge between two adjacent nodes.
+     * @param state mutable algorithm state for all nodes
      * @param u source node
      * @param v target node
      * @param w weight of edge between u and v
+     * @return true when the distance to {@code v} was improved
      */
     public static boolean relax(Map<Node, AlgorithmAddInfo> state, Node u, Node v, double w) {
         double distU = state.get(u).getD();

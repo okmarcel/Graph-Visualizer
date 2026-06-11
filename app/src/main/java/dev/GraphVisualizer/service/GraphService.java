@@ -65,8 +65,8 @@ public final class GraphService {
     }
 
     /**
-     * Graph setter
-     * @param graph
+     * Replaces the currently active graph instance.
+     * @param graph new graph instance
      */
     public void setGraph(Graph graph) {
         this.graph = graph;
