@@ -25,3 +25,12 @@ To clear cache after build run:
 ```
 ./gradlew clean
 ```
+
+## Documentation
+
+You can generate javadoc documentation with gradle:
+```
+./gradlew javadoc
+```
+
+You will find the generated docs in `app/build/docs/javadoc`.
