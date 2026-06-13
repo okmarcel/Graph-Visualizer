@@ -5,6 +5,10 @@ import java.util.Deque;
 
 /** Tracks user actions as do/undo pairs so they can be stepped backward and forward. */
 public final class CommandManager {
+    /** Creates an empty command history. */
+    public CommandManager() {
+    }
+
     private record Entry(Runnable doIt, Runnable undoIt) {}
 
     private final Deque<Entry> undoStack = new ArrayDeque<>();

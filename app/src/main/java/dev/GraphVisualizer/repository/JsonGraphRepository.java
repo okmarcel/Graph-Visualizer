@@ -11,6 +11,10 @@ import java.util.Map;
 
 /** Class JsonGraphRepository - implementation of GraphRepository for JSON files */
 public final class JsonGraphRepository implements GraphRepository {
+    /** Creates a JSON graph repository. */
+    public JsonGraphRepository() {
+    }
+
     /** Jackson mapper used to serialize and deserialize graph DTOs */
     private final ObjectMapper mapper = new ObjectMapper();
 

@@ -111,7 +111,14 @@ public class GraphCanvas extends Pane {
 
     /** Available canvas interaction modes */
     public enum CanvasMode {
-        PAN, ADD_NODE, ADD_EDGE, REMOVE
+        /** Moves the viewport without changing the graph. */
+        PAN,
+        /** Adds a node at the selected canvas position. */
+        ADD_NODE,
+        /** Adds an edge between selected nodes. */
+        ADD_EDGE,
+        /** Removes the selected node or edge. */
+        REMOVE
     }
 
     /**
@@ -232,7 +239,10 @@ public class GraphCanvas extends Pane {
         refresh();
     }
 
-    /** Overlays algorithm result colors and distance labels on the canvas. */
+    /**
+     * Overlays algorithm result colors and distance labels on the canvas.
+     * @param state algorithm state to display for each node
+     */
     public void showAlgorithmResult(Map<Node, AlgorithmAddInfo> state) {
         this.algorithmState = state;
         this.highlightedPath = new ArrayList<>();

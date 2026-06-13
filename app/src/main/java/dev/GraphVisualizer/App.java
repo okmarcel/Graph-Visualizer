@@ -7,6 +7,11 @@ import javafx.stage.Stage;
 
 /** Class App - JavaFX entry point of the application */
 public class App extends Application {
+	/** Creates the JavaFX application entry point. */
+	public App() {
+		super();
+	}
+
 	/**
 	 * Creates and shows the main application window.
 	 * @param stage primary stage provided by JavaFX runtime
