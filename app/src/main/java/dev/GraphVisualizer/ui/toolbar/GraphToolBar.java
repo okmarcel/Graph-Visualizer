@@ -249,8 +249,8 @@ public class GraphToolBar extends ToolBar {
 
         clearAlgoBtn.setOnAction(e -> resetAlgorithmUi());
 
-        undoBtn.setOnAction(e -> { commandManager.undo(); canvas.refresh(); });
-        redoBtn.setOnAction(e -> { commandManager.redo(); canvas.refresh(); });
+        undoBtn.setOnAction(e -> { commandManager.undo(); canvas.syncNodeCounterWithGraph(); canvas.refresh(); });
+        redoBtn.setOnAction(e -> { commandManager.redo(); canvas.syncNodeCounterWithGraph(); canvas.refresh(); });
 
         stepBackBtn.setOnAction(e -> {
             if (algorithmService.stepBack()) {
