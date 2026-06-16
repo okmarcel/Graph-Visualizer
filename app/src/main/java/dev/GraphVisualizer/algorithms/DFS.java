@@ -9,8 +9,7 @@ import java.util.Map;
 /** Class DFS - implementation of depth first search algorithm */
 public final class DFS {
     /** Creates a DFS algorithm helper. */
-    public DFS() {
-    }
+    private DFS() {}
 
     /**
      * Classical CLRS implementation of Depth First Search (Chapter 22.3).

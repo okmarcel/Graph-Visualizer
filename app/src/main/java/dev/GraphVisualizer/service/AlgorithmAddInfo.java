@@ -11,8 +11,10 @@ public final class AlgorithmAddInfo {
     public enum NodeColor {
         /** The node has not yet been visited. */
         WHITE,
+
         /** The node has been discovered and is being processed. */
         GREY,
+        
         /** The node and its neighbors have been fully processed. */
         BLACK;
     }

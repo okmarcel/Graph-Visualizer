@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DFSServiceTest {
-
     private DirectedGraph graph;
     private GraphService graphService;
     private AlgorithmService algorithmService;
@@ -76,7 +75,7 @@ public class DFSServiceTest {
     }
 
     @Test
-    @DisplayName("Full-forest DFS visits nodes unreachable from source in separate DFS trees (CLRS 22.3)")
+    @DisplayName("Full-forest DFS visits nodes unreachable from source in separate DFS trees")
     public void testFullForestVisitsUnreachableNodes() {
         // CLRS DFS outer loop visits every WHITE node even if not reachable from sourceNode.
         // F and G have edges F->A and G->A so they are NOT reachable from A, but the

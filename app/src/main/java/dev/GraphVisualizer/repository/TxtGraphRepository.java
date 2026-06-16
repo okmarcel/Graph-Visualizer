@@ -12,8 +12,7 @@ import java.util.Map;
 /** Class TxtGraphRepository - implementation of GraphRepository for TXT files */
 public final class TxtGraphRepository implements GraphRepository {
     /** Creates a text graph repository. */
-    public TxtGraphRepository() {
-    }
+    public TxtGraphRepository() {}
 
     /**
      * Saves graph to a TXT file as adjacency list

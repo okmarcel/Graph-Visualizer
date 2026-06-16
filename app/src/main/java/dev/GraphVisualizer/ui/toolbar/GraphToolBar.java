@@ -30,7 +30,6 @@ import java.util.Optional;
 
 /** Class GraphToolBar - toolbar controlling editing, persistence and algorithms */
 public class GraphToolBar extends ToolBar {
-
     /** Supported save formats exposed in the save menu */
     private enum SaveFormat {
         JSON("JSON", ".json"),
@@ -69,10 +68,13 @@ public class GraphToolBar extends ToolBar {
 
     /** Graph service used by toolbar actions */
     private final GraphService graphService;
+
     /** Algorithm execution service */
     private final AlgorithmService algorithmService;
+
     /** Shared undo/redo manager */
     private final CommandManager commandManager;
+
     /** Canvas controlled by this toolbar */
     private GraphCanvas canvas;
 
@@ -86,17 +88,22 @@ public class GraphToolBar extends ToolBar {
 
     /** Toggle switching graph directionality */
     private final ToggleButton directedBtn = flagBtn("Directed");
+
     /** Toggle switching graph weighting */
     private final ToggleButton weightedBtn = flagBtn("Weighted");
 
     /** Button running BFS */
     private final Button bfsBtn = algoBtn("BFS");
+
     /** Button running DFS */
     private final Button dfsBtn = algoBtn("DFS");
+
     /** Button running Dijkstra */
     private final Button dijkstraBtn = algoBtn("Dijkstra");
+
     /** Button prompting for a Dijkstra target path */
     private final Button showPathBtn = subtleBtn("Path to…");
+
     /** Button clearing algorithm overlays */
     private final Button clearAlgoBtn = subtleBtn("Clear Results");
 
@@ -105,8 +112,10 @@ public class GraphToolBar extends ToolBar {
 
     /** Step-back button for recorded algorithm states */
     private final Button stepBackBtn = subtleBtn("◀");
+
     /** Step-forward button for recorded algorithm states */
     private final Button stepFwdBtn = subtleBtn("▶");
+
     /** Label showing current algorithm step index */
     private final Label  stepLabel = new Label("—");
 
@@ -114,10 +123,13 @@ public class GraphToolBar extends ToolBar {
 
     /** Current graph directionality flag */
     private boolean directed;
+
     /** Current graph weighting flag */
     private boolean weighted;
+
     /** Source node from the last successful Dijkstra run */
     private Node lastDijkstraSource = null;
+    
     /** Toggle group keeping editing modes mutually exclusive */
     private ToggleGroup modeGroup;
 

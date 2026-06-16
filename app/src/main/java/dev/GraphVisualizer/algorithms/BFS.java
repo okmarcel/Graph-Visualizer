@@ -11,8 +11,7 @@ import java.util.Queue;
 /** Class BFS - implementation of breadth first search algorithm */
 public final class BFS {
     /** Creates a BFS algorithm helper. */
-    public BFS() {
-    }
+    private BFS() {}
 
     /**
      * Classical CLRS implementation of the Breadth First Search algorithm.

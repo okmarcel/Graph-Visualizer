@@ -12,8 +12,7 @@ import java.util.Map;
 /** Class CsvGraphRepository - implementation of GraphRepository for CSV files */
 public final class CsvGraphRepository implements GraphRepository {
     /** Creates a CSV graph repository. */
-    public CsvGraphRepository() {
-    }
+    public CsvGraphRepository() {}
 
     /**
      * Saves graph to a CSV file

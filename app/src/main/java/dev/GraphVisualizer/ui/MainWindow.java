@@ -22,15 +22,19 @@ public class MainWindow {
 
     /** Primary JavaFX stage */
     private final Stage stage;
+
     /** Service managing graph persistence and graph type switching */
     private final GraphService graphService;
+
     /** Service responsible for algorithm execution */
     private final AlgorithmService algorithmService;
+
     /** Shared undo/redo manager */
     private final CommandManager commandManager;
 
     /** Graph direction flag mirrored by toolbar and canvas */
     private boolean directed = false;
+    
     /** Graph weighting flag mirrored by toolbar and canvas */
     private boolean weighted = false;
 

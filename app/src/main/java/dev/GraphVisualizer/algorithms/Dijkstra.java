@@ -10,8 +10,7 @@ import java.util.Set;
 /** Class Dijkstra - implementation of Dijkstra algorithm */
 public final class Dijkstra {
     /** Creates a Dijkstra algorithm helper. */
-    public Dijkstra() {
-    }
+    private Dijkstra() {}
 
     /**
      * Classical CLRS implementation of Dijkstra's algorithm.

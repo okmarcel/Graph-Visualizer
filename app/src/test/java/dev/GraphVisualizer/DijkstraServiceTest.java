@@ -9,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class DijkstraServiceTest {
-
     private WeightedDirectedGraph graph;
     private GraphService graphService;
     private AlgorithmService algorithmService;
@@ -153,6 +152,7 @@ public class DijkstraServiceTest {
         g.addNode(x);
         g.addNode(y);
         g.addNode(z);
+
         // x->y stored normally, z->y stored in reverse — z should be reachable from x
         g.addEdge(new Edge(x, y, 1.0));
         g.addEdge(new Edge(z, y, 2.0));

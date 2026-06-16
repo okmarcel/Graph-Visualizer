@@ -89,8 +89,7 @@ public final class AlgorithmService {
      * Synchronization of state between:
      * - service: graph from graph service
      * - state: map of nodes and their algorithm state
-     * needed when graph changes representation betweeen 
-     * algorithm calls could also use some form of cache or observer pattern 
+     * needed when graph changes representation betweeen algorithm calls 
      */
     private void syncState() {
         for(Node i : service.getGraph().getAllNodes()) {
