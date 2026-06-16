@@ -19,13 +19,19 @@ public final class GraphService {
     /** Instance of TxtGrapRepository */
     private final GraphRepository txtRepository  = new TxtGraphRepository();
 
-    /** Constructor taking graph - build adjacent table for all nodes as well  */
+    /**
+     * Constructor taking graph and building its adjacency table.
+     * @param graph graph managed by this service
+     */
     public GraphService(Graph graph) {
         this.graph = graph;
         this.graph.buildAdjacent();
     }
 
-    /** Saves the current graph to the file selected by the user. */
+    /**
+     * Saves the current graph to the file selected by the user.
+     * @param file destination file
+     */
     public void save(File file) {
         File target = requireFile(file);
         File parent = target.getAbsoluteFile().getParentFile();
@@ -35,7 +41,10 @@ public final class GraphService {
         repositoryFor(target).save(graph, target);
     }
 
-    /** Loads a graph from the file selected by the user. */
+    /**
+     * Loads a graph from the file selected by the user.
+     * @param file source file
+     */
     public void load(File file) {
         File source = requireFile(file);
         if (!source.exists()) {
@@ -54,12 +63,18 @@ public final class GraphService {
         return graph;
     }
 
-    /** Returns whether the current graph type is directed. */
+    /**
+     * Returns whether the current graph type is directed.
+     * @return {@code true} when the current graph is directed
+     */
     public boolean isDirectedGraph() {
         return graph instanceof DirectedGraph || graph instanceof WeightedDirectedGraph;
     }
 
-    /** Returns whether the current graph type is weighted. */
+    /**
+     * Returns whether the current graph type is weighted.
+     * @return {@code true} when the current graph is weighted
+     */
     public boolean isWeightedGraph() {
         return graph instanceof WeightedDirectedGraph || graph instanceof WeightedUndirectedGraph;
     }

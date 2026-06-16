@@ -99,29 +99,44 @@ public final class AlgorithmService {
         state.keySet().retainAll(service.getGraph().getAllNodes());
     }   
 
-    /** Returns the state snapshot at the current step index (or final state if no steps). */
+    /**
+     * Returns the state snapshot at the current step index.
+     * @return current step snapshot, or final state if no steps were recorded
+     */
     public Map<Node, AlgorithmAddInfo> getStepState() {
         if (steps.isEmpty())
             return state;
         return steps.get(stepIndex);
     }
 
-    /** Returns true if there are recorded steps to navigate. */
+    /**
+     * Returns whether there are recorded steps to navigate.
+     * @return {@code true} when more than one step was recorded
+     */
     public boolean hasSteps() {
         return steps.size() > 1;
     }
 
-    /** Returns the 1-based current step number for display. */
+    /**
+     * Returns the 1-based current step number for display.
+     * @return current step number
+     */
     public int getStepIndex() {
         return stepIndex + 1;
     }
 
-    /** Returns the total number of recorded steps. */
+    /**
+     * Returns the total number of recorded steps.
+     * @return number of recorded steps
+     */
     public int getStepCount() {
         return steps.size();
     }
 
-    /** Advances to the next step. Returns true if the move was possible. */
+    /**
+     * Advances to the next step.
+     * @return {@code true} if the move was possible
+     */
     public boolean stepForward() {
         if (stepIndex < steps.size() - 1) {
             stepIndex++; return true;
@@ -129,7 +144,10 @@ public final class AlgorithmService {
         return false;
     }
 
-    /** Goes back to the previous step. Returns true if the move was possible. */
+    /**
+     * Goes back to the previous step.
+     * @return {@code true} if the move was possible
+     */
     public boolean stepBack() {
         if (stepIndex > 0) {
             stepIndex--;
@@ -144,7 +162,11 @@ public final class AlgorithmService {
             stepIndex = 0;
     }
 
-    /** Follows pi pointers from target back to the source and returns the ordered path. */
+    /**
+     * Follows pi pointers from target back to the source and returns the ordered path.
+     * @param target node from which to reconstruct the path
+     * @return ordered path from the source to {@code target}
+     */
     public List<Node> reconstructPath(Node target) {
         List<Node> path = new ArrayList<>();
         Node current = target;
