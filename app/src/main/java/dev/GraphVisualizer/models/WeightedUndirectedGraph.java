@@ -2,7 +2,7 @@ package dev.GraphVisualizer.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map; 
 
 /** Class WeightedUndirectedGraph - class that represents a undirected graph with weighted edges data structure */
@@ -28,7 +28,7 @@ public final class WeightedUndirectedGraph extends Graph {
 
     /** Rebuilds the adjacency list for every node. */
     public void buildAdjacent(){
-        this.adjacent = new HashMap<>();
+        this.adjacent = new LinkedHashMap<>();
         for(Node i : getAllNodes()) {
             adjacent.put(i, new ArrayList<>());
         }
