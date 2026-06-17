@@ -355,14 +355,24 @@ public class GraphCanvas extends Pane {
 
             graphGroup.getChildren().addAll(circle, label);
 
-            // distance label below node when an algorithm has run
+            // distance/time label above node when an algorithm has run
             if (algorithmState != null && algorithmState.containsKey(node)) {
                 double d = algorithmState.get(node).getD();
+                double f = algorithmState.get(node).getF();
                 if (d != Double.POSITIVE_INFINITY) {
                     String dStr = (d == Math.floor(d))
                         ? String.valueOf((long) d)
                         : String.format("%.1f", d);
-                    Text dist = new Text(dStr);
+                    String displayStr;
+                    if (f > 0) {
+                        String fStr = (f == Math.floor(f))
+                            ? String.valueOf((long) f)
+                            : String.format("%.1f", f);
+                        displayStr = dStr + "/" + fStr;
+                    } else {
+                        displayStr = dStr;
+                    }
+                    Text dist = new Text(displayStr);
                     dist.setFill(NODE_LABEL_COLOR);
                     dist.setFont(Font.font("System", FontWeight.BOLD, 16));
                     dist.setX(node.getPositionX() - dist.getLayoutBounds().getWidth() / 2);
