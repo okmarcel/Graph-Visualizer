@@ -386,7 +386,7 @@ public class GraphCanvas extends Pane {
             for (int i = 0; i < highlightedPath.size() - 1; i++) {
                 Node p = highlightedPath.get(i);
                 Node q = highlightedPath.get(i + 1);
-                if ((src.equals(p) && tgt.equals(q)) || (src.equals(q) && tgt.equals(p))) {
+                if ((src.equals(p) && tgt.equals(q)) || (!directed && src.equals(q) && tgt.equals(p))) {
                     onPath = true; break;
                 }
             }
