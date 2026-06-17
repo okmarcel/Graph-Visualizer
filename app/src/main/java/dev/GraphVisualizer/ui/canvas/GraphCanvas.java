@@ -397,35 +397,48 @@ public class GraphCanvas extends Pane {
             double tgtX = tgt.getPositionX();
             double tgtY = tgt.getPositionY();
 
-            Line line = new Line(srcX, srcY, tgtX, tgtY);
+            double dx = tgtX - srcX;
+            double dy = tgtY - srcY;
+            double len = Math.sqrt(dx * dx + dy * dy);
+
+            // Offset parallel edges when a reverse edge also exists
+            boolean hasReverse = directed && graphService.getGraph().getAllEdges().stream()
+                .anyMatch(e -> e.getSource() == tgt && e.getTarget() == src);
+            double offset = hasReverse ? 8.0 : 0.0;
+            double perpX = len == 0 ? 0 : -dy / len * offset;
+            double perpY = len == 0 ? 0 :  dx / len * offset;
+
+            double x1 = srcX + perpX;
+            double y1 = srcY + perpY;
+            double x2 = tgtX + perpX;
+            double y2 = tgtY + perpY;
+
+            Line line = new Line(x1, y1, x2, y2);
             line.setStroke(lineColor);
             line.setStrokeWidth(onPath ? 5 : 3);
             graphGroup.getChildren().add(line);
 
             if (directed) {
-                Polygon arrow = buildArrow(srcX, srcY, tgtX, tgtY);
+                Polygon arrow = buildArrow(x1, y1, x2, y2);
                 arrow.setFill(lineColor);
                 graphGroup.getChildren().add(arrow);
             }
 
             if (weighted) {
-                double midX = (srcX + tgtX) / 2;
-                double midY = (srcY + tgtY) / 2;
-                double dx = tgtX - srcX;
-                double dy = tgtY - srcY;
-                double len = Math.sqrt(dx * dx + dy * dy);
-                double perpX = len == 0 ? 0 : -dy / len * 14;
-                double perpY = len == 0 ? 0 :  dx / len * 14;
+                double midX = (x1 + x2) / 2;
+                double midY = (y1 + y2) / 2;
+                double wPerpX = len == 0 ? 0 : -dy / len * 14;
+                double wPerpY = len == 0 ? 0 :  dx / len * 14;
                 Text wLabel = new Text(String.format("%.1f", edge.getWeight()));
                 wLabel.setFill(EDGE_WEIGHT_COLOR);
                 wLabel.setFont(Font.font("System", FontWeight.BOLD, 13));
-                wLabel.setX(midX + perpX - wLabel.getLayoutBounds().getWidth() / 2);
-                wLabel.setY(midY + perpY + wLabel.getLayoutBounds().getHeight() / 4);
+                wLabel.setX(midX + wPerpX - wLabel.getLayoutBounds().getWidth() / 2);
+                wLabel.setY(midY + wPerpY + wLabel.getLayoutBounds().getHeight() / 4);
                 graphGroup.getChildren().add(wLabel);
             }
 
             // Wide transparent hit area so the edge is easy to click
-            Line hitLine = new Line(srcX, srcY, tgtX, tgtY);
+            Line hitLine = new Line(x1, y1, x2, y2);
             hitLine.setStroke(Color.TRANSPARENT);
             hitLine.setStrokeWidth(14);
             hitLine.setOnMouseClicked(e -> {
