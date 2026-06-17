@@ -215,7 +215,7 @@ public class GraphToolBar extends ToolBar {
                 () -> { savedNodes.forEach(graph::addNode); savedEdges.forEach(graph::addEdge); }
             );
             resetAlgorithmUi();
-            canvas.clearBends();
+
             canvas.resetNodeCounter();
             canvas.setMode(CanvasMode.PAN);
             panBtn.setSelected(true);
@@ -227,7 +227,7 @@ public class GraphToolBar extends ToolBar {
             directed = directedBtn.isSelected();
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
-            canvas.clearBends();
+
             resetAlgorithmUi();
             canvas.updateGraphType(directed, weighted);
         });
@@ -250,7 +250,7 @@ public class GraphToolBar extends ToolBar {
             weighted = nowWeighted;
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
-            canvas.clearBends();
+
             resetAlgorithmUi();
             canvas.updateGraphType(directed, weighted);
         });
@@ -352,7 +352,6 @@ public class GraphToolBar extends ToolBar {
         directedBtn.setSelected(directed);
         weightedBtn.setSelected(weighted);
         commandManager.clear();
-        canvas.clearBends();
         resetAlgorithmUi();
         canvas.updateGraphType(directed, weighted);
         canvas.syncNodeCounterWithGraph();
