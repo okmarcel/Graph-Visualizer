@@ -10,7 +10,9 @@ import dev.GraphVisualizer.service.GraphService;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
@@ -18,8 +20,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
+import javafx.scene.shape.QuadCurve;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -30,6 +32,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.transform.Affine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +61,9 @@ public class GraphCanvas extends Pane {
     private static final double SCALE_MIN  = 0.2;
     private static final double SCALE_MAX  = 3.0;
     private static final double NODE_RADIUS = 22.0;
+
+    /** Radius of bend-handle circles drawn at each edge midpoint in PAN mode */
+    private static final double BEND_HANDLE_RADIUS = 7.0;
 
     /** Graph service used as the canvas data source */
     private final GraphService graphService;
@@ -104,11 +110,17 @@ public class GraphCanvas extends Pane {
     /** Shared transform used for zooming and panning */
     private final Affine viewTransform = new Affine();
 
-    /** Reverse lookup from rendered node circles to model nodes */
-    private final Map<Circle, Node> circleToNode = new HashMap<>();
+    /**
+     * Per-edge bend offsets: [offsetX, offsetY] relative to the straight-line
+     * midpoint.  Absent means straight (or auto-curved for antiparallel pairs).
+     */
+    private final Map<Edge, double[]> edgeBend = new HashMap<>();
 
-    /** Reverse lookup from rendered edge lines to model edges */
-    private final Map<Line, Edge> lineToEdge = new HashMap<>();
+    /** Edge whose bend handle is currently being dragged, or null. */
+    private Edge bendingEdge = null;
+
+    /** Bend offset captured at the start of the current bend drag. */
+    private double[] bendOrigOffset = null;
 
     /** Algorithm state overlay, null when no algorithm has been run */
     private Map<Node, AlgorithmAddInfo> algorithmState = null;
@@ -136,7 +148,7 @@ public class GraphCanvas extends Pane {
 
         /** Adds an edge between selected nodes. */
         ADD_EDGE,
-        
+
         /** Removes the selected node or edge. */
         REMOVE
     }
@@ -311,11 +323,14 @@ public class GraphCanvas extends Pane {
         viewTransform.setToIdentity();
     }
 
+    /** Removes all stored bend offsets, reverting every edge to a straight line. */
+    public void clearBends() {
+        edgeBend.clear();
+    }
+
     /** Redraws the whole graph view from the current model state. */
     public void refresh() {
         graphGroup.getChildren().clear();
-        circleToNode.clear();
-        lineToEdge.clear();
         drawEdges();
         drawNodes();
     }
@@ -360,7 +375,6 @@ public class GraphCanvas extends Pane {
                 e.consume();
             });
 
-            circleToNode.put(circle, node);
             graphGroup.getChildren().addAll(circle, label);
 
             // distance label below node when an algorithm has run
@@ -382,13 +396,14 @@ public class GraphCanvas extends Pane {
         }
     }
 
-    /** Draws all edges, arrows, weights and invisible hit areas. */
+    /** Draws all edges, arrows, weights, bend handles and invisible hit areas. */
     private void drawEdges() {
         for (Edge edge : graphService.getGraph().getAllEdges()) {
             Node src = edge.getSource();
             Node tgt = edge.getTarget();
             if (src == null || tgt == null)
                 continue;
+
             boolean onPath = false;
             for (int i = 0; i < highlightedPath.size() - 1; i++) {
                 Node p = highlightedPath.get(i);
@@ -398,39 +413,66 @@ public class GraphCanvas extends Pane {
                 }
             }
             Color lineColor = onPath ? PATH_COLOR : EDGE_COLOR;
-            Line line = new Line(src.getPositionX(), src.getPositionY(), tgt.getPositionX(), tgt.getPositionY());
-            line.setStroke(lineColor);
-            line.setStrokeWidth(onPath ? 5 : 3);
-            lineToEdge.put(line, edge);
-            graphGroup.getChildren().add(line);
+
+            double srcX = src.getPositionX();
+            double srcY = src.getPositionY();
+            double tgtX = tgt.getPositionX();
+            double tgtY = tgt.getPositionY();
+
+            double midX = (srcX + tgtX) / 2;
+            double midY = (srcY + tgtY) / 2;
+
+            double[] bend = getEffectiveBend(edge);
+            double ctrlX = midX + 2 * bend[0];
+            double ctrlY = midY + 2 * bend[1];
+
+            QuadCurve curve = new QuadCurve(srcX, srcY, ctrlX, ctrlY, tgtX, tgtY);
+            curve.setFill(null);
+            curve.setStroke(lineColor);
+            curve.setStrokeWidth(onPath ? 5 : 3);
+            graphGroup.getChildren().add(curve);
 
             if (directed) {
-                Polygon arrow = buildArrow(src, tgt);
+                Polygon arrow = buildArrow(ctrlX, ctrlY, tgtX, tgtY);
                 arrow.setFill(lineColor);
                 graphGroup.getChildren().add(arrow);
             }
 
             if (weighted) {
-                double mx = (src.getPositionX() + tgt.getPositionX()) / 2;
-                double my = (src.getPositionY() + tgt.getPositionY()) / 2;
-                double edgeDx = tgt.getPositionX() - src.getPositionX();
-                double edgeDy = tgt.getPositionY() - src.getPositionY();
+                // point on the quadratic curve at t=0.5
+                double labelX = 0.25 * srcX + 0.5 * ctrlX + 0.25 * tgtX;
+                double labelY = 0.25 * srcY + 0.5 * ctrlY + 0.25 * tgtY;
+                double edgeDx = tgtX - srcX;
+                double edgeDy = tgtY - srcY;
                 double edgeLen = Math.sqrt(edgeDx * edgeDx + edgeDy * edgeDy);
                 double perpX = edgeLen == 0 ? 0 : -edgeDy / edgeLen * 14;
-                double perpY = edgeLen == 0 ? 0 : edgeDx / edgeLen * 14;
+                double perpY = edgeLen == 0 ? 0 :  edgeDx / edgeLen * 14;
                 Text wLabel = new Text(String.format("%.1f", edge.getWeight()));
                 wLabel.setFill(EDGE_WEIGHT_COLOR);
                 wLabel.setFont(Font.font("System", FontWeight.BOLD, 13));
-                wLabel.setX(mx + perpX - wLabel.getLayoutBounds().getWidth() / 2);
-                wLabel.setY(my + perpY + wLabel.getLayoutBounds().getHeight() / 4);
+                wLabel.setX(labelX + perpX - wLabel.getLayoutBounds().getWidth() / 2);
+                wLabel.setY(labelY + perpY + wLabel.getLayoutBounds().getHeight() / 4);
                 graphGroup.getChildren().add(wLabel);
             }
 
-            // Wide transparent line on top so edges are easy to click
-            Line hitLine = new Line(src.getPositionX(), src.getPositionY(), tgt.getPositionX(), tgt.getPositionY());
-            hitLine.setStroke(Color.TRANSPARENT);
-            hitLine.setStrokeWidth(14);
-            hitLine.setOnMouseClicked(e -> {
+            // Bend handle - visible in PAN mode so the user can drag to curve the edge
+            if (mode == CanvasMode.PAN) {
+                double handleX = midX + bend[0];
+                double handleY = midY + bend[1];
+                Circle handle = new Circle(handleX, handleY, BEND_HANDLE_RADIUS);
+                handle.setFill(darkTheme ? Color.web("#334155") : Color.web("#cbd5e1"));
+                handle.setStroke(EDGE_COLOR.brighter());
+                handle.setStrokeWidth(1.5);
+                handle.setMouseTransparent(true); // picked up by the pan event filter
+                graphGroup.getChildren().add(handle);
+            }
+
+            // Wide transparent hit area so the edge is easy to click
+            QuadCurve hitCurve = new QuadCurve(srcX, srcY, ctrlX, ctrlY, tgtX, tgtY);
+            hitCurve.setFill(Color.TRANSPARENT);
+            hitCurve.setStroke(Color.TRANSPARENT);
+            hitCurve.setStrokeWidth(14);
+            hitCurve.setOnMouseClicked(e -> {
                 if (e.getButton() == MouseButton.SECONDARY) {
                     handleEdgeDoubleClick(edge);
                     e.consume();
@@ -438,25 +480,82 @@ public class GraphCanvas extends Pane {
                 }
                 if (e.getClickCount() == 2) {
                     handleEdgeDoubleClick(edge);
-                }
-                else {
+                } else {
                     handleEdgeClick(edge, e);
                 }
                 e.consume();
             });
-            graphGroup.getChildren().add(hitLine);
+            graphGroup.getChildren().add(hitCurve);
         }
     }
 
     /**
-     * Builds an arrow head polygon for a directed edge.
-     * @param src source node
-     * @param tgt target node
+     * Returns the effective bend offset [offsetX, offsetY] for an edge.
+     * When the user has set a manual bend it is returned as-is.  For directed
+     * graphs where both A→B and B→A exist, a perpendicular auto-offset is
+     * applied so the two curves do not overlap.  Otherwise [0, 0] is returned.
+     *
+     * @param edge edge to query
+     * @return bend offset array (never null)
+     */
+    private double[] getEffectiveBend(Edge edge) {
+        if (edgeBend.containsKey(edge)) {
+            return edgeBend.get(edge);
+        }
+        if (directed) {
+            Node src = edge.getSource();
+            Node tgt = edge.getTarget();
+            boolean hasReverse = graphService.getGraph().getAllEdges().stream()
+                .anyMatch(e -> e != edge && e.getSource() == tgt && e.getTarget() == src);
+            if (hasReverse) {
+                double dx = tgt.getPositionX() - src.getPositionX();
+                double dy = tgt.getPositionY() - src.getPositionY();
+                double len = Math.sqrt(dx * dx + dy * dy);
+                if (len > 0) {
+                    return new double[]{ -dy / len * 22, dx / len * 22 };
+                }
+            }
+        }
+        return new double[]{ 0, 0 };
+    }
+
+    /**
+     * Finds the edge whose bend handle is closest to the given graph-space point.
+     * @param gx x coordinate in graph space
+     * @param gy y coordinate in graph space
+     * @return the matching edge, or null when no handle is nearby
+     */
+    private Edge getBendHandleAt(double gx, double gy) {
+        for (Edge edge : graphService.getGraph().getAllEdges()) {
+            Node src = edge.getSource();
+            Node tgt = edge.getTarget();
+            if (src == null || tgt == null) continue;
+            double[] bend = getEffectiveBend(edge);
+            double handleX = (src.getPositionX() + tgt.getPositionX()) / 2 + bend[0];
+            double handleY = (src.getPositionY() + tgt.getPositionY()) / 2 + bend[1];
+            double dx = gx - handleX;
+            double dy = gy - handleY;
+            if (Math.sqrt(dx * dx + dy * dy) <= BEND_HANDLE_RADIUS + 3) {
+                return edge;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Builds an arrow head polygon for a directed edge drawn as a quadratic curve.
+     * The tip direction is the tangent of the curve at t=1, which equals the
+     * direction from the control point to the end point.
+     *
+     * @param ctrlX x coordinate of the quadratic control point
+     * @param ctrlY y coordinate of the quadratic control point
+     * @param tgtX  x coordinate of the target node centre
+     * @param tgtY  y coordinate of the target node centre
      * @return polygon representing the arrow head
      */
-    private Polygon buildArrow(Node src, Node tgt) {
-        double dx = tgt.getPositionX() - src.getPositionX();
-        double dy = tgt.getPositionY() - src.getPositionY();
+    private Polygon buildArrow(double ctrlX, double ctrlY, double tgtX, double tgtY) {
+        double dx = tgtX - ctrlX;
+        double dy = tgtY - ctrlY;
         double len = Math.sqrt(dx * dx + dy * dy);
         if (len == 0) {
             return new Polygon();
@@ -465,8 +564,8 @@ public class GraphCanvas extends Pane {
         double ux = dx / len;
         double uy = dy / len;
 
-        double tipX = tgt.getPositionX() - ux * NODE_RADIUS;
-        double tipY = tgt.getPositionY() - uy * NODE_RADIUS;
+        double tipX = tgtX - ux * NODE_RADIUS;
+        double tipY = tgtY - uy * NODE_RADIUS;
 
         double arrowLen  = 14;
         double arrowHalf = 6;
@@ -526,8 +625,11 @@ public class GraphCanvas extends Pane {
 
     /**
      * Handles a click on a node according to the active canvas mode.
+     * In ADD_EDGE mode clicking the already-selected node deselects it,
+     * and adding an edge that already exists between the two nodes is blocked.
+     *
      * @param node clicked node
-     * @param e original mouse event
+     * @param e    original mouse event
      */
     private void handleNodeClick(Node node, MouseEvent e) {
         switch (mode) {
@@ -535,25 +637,44 @@ public class GraphCanvas extends Pane {
                 if (selectedNode == null) {
                     selectedNode = node;
                     refresh();
-                } else if (selectedNode != node) {
+                } else if (selectedNode == node) {
+                    // clicking the same node again deselects it
+                    selectedNode = null;
+                    refresh();
+                } else {
+                    // Block duplicate edges (same pair regardless of direction for undirected)
+                    Graph graph = graphService.getGraph();
+                    Node src = selectedNode;
+                    boolean edgeExists = graph.getAllEdges().stream().anyMatch(ed -> {
+                        if (directed) {
+                            return ed.getSource() == src && ed.getTarget() == node;
+                        } else {
+                            return (ed.getSource() == src && ed.getTarget() == node)
+                                || (ed.getSource() == node && ed.getTarget() == src);
+                        }
+                    });
+                    if (edgeExists) {
+                        selectedNode = null;
+                        refresh();
+                        break;
+                    }
+
                     double w = 1.0;
                     if (weighted) {
                         TextInputDialog wd = new TextInputDialog("1.0");
                         wd.setTitle("Edge weight");
                         String sep = directed ? " → " : " — ";
-                        wd.setHeaderText(selectedNode.getLabel() + sep + node.getLabel());
+                        wd.setHeaderText(src.getLabel() + sep + node.getLabel());
                         wd.setContentText("Weight:");
                         wd.initOwner(getScene().getWindow());
                         styleDialog(wd);
                         Optional<String> wr = wd.showAndWait();
-                        if (wr.isEmpty()) { selectedNode = null; refresh(); return; }
+                        if (wr.isEmpty()) { selectedNode = null; refresh(); break; }
                         try { w = Double.parseDouble(wr.get()); }
-                        catch (NumberFormatException ignored) { selectedNode = null; refresh(); return; }
+                        catch (NumberFormatException ignored) { selectedNode = null; refresh(); break; }
                     }
                     double finalW = w;
-                    Node src = selectedNode;
                     Edge newEdge = new Edge(src, node, finalW);
-                    Graph graph = graphService.getGraph();
                     commandManager.push(
                         () -> graph.addEdge(newEdge),
                         () -> graph.removeEdge(newEdge)
@@ -580,7 +701,7 @@ public class GraphCanvas extends Pane {
     /**
      * Handles a click on an edge according to the active canvas mode.
      * @param edge clicked edge
-     * @param e original mouse event
+     * @param e    original mouse event
      */
     private void handleEdgeClick(Edge edge, MouseEvent e) {
         if (mode == CanvasMode.REMOVE) {
@@ -595,6 +716,8 @@ public class GraphCanvas extends Pane {
 
     /**
      * Opens a rename dialog for the given node.
+     * Rejects the new label when another node already uses it.
+     *
      * @param node node to rename
      */
     private void handleNodeDoubleClick(Node node) {
@@ -605,7 +728,18 @@ public class GraphCanvas extends Pane {
         dialog.initOwner(getScene().getWindow());
         styleDialog(dialog);
         Optional<String> result = dialog.showAndWait();
-        result.filter(s -> !s.isBlank()).ifPresent(s -> {
+        result.filter(s -> !s.isBlank() && !s.equals(node.getLabel())).ifPresent(s -> {
+            boolean duplicate = graphService.getGraph().getAllNodes().stream()
+                .anyMatch(n -> n != node && n.getLabel().equals(s));
+            if (duplicate) {
+                Alert alert = new Alert(Alert.AlertType.WARNING,
+                    "A node labeled \"" + s + "\" already exists.", ButtonType.OK);
+                alert.setTitle("Duplicate label");
+                alert.setHeaderText(null);
+                alert.initOwner(getScene().getWindow());
+                alert.showAndWait();
+                return;
+            }
             String oldLabel = node.getLabel();
             commandManager.push(
                 () -> node.setLabel(s),
@@ -665,8 +799,8 @@ public class GraphCanvas extends Pane {
     /**
      * Creates a single legend row.
      * @param color color sample shown in the row
-     * @param text legend label
-     * @param fg foreground text color
+     * @param text  legend label
+     * @param fg    foreground text color
      * @return configured legend row
      */
     private HBox legendItem(Color color, String text, String fg) {
@@ -755,7 +889,6 @@ public class GraphCanvas extends Pane {
         double oldScale = scale;
         scale = Math.max(SCALE_MIN, Math.min(SCALE_MAX, scale + delta));
         if (scale == oldScale) return;
-        // zoom towards the centre of the visible viewport
         double cx = getWidth() / 2.0;
         double cy = getHeight() / 2.0;
         translateX = cx - (cx - translateX) * scale / oldScale;
@@ -766,20 +899,29 @@ public class GraphCanvas extends Pane {
         viewTransform.setTy(translateY);
     }
 
-    /** Registers panning and node-dragging mouse handlers. */
+    /** Registers panning, node-dragging and bend-handle dragging mouse handlers. */
     private void addPanHandlers() {
         addEventFilter(MouseEvent.MOUSE_PRESSED, e -> {
             if (zoomControls.getBoundsInParent().contains(e.getX(), e.getY())) {
                 isPanning = false;
                 return;
             }
-            double gx  = screenToGraphX(e.getX());
-            double gy  = screenToGraphY(e.getY());
-            Node hit = getNodeAt(gx, gy);
-            if (mode == CanvasMode.PAN && hit != null && e.getButton() == MouseButton.PRIMARY) {
-                draggingNode  = hit;
-                dragNodeOrigX = hit.getPositionX();
-                dragNodeOrigY = hit.getPositionY();
+            double gx = screenToGraphX(e.getX());
+            double gy = screenToGraphY(e.getY());
+
+            Edge bendHit = (mode == CanvasMode.PAN) ? getBendHandleAt(gx, gy) : null;
+            Node nodeHit = getNodeAt(gx, gy);
+
+            if (bendHit != null && e.getButton() == MouseButton.PRIMARY) {
+                // Start bend drag - takes priority over node drag and pan
+                bendingEdge    = bendHit;
+                bendOrigOffset = Arrays.copyOf(getEffectiveBend(bendHit), 2);
+                isDraggingNode = false;
+                isPanning      = false;
+            } else if (mode == CanvasMode.PAN && nodeHit != null && e.getButton() == MouseButton.PRIMARY) {
+                draggingNode   = nodeHit;
+                dragNodeOrigX  = nodeHit.getPositionX();
+                dragNodeOrigY  = nodeHit.getPositionY();
                 isDraggingNode = true;
                 isPanning      = false;
             } else if (mode == CanvasMode.PAN && e.getButton() == MouseButton.PRIMARY) {
@@ -791,7 +933,19 @@ public class GraphCanvas extends Pane {
         });
 
         addEventFilter(MouseEvent.MOUSE_DRAGGED, e -> {
-            if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
+            if (bendingEdge != null) {
+                // Update the manual bend offset for the edge being dragged
+                Node src = bendingEdge.getSource();
+                Node tgt = bendingEdge.getTarget();
+                double midX = (src.getPositionX() + tgt.getPositionX()) / 2;
+                double midY = (src.getPositionY() + tgt.getPositionY()) / 2;
+                double[] offset = edgeBend.computeIfAbsent(bendingEdge, k -> new double[]{ 0, 0 });
+                offset[0] = screenToGraphX(e.getX()) - midX;
+                offset[1] = screenToGraphY(e.getY()) - midY;
+                graphService.getGraph().setCache(true);
+                refresh();
+                e.consume();
+            } else if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
                 draggingNode.setPositionX(screenToGraphX(e.getX()));
                 draggingNode.setPositionY(screenToGraphY(e.getY()));
                 graphService.getGraph().setCache(true);
@@ -807,10 +961,28 @@ public class GraphCanvas extends Pane {
         });
 
         addEventFilter(MouseEvent.MOUSE_RELEASED, e -> {
-            if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
-                Node node = draggingNode;
-                double newX = node.getPositionX();
-                double newY = node.getPositionY();
+            if (bendingEdge != null) {
+                Edge edge = bendingEdge;
+                double[] finalOffset = Arrays.copyOf(edgeBend.getOrDefault(edge, new double[]{ 0, 0 }), 2);
+                double[] origOffset  = bendOrigOffset;
+                if (finalOffset[0] != origOffset[0] || finalOffset[1] != origOffset[1]) {
+                    nodeDragConsumed = true;
+                    commandManager.push(
+                        () -> { edgeBend.put(edge, Arrays.copyOf(finalOffset, 2)); refresh(); },
+                        () -> {
+                            if (origOffset[0] == 0 && origOffset[1] == 0) edgeBend.remove(edge);
+                            else edgeBend.put(edge, Arrays.copyOf(origOffset, 2));
+                            refresh();
+                        }
+                    );
+                }
+                bendingEdge    = null;
+                bendOrigOffset = null;
+                isPanning      = false;
+            } else if (mode == CanvasMode.PAN && isDraggingNode && draggingNode != null) {
+                Node node  = draggingNode;
+                double newX  = node.getPositionX();
+                double newY  = node.getPositionY();
                 double origX = dragNodeOrigX;
                 double origY = dragNodeOrigY;
                 if (newX != origX || newY != origY) {
@@ -822,8 +994,8 @@ public class GraphCanvas extends Pane {
                 }
             }
             isDraggingNode = false;
-            draggingNode = null;
-            isPanning = false;
+            draggingNode   = null;
+            isPanning      = false;
         });
     }
 }
