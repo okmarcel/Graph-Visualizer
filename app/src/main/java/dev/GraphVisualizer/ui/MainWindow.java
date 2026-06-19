@@ -84,8 +84,8 @@ public class MainWindow {
     }
 
     /**
-     * Populates the initial sample graph visible after application start.
-     * @param graph graph to populate
+     * Initializes the sample graph visible after application start.
+     * @param graph graph to initialize
      */
     private void initializeSampleGraph(Graph graph) {
         Node nodeA = new Node("A", 300, 150);

@@ -12,7 +12,7 @@ public final class DFS {
     private DFS() {}
 
     /**
-     * Classical CLRS implementation of Depth First Search (Chapter 22.3).
+     * Classical CLRS implementation of Depth First Search.
      * Visits sourceNode first, then continues from any remaining WHITE nodes (full-forest).
      * @param adjacent adjacency list for all nodes
      * @param state mutable algorithm state for all nodes

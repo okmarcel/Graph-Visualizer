@@ -77,9 +77,6 @@ public class DFSServiceTest {
     @Test
     @DisplayName("Full-forest DFS visits nodes unreachable from source in separate DFS trees")
     public void testFullForestVisitsUnreachableNodes() {
-        // CLRS DFS outer loop visits every WHITE node even if not reachable from sourceNode.
-        // F and G have edges F->A and G->A so they are NOT reachable from A, but the
-        // full-forest loop still visits them — they just have pi==null (no parent from A).
         Node f = new Node("F", 4.0, 0.0);
         Node g = new Node("G", 5.0, 0.0);
         graph.addNode(f);

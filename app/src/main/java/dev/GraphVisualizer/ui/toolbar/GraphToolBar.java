@@ -290,7 +290,7 @@ public class GraphToolBar extends ToolBar {
         });
     }
 
-    /** Populates the save menu with supported output formats. */
+    /** Initializes the save menu with supported output formats. */
     private void initializeSaveMenu() {
         for (SaveFormat format : SaveFormat.values()) {
             MenuItem item = format.toMenuItem();

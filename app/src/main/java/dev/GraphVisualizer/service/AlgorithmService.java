@@ -13,7 +13,7 @@ public final class AlgorithmService {
     /** Graph representation plus the adjacency list for every node */
     private GraphService service;
 
-    /** Map holding the state of AlgorithmAddInfo needed for algorithm maped to every node in graph */
+    /** Map holding the state of AlgorithmAddInfo needed for algorithm maps every node in the graph */
     private Map<Node, AlgorithmAddInfo> state;
 
     /** Snapshots of state recorded after each significant algorithm step */
@@ -89,7 +89,7 @@ public final class AlgorithmService {
      * Synchronization of state between:
      * - service: graph from graph service
      * - state: map of nodes and their algorithm state
-     * needed when graph changes representation betweeen algorithm calls 
+     * needed when graph changes representation between algorithm calls 
      */
     private void syncState() {
         for(Node i : service.getGraph().getAllNodes()) {

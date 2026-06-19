@@ -54,11 +54,10 @@ public abstract sealed class Graph permits UndirectedGraph, DirectedGraph,  Weig
      * @param node node to be removed from graph
      */
     public void removeNode(Node node) {
-        cache = true;
         if (!nodes.remove(node)) {
-            System.out.println("Tried to remove a node that is not part of the graph.");
-            cache = false;
+            throw new IllegalArgumentException("Tried to remove a node that is not part of the graph.");
         }
+        cache = true;
     }
 
     /**
@@ -66,11 +65,10 @@ public abstract sealed class Graph permits UndirectedGraph, DirectedGraph,  Weig
      * @param edge edge to be removed from graph
      */
     public void removeEdge(Edge edge) {
-        cache = true;
         if (!edges.remove(edge)) {
-            System.out.println("Tried to remove an edge that is not part of the graph.");
-            cache = false;
+            throw new IllegalArgumentException("Tried to remove an edge that is not part of the graph.");
         }
+        cache = true;
     }
 
     /**
@@ -140,7 +138,7 @@ public abstract sealed class Graph permits UndirectedGraph, DirectedGraph,  Weig
     }
 
     /**
-     * Rebuilds the adjacency table for the graph from the current nodes and edges.
+     * Rebuilds the adjacency list for the graph from the current nodes and edges.
      */
     public abstract void buildAdjacent();
 

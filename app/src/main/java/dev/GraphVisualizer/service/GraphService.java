@@ -10,13 +10,13 @@ public final class GraphService {
     /** Member graph - instance of class Graph */
     private Graph graph;
 
-    /** Instance of JsonGrapRepository */
+    /** Instance of JsonGraphRepository */
     private final GraphRepository jsonRepository = new JsonGraphRepository();
     
-    /** Instance of CsvGrapRepository */  
+    /** Instance of CsvGraphRepository */  
     private final GraphRepository csvRepository  = new CsvGraphRepository();
     
-    /** Instance of TxtGrapRepository */
+    /** Instance of TxtGraphRepository */
     private final GraphRepository txtRepository  = new TxtGraphRepository();
 
     /**
