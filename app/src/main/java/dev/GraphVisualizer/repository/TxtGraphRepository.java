@@ -32,14 +32,14 @@ public final class TxtGraphRepository implements GraphRepository {
         StringBuilder sb = new StringBuilder();
         sb.append("TYPE ").append(graph.getClass().getSimpleName()).append("\n");
         sb.append("NODES ").append(graph.getNumberOfNodes()).append("\n");
-        for(Node n : graph.getAllNodes()) {
+        for (Node n : graph.getAllNodes()) {
             sb.append(n.getId()).append(" ")
               .append(n.getLabel()).append(" ")
               .append(n.getPositionX()).append(" ")
               .append(n.getPositionY()).append("\n");
         }
         sb.append("EDGES ").append(graph.getNumberOfEdges()).append("\n");
-        for(Edge e : graph.getAllEdges()) {
+        for (Edge e : graph.getAllEdges()) {
             sb.append(e.getSource().getId()).append(" ")
               .append(e.getTarget().getId()).append(" ")
               .append(e.getWeight()).append("\n");
@@ -60,39 +60,69 @@ public final class TxtGraphRepository implements GraphRepository {
     public Graph load(File file) {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            if(lines.isEmpty())
+            if (lines.isEmpty()) {
                 throw new GraphIOException("File is empty: " + file.getPath(), null);
-
-            String type = lines.get(0).split(" ")[1];
-            Graph graph = switch(type) {
-                case "DirectedGraph" -> new DirectedGraph();
-                case "UndirectedGraph" -> new UndirectedGraph();
-                case "WeightedDirectedGraph" -> new WeightedDirectedGraph();
-                default -> new WeightedUndirectedGraph();
-            };
-
-            int nodeCount = Integer.parseInt(lines.get(1).split(" ")[1]);
-            Map<String, Node> nodeMap = new HashMap<>();
-            for(int i = 2; i < 2 + nodeCount; i++) {
-                String[] parts = lines.get(i).split(" ");
-                Node n = new Node(parts[1], Double.parseDouble(parts[2]), Double.parseDouble(parts[3]));
-                nodeMap.put(parts[0], n);
-                graph.addNode(n);
             }
 
+            if (lines.size() < 2) {
+                throw GraphLoadValidator.invalid(file, "Missing NODES header.");
+            }
+
+            String[] typeHeader = splitLine(lines.get(0));
+            GraphLoadValidator.requireParts(typeHeader, 2, file, 1);
+            GraphLoadValidator.requireKeyword(typeHeader[0], "TYPE", file, 1);
+            Graph graph = GraphLoadValidator.newGraph(typeHeader[1], file);
+
+            String[] nodeHeader = splitLine(lines.get(1));
+            GraphLoadValidator.requireParts(nodeHeader, 2, file, 2);
+            GraphLoadValidator.requireKeyword(nodeHeader[0], "NODES", file, 2);
+            int nodeCount = GraphLoadValidator.parseCount(nodeHeader[1], file, "node count");
+            if (lines.size() < 3 + nodeCount) {
+                throw GraphLoadValidator.invalid(file, "Missing EDGES header.");
+            }
+
+            Map<String, Node> nodeMap = new HashMap<>();
+            for (int i = 2; i < 2 + nodeCount; ++i) {
+                String[] parts = splitLine(lines.get(i));
+                GraphLoadValidator.requireParts(parts, 4, file, i + 1);
+                GraphLoadValidator.addNode(
+                    graph,
+                    nodeMap,
+                    parts[0],
+                    parts[1],
+                    GraphLoadValidator.parseDouble(parts[2], file, "node x"),
+                    GraphLoadValidator.parseDouble(parts[3], file, "node y"),
+                    file
+                );
+            }
+
+            String[] edgeHeader = splitLine(lines.get(2 + nodeCount));
+            GraphLoadValidator.requireParts(edgeHeader, 2, file, 3 + nodeCount);
+            GraphLoadValidator.requireKeyword(edgeHeader[0], "EDGES", file, 3 + nodeCount);
             int edgeStart = 2 + nodeCount + 1;
-            int edgeCount = Integer.parseInt(lines.get(2 + nodeCount).split(" ")[1]);
-            for(int i = edgeStart; i < edgeStart + edgeCount; i++) {
-                String[] parts = lines.get(i).split(" ");
-                graph.addEdge(new Edge(
-                    nodeMap.get(parts[0]),
-                    nodeMap.get(parts[1]),
-                    Double.parseDouble(parts[2])
-                ));
+            int edgeCount = GraphLoadValidator.parseCount(edgeHeader[1], file, "edge count");
+            if (lines.size() != edgeStart + edgeCount) {
+                throw GraphLoadValidator.invalid(file, "Edge count does not match file contents.");
+            }
+
+            for (int i = edgeStart; i < edgeStart + edgeCount; ++i) {
+                String[] parts = splitLine(lines.get(i));
+                GraphLoadValidator.requireParts(parts, 3, file, i + 1);
+                GraphLoadValidator.addEdge(
+                    graph,
+                    GraphLoadValidator.requireNode(nodeMap, parts[0], file, "source node id"),
+                    GraphLoadValidator.requireNode(nodeMap, parts[1], file, "target node id"),
+                    GraphLoadValidator.parseDouble(parts[2], file, "edge weight"),
+                    file
+                );
             }
             return graph;
         } catch(IOException e) {
             throw new GraphIOException("Failed to load graph from file: " + file.getPath(), e);
         }
+    }
+
+    private String[] splitLine(String line) {
+        return line.trim().split("\\s+");
     }
 }

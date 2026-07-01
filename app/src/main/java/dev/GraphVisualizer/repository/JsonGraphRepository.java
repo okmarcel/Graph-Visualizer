@@ -26,10 +26,10 @@ public final class JsonGraphRepository implements GraphRepository {
         public String label;
 
         /** Stored x position */
-        public double x;
+        public Double x;
 
         /** Stored y position */
-        public double y;
+        public Double y;
     }
 
     /** DTO representing a single edge inside JSON graph files */
@@ -41,7 +41,7 @@ public final class JsonGraphRepository implements GraphRepository {
         public String targetId;
 
         /** Stored edge weight */
-        public double weight;
+        public Double weight;
     }
 
     /** DTO representing the full serialized graph payload */
@@ -98,24 +98,37 @@ public final class JsonGraphRepository implements GraphRepository {
     public Graph load(File file) {
         try {
             GraphDTO dto = mapper.readValue(file, GraphDTO.class);
-            Graph graph = switch(dto.type) {
-                case "DirectedGraph" -> new DirectedGraph();
-                case "UndirectedGraph" -> new UndirectedGraph();
-                case "WeightedDirectedGraph" -> new WeightedDirectedGraph();
-                default -> new WeightedUndirectedGraph();
-            };
-            Map<String, Node> nodeMap = new HashMap<>();
-            for(NodeDTO nd : dto.nodes) {
-                Node n = new Node(nd.label, nd.x, nd.y);
-                nodeMap.put(nd.id, n);
-                graph.addNode(n);
+            if (dto == null) {
+                throw GraphLoadValidator.invalid(file, "Missing graph object.");
             }
-            for(EdgeDTO ed : dto.edges) {
-                graph.addEdge(new Edge(
-                    nodeMap.get(ed.sourceId),
-                    nodeMap.get(ed.targetId),
-                    ed.weight
-                ));
+
+            Graph graph = GraphLoadValidator.newGraph(dto.type, file);
+            Map<String, Node> nodeMap = new HashMap<>();
+            for (NodeDTO nd : GraphLoadValidator.requireList(dto.nodes, file, "nodes")) {
+                if (nd == null) {
+                    throw GraphLoadValidator.invalid(file, "Empty node entry.");
+                }
+                GraphLoadValidator.addNode(
+                    graph,
+                    nodeMap,
+                    nd.id,
+                    nd.label,
+                    GraphLoadValidator.requireDouble(nd.x, file, "node x"),
+                    GraphLoadValidator.requireDouble(nd.y, file, "node y"),
+                    file
+                );
+            }
+            for (EdgeDTO ed : GraphLoadValidator.requireList(dto.edges, file, "edges")) {
+                if (ed == null) {
+                    throw GraphLoadValidator.invalid(file, "Empty edge entry.");
+                }
+                GraphLoadValidator.addEdge(
+                    graph,
+                    GraphLoadValidator.requireNode(nodeMap, ed.sourceId, file, "source node id"),
+                    GraphLoadValidator.requireNode(nodeMap, ed.targetId, file, "target node id"),
+                    GraphLoadValidator.requireDouble(ed.weight, file, "edge weight"),
+                    file
+                );
             }
             return graph;
         } catch (IOException e) {

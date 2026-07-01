@@ -9,6 +9,8 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -156,6 +158,26 @@ public class JsonGraphRepositoryTest {
     @DisplayName("Loading from a non-existent file throws GraphIOException")
     public void testLoadNonExistentFileThrows() {
         File file = tempDir.resolve("nonexistent.json").toFile();
+        assertThrows(GraphIOException.class, () -> repository.load(file));
+    }
+
+    @Test
+    @DisplayName("Loading JSON with unknown graph type throws GraphIOException")
+    public void testLoadUnknownTypeThrows() throws IOException {
+        File file = tempDir.resolve("unknown_type.json").toFile();
+        Files.writeString(file.toPath(), "{\"type\":\"UnknownGraph\",\"nodes\":[],\"edges\":[]}");
+
+        assertThrows(GraphIOException.class, () -> repository.load(file));
+    }
+
+    @Test
+    @DisplayName("Loading JSON edge with unknown node throws GraphIOException")
+    public void testLoadUnknownEdgeNodeThrows() throws IOException {
+        File file = tempDir.resolve("unknown_edge_node.json").toFile();
+        Files.writeString(file.toPath(),
+            "{\"type\":\"DirectedGraph\",\"nodes\":[{\"id\":\"a\",\"label\":\"A\",\"x\":0.0,\"y\":0.0}],"
+            + "\"edges\":[{\"sourceId\":\"a\",\"targetId\":\"b\",\"weight\":1.0}]}");
+
         assertThrows(GraphIOException.class, () -> repository.load(file));
     }
 

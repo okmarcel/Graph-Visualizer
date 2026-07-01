@@ -27,14 +27,14 @@ public final class CsvGraphRepository implements GraphRepository {
     public void save(Graph graph, File file) {
         StringBuilder sb = new StringBuilder();
         sb.append("TYPE,").append(graph.getClass().getSimpleName()).append("\n");
-        for(Node n : graph.getAllNodes()) {
+        for (Node n : graph.getAllNodes()) {
             sb.append("NODE,")
               .append(n.getId()).append(",")
               .append(n.getLabel()).append(",")
               .append(n.getPositionX()).append(",")
               .append(n.getPositionY()).append("\n");
         }
-        for(Edge e : graph.getAllEdges()) {
+        for (Edge e : graph.getAllEdges()) {
             sb.append("EDGE,")
               .append(e.getSource().getId()).append(",")
               .append(e.getTarget().getId()).append(",")
@@ -56,34 +56,44 @@ public final class CsvGraphRepository implements GraphRepository {
     public Graph load(File file) {
         try {
             List<String> lines = Files.readAllLines(file.toPath());
-            if(lines.isEmpty())
+            if (lines.isEmpty()) {
                 throw new GraphIOException("File is empty: " + file.getPath(), null);
+            }
 
-            String type = lines.get(0).split(",")[1];
-            Graph graph = switch(type) {
-                case "DirectedGraph" -> new DirectedGraph();
-                case "UndirectedGraph" -> new UndirectedGraph();
-                case "WeightedDirectedGraph" -> new WeightedDirectedGraph();
-                default -> new WeightedUndirectedGraph();
-            };
+            String[] header = lines.get(0).split(",", -1);
+            GraphLoadValidator.requireParts(header, 2, file, 1);
+            GraphLoadValidator.requireKeyword(header[0], "TYPE", file, 1);
+            Graph graph = GraphLoadValidator.newGraph(header[1], file);
 
             Map<String, Node> nodeMap = new HashMap<>();
-            for(String line : lines.subList(1, lines.size())) {
-                String[] parts = line.split(",");
-                if(parts[0].equals("NODE")) {
-                    Node n = new Node(parts[2], Double.parseDouble(parts[3]), Double.parseDouble(parts[4]));
-                    nodeMap.put(parts[1], n);
-                    graph.addNode(n);
-                } else if(parts[0].equals("EDGE")) {
-                    graph.addEdge(new Edge(
-                        nodeMap.get(parts[1]),
-                        nodeMap.get(parts[2]),
-                        Double.parseDouble(parts[3])
-                    ));
+            for (int i = 1; i < lines.size(); ++i) {
+                String[] parts = lines.get(i).split(",", -1);
+                if (parts[0].equals("NODE")) {
+                    GraphLoadValidator.requireParts(parts, 5, file, i + 1);
+                    GraphLoadValidator.addNode(
+                        graph,
+                        nodeMap,
+                        parts[1],
+                        parts[2],
+                        GraphLoadValidator.parseDouble(parts[3], file, "node x"),
+                        GraphLoadValidator.parseDouble(parts[4], file, "node y"),
+                        file
+                    );
+                } else if (parts[0].equals("EDGE")) {
+                    GraphLoadValidator.requireParts(parts, 4, file, i + 1);
+                    GraphLoadValidator.addEdge(
+                        graph,
+                        GraphLoadValidator.requireNode(nodeMap, parts[1], file, "source node id"),
+                        GraphLoadValidator.requireNode(nodeMap, parts[2], file, "target node id"),
+                        GraphLoadValidator.parseDouble(parts[3], file, "edge weight"),
+                        file
+                    );
+                } else {
+                    throw GraphLoadValidator.invalid(file, "Unknown record on line " + (i + 1) + ": " + parts[0]);
                 }
             }
             return graph;
-        } catch(IOException e) {
+        } catch (IOException e) {
             throw new GraphIOException("Failed to load graph from file: " + file.getPath(), e);
         }
     }

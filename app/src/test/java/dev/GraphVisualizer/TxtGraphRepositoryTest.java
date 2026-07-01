@@ -9,6 +9,8 @@ import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -156,6 +158,32 @@ public class TxtGraphRepositoryTest {
     @DisplayName("Loading from a non-existent file throws GraphIOException")
     public void testLoadNonExistentFileThrows() {
         File file = tempDir.resolve("nonexistent.txt").toFile();
+        assertThrows(GraphIOException.class, () -> repository.load(file));
+    }
+
+    @Test
+    @DisplayName("Loading TXT with unknown graph type throws GraphIOException")
+    public void testLoadUnknownTypeThrows() throws IOException {
+        File file = tempDir.resolve("unknown_type.txt").toFile();
+        Files.writeString(file.toPath(),
+            "TYPE UnknownGraph\n"
+            + "NODES 0\n"
+            + "EDGES 0\n");
+
+        assertThrows(GraphIOException.class, () -> repository.load(file));
+    }
+
+    @Test
+    @DisplayName("Loading TXT edge with unknown node throws GraphIOException")
+    public void testLoadUnknownEdgeNodeThrows() throws IOException {
+        File file = tempDir.resolve("unknown_edge_node.txt").toFile();
+        Files.writeString(file.toPath(),
+            "TYPE DirectedGraph\n"
+            + "NODES 1\n"
+            + "a A 0.0 0.0\n"
+            + "EDGES 1\n"
+            + "a b 1.0\n");
+
         assertThrows(GraphIOException.class, () -> repository.load(file));
     }
 
