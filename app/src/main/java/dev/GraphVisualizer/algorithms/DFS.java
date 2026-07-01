@@ -8,13 +8,17 @@ import java.util.Map;
 
 /** Class DFS - implementation of depth first search algorithm */
 public final class DFS {
+    /** Creates a DFS algorithm helper. */
+    private DFS() {}
+
     /**
-     * Classical CLRS implementation of Depth First Search (Chapter 22.3).
+     * Classical CLRS implementation of Depth First Search.
      * Visits sourceNode first, then continues from any remaining WHITE nodes (full-forest).
-     * @param adjacent Adjacency List for all nodes
-     * @param state Map of AlgorithmAddInfo for all nodes
+     * @param adjacent adjacency list for all nodes
+     * @param state mutable algorithm state for all nodes
      * @param time array of size 1 used as mutable integer counter
-     * @param sourceNode Node visited first
+     * @param sourceNode node visited first
+     * @param step callback invoked after each significant state change
      */
     public static void runDFS(Map<Node, List<Node>> adjacent, Map<Node, AlgorithmAddInfo> state, double[] time, Node sourceNode, Runnable step) {
         if (state.get(sourceNode).getNodeColor() == AlgorithmAddInfo.NodeColor.WHITE) {
@@ -28,11 +32,11 @@ public final class DFS {
     }
 
     /**
-     * Helper function invoked recursively
-     * @param adjacent Adjacency List for all nodes
-     * @param state Map of AlgorithmAddInfo for all nodes
+     * Recursive helper used by DFS.
+     * @param adjacent adjacency list for all nodes
+     * @param state mutable algorithm state for all nodes
      * @param time array of size 1 used as mutable integer counter
-     * @param u Node on which the function was invoked
+     * @param u node currently being visited
      * @param step callback invoked after each significant state change
      */
     private static void dfsVisit(Map<Node, List<Node>> adjacent, Map<Node, AlgorithmAddInfo> state, double[] time, Node u, Runnable step) {

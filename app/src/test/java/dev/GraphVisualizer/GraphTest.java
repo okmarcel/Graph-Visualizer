@@ -5,20 +5,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
-import java.util.List;
 
 public class GraphTest {
-
-    private Node a, b, c;
-    private Edge ab, bc;
+    private Node a, b;
+    private Edge ab;
 
     @BeforeEach
     public void setUp() {
         a = new Node("A", 0.0, 0.0);
         b = new Node("B", 1.0, 0.0);
-        c = new Node("C", 2.0, 0.0);
         ab = new Edge(a, b);
-        bc = new Edge(b, c);
     }
 
     // DirectedGraph tests

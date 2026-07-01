@@ -5,7 +5,6 @@ import dev.GraphVisualizer.repository.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.io.TempDir;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +13,6 @@ import java.nio.file.Path;
 import java.util.List;
 
 public class JsonGraphRepositoryTest {
-
     @TempDir
     Path tempDir;
 

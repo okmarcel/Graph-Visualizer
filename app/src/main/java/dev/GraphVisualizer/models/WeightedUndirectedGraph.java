@@ -2,16 +2,16 @@ package dev.GraphVisualizer.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map; 
 
 /** Class WeightedUndirectedGraph - class that represents a undirected graph with weighted edges data structure */
 public final class WeightedUndirectedGraph extends Graph {
-    /** Map holding Adjacent list of nodes for every node in the directed graph */
+    /** Adjacency list for every node in the weighted undirected graph */
     private Map<Node, List<Node>> adjacent;
 
     /**
-     * Constructor invoking constructor of the base class - intializes Adjacent table, takes two arguments
+     * Creates a weighted undirected graph with predefined nodes and edges.
      * @param nodes list of predefined nodes
      * @param edges list of predefined edges
      */
@@ -20,15 +20,15 @@ public final class WeightedUndirectedGraph extends Graph {
         buildAdjacent();
     }
 
-    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
+    /** Creates an empty weighted undirected graph. */
     public WeightedUndirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /** Method used to build Adjacent table for every node */
+    /** Rebuilds the adjacency list for every node. */
     public void buildAdjacent(){
-        this.adjacent = new HashMap<>();
+        this.adjacent = new LinkedHashMap<>();
         for(Node i : getAllNodes()) {
             adjacent.put(i, new ArrayList<>());
         }
@@ -38,7 +38,7 @@ public final class WeightedUndirectedGraph extends Graph {
         }
     }
 
-    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
+    /** Rebuilds adjacency data only when the graph has changed. */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();
@@ -47,8 +47,8 @@ public final class WeightedUndirectedGraph extends Graph {
     }
 
     /**
-     * Adjacent table getter
-     * @return Adjacent table
+     * Returns the adjacency list.
+     * @return adjacency list
      */
     public Map<Node, List<Node>> getAdjacent() {
         return adjacent;

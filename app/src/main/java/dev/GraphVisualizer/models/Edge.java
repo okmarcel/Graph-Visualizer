@@ -35,8 +35,8 @@ public final class Edge {
 
     /**
      * Constructs Edge object from nodes, defaults weight to 1.0
-     * @param source
-     * @param target
+     * @param source source node
+     * @param target target node
      */
     public Edge(Node source, Node target) {
         this(source, target, 1.0);

@@ -2,19 +2,18 @@ package dev.GraphVisualizer.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map; 
 
 /** Class DirectedGraph - class that represents a directed graph data structure */
 public final class DirectedGraph extends Graph {
-    /** Map holding Adjacent list of nodes for every node in the directed graph */
+    /** Adjacency list for every node in the directed graph */
     private Map<Node, List<Node>> adjacent;
 
     /**
-     * Constructor invoking constructor of the base class - intializes Adjacent table, takes two arguments
+     * Creates a directed graph with predefined nodes and edges.
      * @param nodes list of predefined nodes
      * @param edges list of predefined edges
-     * Uses Java 25 flexible constructor bodies featuees
      */
     public DirectedGraph(List<Node> nodes, List<Edge> edges) {
         for(Edge edge : edges) {
@@ -25,13 +24,13 @@ public final class DirectedGraph extends Graph {
         buildAdjacent();
     }
 
-    /** Constructor invoking construcotr of the base class - initializes Adjacent table, takes no arguments */
+    /** Creates an empty directed graph. */
     public DirectedGraph() {
         super();
         buildAdjacent();
     }
 
-    /** Overriden method addEdge form class Graph - provides check whether edge that we are trying to add has a weight different than 1.0 */
+    /** Adds an edge after verifying that the graph remains unweighted. */
     @Override
     public void addEdge(Edge edge) {
         if(Math.abs(edge.getWeight() - 1.0) > 1e-9)
@@ -39,9 +38,9 @@ public final class DirectedGraph extends Graph {
         super.addEdge(edge);
     }
 
-    /** Method used to build Adjacent table for every node */
+    /** Rebuilds the adjacency list for every node. */
     public void buildAdjacent(){
-        this.adjacent = new HashMap<>();
+        this.adjacent = new LinkedHashMap<>();
         for(Node i : getAllNodes()) {
             adjacent.put(i, new ArrayList<>());
         }
@@ -50,7 +49,7 @@ public final class DirectedGraph extends Graph {
         }
     }
 
-    /** Method used to rebuild Adjacent table for every node after changes in the graph - resets the cache */
+    /** Rebuilds adjacency data only when the graph has changed. */
     public void rebuildAdjacent() {
         if(cache) {
             buildAdjacent();
@@ -59,8 +58,8 @@ public final class DirectedGraph extends Graph {
     }
 
     /**
-     * Adjacent table getter
-     * @return Adjacent table
+     * Returns the adjacency list.
+     * @return adjacency list
      */
     public Map<Node, List<Node>> getAdjacent() {
         return adjacent;

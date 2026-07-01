@@ -30,7 +30,6 @@ import java.util.Optional;
 
 /** Class GraphToolBar - toolbar controlling editing, persistence and algorithms */
 public class GraphToolBar extends ToolBar {
-
     /** Supported save formats exposed in the save menu */
     private enum SaveFormat {
         JSON("JSON", ".json"),
@@ -69,10 +68,13 @@ public class GraphToolBar extends ToolBar {
 
     /** Graph service used by toolbar actions */
     private final GraphService graphService;
+
     /** Algorithm execution service */
     private final AlgorithmService algorithmService;
+
     /** Shared undo/redo manager */
     private final CommandManager commandManager;
+
     /** Canvas controlled by this toolbar */
     private GraphCanvas canvas;
 
@@ -86,17 +88,22 @@ public class GraphToolBar extends ToolBar {
 
     /** Toggle switching graph directionality */
     private final ToggleButton directedBtn = flagBtn("Directed");
+
     /** Toggle switching graph weighting */
     private final ToggleButton weightedBtn = flagBtn("Weighted");
 
     /** Button running BFS */
     private final Button bfsBtn = algoBtn("BFS");
+
     /** Button running DFS */
     private final Button dfsBtn = algoBtn("DFS");
+
     /** Button running Dijkstra */
     private final Button dijkstraBtn = algoBtn("Dijkstra");
+
     /** Button prompting for a Dijkstra target path */
     private final Button showPathBtn = subtleBtn("Path to…");
+
     /** Button clearing algorithm overlays */
     private final Button clearAlgoBtn = subtleBtn("Clear Results");
 
@@ -105,8 +112,10 @@ public class GraphToolBar extends ToolBar {
 
     /** Step-back button for recorded algorithm states */
     private final Button stepBackBtn = subtleBtn("◀");
+
     /** Step-forward button for recorded algorithm states */
     private final Button stepFwdBtn = subtleBtn("▶");
+
     /** Label showing current algorithm step index */
     private final Label  stepLabel = new Label("—");
 
@@ -114,10 +123,13 @@ public class GraphToolBar extends ToolBar {
 
     /** Current graph directionality flag */
     private boolean directed;
+
     /** Current graph weighting flag */
     private boolean weighted;
+
     /** Source node from the last successful Dijkstra run */
     private Node lastDijkstraSource = null;
+    
     /** Toggle group keeping editing modes mutually exclusive */
     private ToggleGroup modeGroup;
 
@@ -203,6 +215,7 @@ public class GraphToolBar extends ToolBar {
                 () -> { savedNodes.forEach(graph::addNode); savedEdges.forEach(graph::addEdge); }
             );
             resetAlgorithmUi();
+
             canvas.resetNodeCounter();
             canvas.setMode(CanvasMode.PAN);
             panBtn.setSelected(true);
@@ -214,6 +227,7 @@ public class GraphToolBar extends ToolBar {
             directed = directedBtn.isSelected();
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
+
             resetAlgorithmUi();
             canvas.updateGraphType(directed, weighted);
         });
@@ -236,6 +250,7 @@ public class GraphToolBar extends ToolBar {
             weighted = nowWeighted;
             graphService.switchGraphType(directed, weighted);
             commandManager.clear();
+
             resetAlgorithmUi();
             canvas.updateGraphType(directed, weighted);
         });
@@ -249,8 +264,8 @@ public class GraphToolBar extends ToolBar {
 
         clearAlgoBtn.setOnAction(e -> resetAlgorithmUi());
 
-        undoBtn.setOnAction(e -> { commandManager.undo(); canvas.refresh(); });
-        redoBtn.setOnAction(e -> { commandManager.redo(); canvas.refresh(); });
+        undoBtn.setOnAction(e -> { commandManager.undo(); canvas.syncNodeCounterWithGraph(); canvas.refresh(); });
+        redoBtn.setOnAction(e -> { commandManager.redo(); canvas.syncNodeCounterWithGraph(); canvas.refresh(); });
 
         stepBackBtn.setOnAction(e -> {
             if (algorithmService.stepBack()) {
@@ -275,7 +290,7 @@ public class GraphToolBar extends ToolBar {
         });
     }
 
-    /** Populates the save menu with supported output formats. */
+    /** Initializes the save menu with supported output formats. */
     private void initializeSaveMenu() {
         for (SaveFormat format : SaveFormat.values()) {
             MenuItem item = format.toMenuItem();
@@ -602,6 +617,7 @@ public class GraphToolBar extends ToolBar {
         MenuButton b = new MenuButton(text);
         b.setStyle(
             "-fx-background-color: #374151; -fx-text-fill: #9ca3af; " +
+            "-fx-text-base-color: #9ca3af; -fx-mark-color: #9ca3af; " +
             "-fx-background-radius: 6; -fx-cursor: hand;");
         return b;
     }

@@ -22,15 +22,19 @@ public class MainWindow {
 
     /** Primary JavaFX stage */
     private final Stage stage;
+
     /** Service managing graph persistence and graph type switching */
     private final GraphService graphService;
+
     /** Service responsible for algorithm execution */
     private final AlgorithmService algorithmService;
+
     /** Shared undo/redo manager */
     private final CommandManager commandManager;
 
     /** Graph direction flag mirrored by toolbar and canvas */
     private boolean directed = false;
+    
     /** Graph weighting flag mirrored by toolbar and canvas */
     private boolean weighted = false;
 
@@ -80,8 +84,8 @@ public class MainWindow {
     }
 
     /**
-     * Populates the initial sample graph visible after application start.
-     * @param graph graph to populate
+     * Initializes the sample graph visible after application start.
+     * @param graph graph to initialize
      */
     private void initializeSampleGraph(Graph graph) {
         Node nodeA = new Node("A", 300, 150);

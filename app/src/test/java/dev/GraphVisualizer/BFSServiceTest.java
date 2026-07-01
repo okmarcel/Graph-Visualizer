@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BFSServiceTest {
-
     private DirectedGraph graph;
     private GraphService graphService;
     private AlgorithmService algorithmService;

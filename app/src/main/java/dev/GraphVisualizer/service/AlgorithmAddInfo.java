@@ -9,7 +9,14 @@ public final class AlgorithmAddInfo {
      * WHITE, GREY or BLACK
      */
     public enum NodeColor {
-        WHITE, GREY, BLACK;
+        /** The node has not yet been visited. */
+        WHITE,
+
+        /** The node has been discovered and is being processed. */
+        GREY,
+        
+        /** The node and its neighbors have been fully processed. */
+        BLACK;
     }
 
     /** Member nodeColor - nodeColor of the Node used in the algorithm - WHITE, GREY or BLACK */
@@ -84,7 +91,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * nodeColor setter
-     * @param nodeColor
+     * @param nodeColor new algorithm-processing color
      */
     public void setNodeColor(NodeColor nodeColor) {
         this.nodeColor = nodeColor;
@@ -92,7 +99,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * nodeColor getter
-     * @return
+     * @return current algorithm-processing color
      */
     public NodeColor getNodeColor() {
         return nodeColor;
@@ -100,7 +107,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * d setter
-     * @param d
+     * @param d new discovery time or distance from the source node
      */
     public void setD(double d) {
         this.d = d;
@@ -108,7 +115,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * d getter
-     * @return
+     * @return discovery time or distance from the source node
      */
     public double getD() {
         return d;
@@ -116,7 +123,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * pi setter
-     * @param pi
+     * @param pi new parent node, or {@code null} when none exists
      */
     public void setPi(Node pi) {
         this.pi = pi;
@@ -124,7 +131,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * pi getter
-     * @return
+     * @return parent node, or {@code null} when none exists
      */
     public Node getPi() {
         return pi;
@@ -132,7 +139,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * f setter
-     * @param f
+     * @param f new DFS finish time
      */
     public void setF(double f) {
         this.f = f;
@@ -140,7 +147,7 @@ public final class AlgorithmAddInfo {
 
     /**
      * f getter
-     * @return
+     * @return DFS finish time
      */
     public double getF() {
         return f;
@@ -148,9 +155,9 @@ public final class AlgorithmAddInfo {
 
     /**
      * One big setter to set the state of AlgorithmAddInfo used in context of BFS algorithm
-     * @param nodeColor
-     * @param d
-     * @param pi
+     * @param nodeColor new algorithm-processing color
+     * @param d new distance from the source node
+     * @param pi new parent node, or {@code null} when none exists
      */
     public void setAllBFS(NodeColor nodeColor, double d, Node pi) {
         this.nodeColor = nodeColor;
@@ -161,10 +168,10 @@ public final class AlgorithmAddInfo {
 
     /**
      * One big setter to set the state of AlgorithmAddInfo used in context of DFS algorithm
-     * @param nodeColor
-     * @param d
-     * @param pi
-     * @param f
+     * @param nodeColor new algorithm-processing color
+     * @param d new DFS discovery time
+     * @param pi new parent node, or {@code null} when none exists
+     * @param f new DFS finish time
      */
     public void setAllDFS(NodeColor nodeColor, double d, Node pi, double f) {
         this.nodeColor = nodeColor;

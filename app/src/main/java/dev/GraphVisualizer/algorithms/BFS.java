@@ -10,10 +10,15 @@ import java.util.Queue;
 
 /** Class BFS - implementation of breadth first search algorithm */
 public final class BFS {
+    /** Creates a BFS algorithm helper. */
+    private BFS() {}
+
     /**
-     * Classical CLRS implementation of Breadth First Search algorithm
-     * @param service API with representation of graph and Adjacency List for all nodes
-     * @param sourceNode Node from which the algorithm runs
+     * Classical CLRS implementation of the Breadth First Search algorithm.
+     * @param adjacent adjacency list for all nodes
+     * @param state mutable algorithm state for every node
+     * @param sourceNode node from which the algorithm starts
+     * @param step callback invoked after each significant state change
      */
     public static void runBFS(Map<Node, List<Node>> adjacent, Map<Node, AlgorithmAddInfo> state, Node sourceNode, Runnable step) {
         state.get(sourceNode).setAllBFS(AlgorithmAddInfo.NodeColor.GREY, 0.0, null);
